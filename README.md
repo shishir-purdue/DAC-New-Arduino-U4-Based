@@ -3,6 +3,6 @@
 
 Note:
 There are three different generations of DAC Box.
-- DAC(Old): The earliest version, designed by Yisheng & Yupeng, archived version.
+- DAC(Old): The first version, designed by Yisheng & Yupeng, archived version.
 - DAC(New): The second version, similar to DAC(Old), using UNO R4 and rewrites the software. **This is the current repo version**
-- DAC(Linux): The latest version, using Raspberry Pi and supports AD5791 & AD5780.
+- DAC(Linux): The third version, using Raspberry Pi and supports AD5791 & AD5780.
