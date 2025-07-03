@@ -1,5 +1,5 @@
-The source-file of the DAC Motherboard.
+The source file of the DAC Motherboard.
 Contains 
-  - the schematic
-  - the gerber file for manufacturing 
-  - the BOM for purchasing parts.
+  - The PCB layout
+  - The Gerber file for manufacturing 
+  - The BOM for purchasing parts.
