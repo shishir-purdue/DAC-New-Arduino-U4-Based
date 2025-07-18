@@ -1,6 +1,8 @@
 # DAC-New-AD5780-Arduino-Uno-R4
 4 channel DAC(New) box based on AD5780 and Arduino Uno R4 and custom circuit boards.
 
+This version is designed to comply for max compatibility, where Python warppers for *DAC-Old-Original-Arduino-Mega-Based* can directly operate on this hardware.
+
 Note:
 There are three different generations of DAC Box.
 - DAC(Old): The first version, designed by Yisheng & Yupeng, archived version.
