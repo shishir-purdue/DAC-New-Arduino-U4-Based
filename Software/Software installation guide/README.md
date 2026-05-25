@@ -56,6 +56,7 @@ After successful uploading, you can disconnect the dev board and proceed to the 
 
 Note: You need to install the Arduino Uno R4 driver, so your computer can recognize the Arduino hardware. A screenshot is taken from the *USBTreeView* software
 ![image.png](49446cca-ae72-43f1-8202-080e94199bec.png)
+
 Detailed driver instructions can be found here.
 
 https://docs.arduino.cc/tutorials/uno-r4-minima/minima-getting-started
