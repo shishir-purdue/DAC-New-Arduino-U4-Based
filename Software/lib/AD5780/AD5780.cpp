@@ -251,7 +251,7 @@ void AD5780_Setup(unsigned char slaveDeviceId, unsigned long setupWord, SPISetti
  *
  * @return none.
 *******************************************************************************/
-void AD5780_ramp(unsigned char slaveDeviceId, unsigned long finval, unsigned long step_size, int del_t, SPISettings* settings) {
+bool AD5780_ramp(unsigned char slaveDeviceId, unsigned long finval, unsigned long step_size, int del_t, SPISettings* settings, RampAbortCheck abortCheck) {
     unsigned long raw_value = AD5780_GetRegisterValue(slaveDeviceId, AD5780_REG_DAC, 3, settings);
     unsigned long current = (raw_value >> 2) & 0x3FFFF;
 
@@ -260,6 +260,10 @@ void AD5780_ramp(unsigned char slaveDeviceId, unsigned long finval, unsigned lon
 
     if(current <= finval) {
         while (current < finval) {
+            if (abortCheck && abortCheck()) {
+                Serial.println("RAMP aborted.");
+                return false;
+            }
             delayMicroseconds(del_t);
 
             if((current + step_size) > finval) {
@@ -275,6 +279,10 @@ void AD5780_ramp(unsigned char slaveDeviceId, unsigned long finval, unsigned lon
         }
     } else {
         while (current > finval) {
+            if (abortCheck && abortCheck()) {
+                Serial.println("RAMP aborted.");
+                return false;
+            }
             delayMicroseconds(del_t);
 
             if((current - step_size) < finval) {
@@ -292,4 +300,5 @@ void AD5780_ramp(unsigned char slaveDeviceId, unsigned long finval, unsigned lon
             AD5780_SetDacValue(slaveDeviceId, current, settings);
         }
     }
+    return true;
 }

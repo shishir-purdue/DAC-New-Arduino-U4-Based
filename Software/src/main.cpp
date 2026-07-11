@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include "ad5780.h"
 #include "Communication.h"
+#include <string.h>
 
 #define GLOBAL_PWR_EN 9
 #define GLOBAL_CLR 8
@@ -23,6 +24,7 @@ SPISettings AD5780_spi_settings;
 static char inputLine[128]; // Static buffer for storing input line from client
 int inputPos = 0;
 bool clientConnected = false;
+bool dacBusy = false; // Single-DAC lock: only one DAC operation at a time
 
 const char HELP_MESSAGE[] =
 "#Help:\r\n"
@@ -41,6 +43,10 @@ void processCommand(char* cmdLine);
 bool isInteger(char* str);
 void printHelp();
 bool isAllUpperCase(const char* str);
+bool isValidChannel(int ch);
+
+// Abort callback for long-running ramp; checked periodically inside the ramp loop
+bool rampAbortCheck();
 
 // Handler functions for commands
 void func_INIT(int param);
@@ -67,6 +73,9 @@ void setup() {
   digitalWrite(GLOBAL_CLR, HIGH);
   digitalWrite(GLOBAL_RST, HIGH);
   digitalWrite(GLOBAL_PWR_EN, HIGH);
+
+  Serial.println("Beginning SPI bus...");
+  SPI.begin();
 
   Serial.println("Beginning AD5780 SPI settings...");
   if ((bool)AD5780_SPI_Init(false, SPI_1MHZ, false, true, &AD5780_spi_settings)) {  //1M for stability, SPI Mode 1 because sampling on Falling Edge
@@ -100,19 +109,29 @@ void setup() {
 }
 
 void loop() {
+  // Maintain Ethernet link state (detect cable unplug/replug, DHCP renewal)
+  Ethernet.maintain();
+
   // Check if client is still connected
   if (clientConnected && (!telnetClient || !telnetClient.connected())) {
-    // Client was connected, but now it's not
     Serial.println("Client disconnected.");
+    telnetClient.stop();
     clientConnected = false;
+    dacBusy = false;
   }
 
-  // Check for a new client connection if none is active
-  if (!clientConnected) {
-    EthernetClient newClient = telnetServer.available();
-    if (newClient && newClient.connected()) {
-      telnetClient = newClient; // Store the newly connected client
+  // Always check for new connections (single-client policy)
+  EthernetClient newClient = telnetServer.available();
+  if (newClient && newClient.connected()) {
+    if (clientConnected) {
+      // Reject: only one client allowed at a time
+      Serial.println("Second client rejected - server busy.");
+      newClient.print("ERR! Server busy: only one connection allowed.\r\n");
+      newClient.stop();
+    } else {
+      telnetClient = newClient;
       clientConnected = true;
+      dacBusy = false;
       Serial.println("Client connected.");
       telnetClient.print("Welcome to the Telnet server!\r\nType HELP for instructions.\r\n");
       inputPos = 0;
@@ -163,8 +182,7 @@ void processCommand(char* cmdLine) {
     return;
   }
 
-  // Convert the first token into a String for easier comparison
-  String command = String(tokens[0]);
+  const char* command = tokens[0];
 
   // Debug print the received command and arguments
   Serial.print("Received Command: ");
@@ -176,38 +194,59 @@ void processCommand(char* cmdLine) {
   Serial.println();
 
   // Dispatch based on command
-  if (command == "INIT") {
+  if (strcmp(command, "INIT") == 0) {
     // INIT or INIT [number]
     if (tokenCount == 1) {
       // No parameter
       func_INIT(-1);
     } else if (tokenCount == 2 && isInteger(tokens[1])) {
       int param = atoi(tokens[1]);
-      func_INIT(param);
+      if (param == -1 || isValidChannel(param)) {
+        func_INIT(param);
+      } else {
+        Serial.println("ERR! Invalid DAC channel.");
+        if (clientConnected && telnetClient.connected()) {
+          telnetClient.print("ERR! Invalid DAC channel. Must be 1-4.\r\n");
+        }
+      }
     } else {
       printHelp();
     }
-  } else if (command == "READ") {
+  } else if (strcmp(command, "READ") == 0) {
     // READ [number]
     if (tokenCount == 2 && isInteger(tokens[1])) {
       int param = atoi(tokens[1]);
-      func_READ(param);
+      if (isValidChannel(param)) {
+        func_READ(param);
+      } else {
+        Serial.println("ERR! Invalid DAC channel.");
+        if (clientConnected && telnetClient.connected()) {
+          telnetClient.print("ERR! Invalid DAC channel. Must be 1-4.\r\n");
+        }
+      }
     } else {
       printHelp();
     }
-  } else if (command == "SET") {
+  } else if (strcmp(command, "SET") == 0) {
     // SET [number] [number]
     if (tokenCount == 3 && isInteger(tokens[1]) && isInteger(tokens[2])) {
       int p1 = atoi(tokens[1]);
       int p2 = atoi(tokens[2]);
-      func_SET(p1, p2);
+      if (isValidChannel(p1)) {
+        func_SET(p1, p2);
+      } else {
+        Serial.println("ERR! Invalid DAC channel.");
+        if (clientConnected && telnetClient.connected()) {
+          telnetClient.print("ERR! Invalid DAC channel. Must be 1-4.\r\n");
+        }
+      }
     } else {
       printHelp();
     }
-  } else if (command == "HELP") {
+  } else if (strcmp(command, "HELP") == 0) {
     // HELP
     func_HELP();
-  } else if (command == "RAMP") {
+  } else if (strcmp(command, "RAMP") == 0) {
     // RAMP [number] [number] [number] [number]
     if (tokenCount == 5 && isInteger(tokens[1]) && isInteger(tokens[2]) &&
                           isInteger(tokens[3]) && isInteger(tokens[4])) {
@@ -215,11 +254,18 @@ void processCommand(char* cmdLine) {
       int p2 = atoi(tokens[2]);
       int p3 = atoi(tokens[3]);
       int p4 = atoi(tokens[4]);
-      func_RAMP(p1, p2, p3, p4);
+      if (isValidChannel(p1)) {
+        func_RAMP(p1, p2, p3, p4);
+      } else {
+        Serial.println("ERR! Invalid DAC channel.");
+        if (clientConnected && telnetClient.connected()) {
+          telnetClient.print("ERR! Invalid DAC channel. Must be 1-4.\r\n");
+        }
+      }
     } else {
       printHelp();
     }
-  } else if (command == "ID") {
+  } else if (strcmp(command, "ID") == 0) {
     // ID
     func_ID();
   } else {
@@ -260,10 +306,30 @@ bool isAllUpperCase(const char* str) {
   return true;
 }
 
+bool isValidChannel(int ch) {
+  return (ch >= 1 && ch <= (int)(sizeof(DAC_sync) / sizeof(*DAC_sync)));
+}
+
+bool rampAbortCheck() {
+  Ethernet.maintain();
+  if (clientConnected && (!telnetClient || !telnetClient.connected())) {
+    return true;
+  }
+  return false;
+}
+
 // ================== Command Handler Functions ================== //
 
 void func_INIT(int param) {
-  // Called when INIT command is received
+  if (dacBusy) {
+    Serial.println("ERR! DAC busy, INIT rejected.");
+    if (clientConnected && telnetClient.connected()) {
+      telnetClient.print("ERR! DAC busy, command rejected.\r\n");
+    }
+    return;
+  }
+  dacBusy = true;
+
   // Print debug info on Serial
   Serial.print("func_INIT called with param: ");
   Serial.println(param);
@@ -286,10 +352,20 @@ void func_INIT(int param) {
       telnetClient.print("\r\n");
     }
   }
+
+  dacBusy = false;
 }
 
 void func_READ(int param) {
-  // Called when READ command is received
+  if (dacBusy) {
+    Serial.println("ERR! DAC busy, READ rejected.");
+    if (clientConnected && telnetClient.connected()) {
+      telnetClient.print("ERR! DAC busy, command rejected.\r\n");
+    }
+    return;
+  }
+  dacBusy = true;
+
   // Print debug info on Serial
   Serial.print("func_READ called with param: ");
   Serial.print(param);
@@ -308,9 +384,20 @@ void func_READ(int param) {
     telnetClient.print(current_dac_values);
     telnetClient.print("\r\n");
   }
+
+  dacBusy = false;
 }
 
 void func_SET(int p1, int p2) {
+  if (dacBusy) {
+    Serial.println("ERR! DAC busy, SET rejected.");
+    if (clientConnected && telnetClient.connected()) {
+      telnetClient.print("ERR! DAC busy, command rejected.\r\n");
+    }
+    return;
+  }
+  dacBusy = true;
+
   // Called when SET command is received
   // Print debug info on Serial
   Serial.print("func_SET called with params: ");
@@ -337,6 +424,8 @@ void func_SET(int p1, int p2) {
     telnetClient.print(p2);
     telnetClient.print("\r\n");
   }
+
+  dacBusy = false;
 }
 
 void func_HELP() {
@@ -347,6 +436,15 @@ void func_HELP() {
 }
 
 void func_RAMP(int p1, int p2, int p3, int p4) {
+  if (dacBusy) {
+    Serial.println("ERR! DAC busy, RAMP rejected.");
+    if (clientConnected && telnetClient.connected()) {
+      telnetClient.print("ERR! DAC busy, command rejected.\r\n");
+    }
+    return;
+  }
+  dacBusy = true;
+
   // Called when RAMP command is received
   // Print debug info on Serial
   if(p2 > VMAX || p2 < VMIN) {
@@ -359,21 +457,24 @@ void func_RAMP(int p1, int p2, int p3, int p4) {
   }
 
   if(p3 != 0) {
-    AD5780_ramp((unsigned char)DAC_sync[p1 - 1], p2, p3, p4, &AD5780_spi_settings);
+    bool completed = AD5780_ramp((unsigned char)DAC_sync[p1 - 1], p2, p3, p4, &AD5780_spi_settings, rampAbortCheck);
 
-    Serial.print("func_RAMP called with params: ");
-    Serial.print(p1); Serial.print(", ");
-    Serial.print(p2); Serial.print(", ");
-    Serial.print(p3); Serial.print(", ");
-    Serial.println(p4);
-    // Respond to client
-    if (clientConnected && telnetClient.connected()) {
-      telnetClient.print("RAMP command received with parameters: ");
-      telnetClient.print(p1); telnetClient.print(" ");
-      telnetClient.print(p2); telnetClient.print(" ");
-      telnetClient.print(p3); telnetClient.print(" ");
-      telnetClient.print(p4);
-      telnetClient.print("\r\n");
+    if (completed) {
+      Serial.print("func_RAMP completed with params: ");
+      Serial.print(p1); Serial.print(", ");
+      Serial.print(p2); Serial.print(", ");
+      Serial.print(p3); Serial.print(", ");
+      Serial.println(p4);
+      if (clientConnected && telnetClient.connected()) {
+        telnetClient.print("RAMP command received with parameters: ");
+        telnetClient.print(p1); telnetClient.print(" ");
+        telnetClient.print(p2); telnetClient.print(" ");
+        telnetClient.print(p3); telnetClient.print(" ");
+        telnetClient.print(p4);
+        telnetClient.print("\r\n");
+      }
+    } else {
+      Serial.println("ERR! RAMP aborted: client disconnect detected.");
     }
   } else {
     Serial.println("ERR! step_size = 0, RAMP not executed.");
@@ -384,6 +485,8 @@ void func_RAMP(int p1, int p2, int p3, int p4) {
       telnetClient.print("\r\n");
     }
   }
+
+  dacBusy = false;
 }
 
 void func_ID() {

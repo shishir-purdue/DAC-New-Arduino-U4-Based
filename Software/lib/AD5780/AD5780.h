@@ -121,7 +121,10 @@ void AD5780_SoftInstruction(unsigned char slaveDeviceId, unsigned char instructi
 /* Writes to Control Register. */
 void AD5780_Setup(unsigned char slaveDeviceId, unsigned long setupWord, SPISettings* settings);
 
-/* Steps (ramp) to desired voltage */
-void AD5780_ramp(unsigned char slaveDeviceId, unsigned long finval, unsigned long step_size, int del_t, SPISettings* settings);
+/* Abort callback for ramp; returns true if ramp should abort. */
+typedef bool (*RampAbortCheck)();
+
+/* Steps (ramp) to desired voltage. Returns true if completed, false if aborted. */
+bool AD5780_ramp(unsigned char slaveDeviceId, unsigned long finval, unsigned long step_size, int del_t, SPISettings* settings, RampAbortCheck abortCheck);
 
 #endif	// AD5780_H_
