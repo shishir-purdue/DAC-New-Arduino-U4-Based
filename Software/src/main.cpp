@@ -116,7 +116,10 @@ void loop() {
   if (clientConnected && (!telnetClient || !telnetClient.connected())) {
     Serial.println("Client disconnected.");
     telnetClient.stop();
+    telnetClient = EthernetClient();
     clientConnected = false;
+    inputPos = 0;
+    inputLine[0] = '\0';
     dacBusy = false;
   }
 
