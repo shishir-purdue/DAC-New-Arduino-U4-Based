@@ -108,7 +108,8 @@ These cause crashes, freezes, or hardware risk. **Current phase.**
 
 Incorrect output or undefined behavior. Not yet addressed.
 
-- [ ] **H1: Shadowed global `AD5780_spi_settings` in SPI init error path**
+- [x] **H1: Shadowed global `AD5780_spi_settings` in SPI init error path**
+  - Repair: explicitly assign 1 MHz, MSB first, MODE1 to the global on failure.
   - `main.cpp:79` - local declaration shadows global; global left uninitialized on failure
   - **Codex clarification:** The global is default-constructed, not indeterminate;
     the local fallback does not update it. The configured valid parameters do not

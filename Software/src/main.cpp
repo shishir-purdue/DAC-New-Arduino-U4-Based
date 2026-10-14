@@ -95,8 +95,8 @@ void setup() {
           DacLog.print("\nSPI init Success!\n");
       }
   } else {
-      SPISettings AD5780_spi_settings;
-      DacLog.print("\nSPI init fail!\n");
+      AD5780_spi_settings = SPISettings(SPI_1MHZ, MSBFIRST, SPI_MODE1);
+      DacLog.print("\nSPI init failed; explicit DAC settings restored.\n");
   }
 
   // Static network configuration; failure leaves the local buttons operational.
