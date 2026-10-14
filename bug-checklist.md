@@ -153,9 +153,13 @@ Robustness, usability, and code quality improvements. Not yet addressed.
   - SET/RAMP responses include WARN and the actual clamped target; M2 covers both bounds and operations.
 - [x] **M3:** Input buffer overflow silently truncated (could form wrong command)
 - [x] **M4:** Single-byte-per-loop read risks data loss during blocking operations
-- [ ] **M5:** Include filename case mismatch (`ad5780.h` vs `AD5780.h`)
-- [ ] **M6:** Dead code - `writeCommand[0]`/`registerWord[0] = 0x01` never transmitted
-- [ ] **M7:** Undefined GPIO macros (`GPIO1_PIN_OUT`, etc.) from ADI template
+- [x] **M5:** Include filename case mismatch (`ad5780.h` vs `AD5780.h`)
+- [x] **M6:** Dead code - `writeCommand[0]`/`registerWord[0] = 0x01` never transmitted
+- [x] **M7:** Undefined GPIO macros (`GPIO1_PIN_OUT`, etc.) from ADI template
+  - Legacy ADI portability cleanup: canonical header case, explicit three-byte
+    MSB-first wire frames without unused prefix or host-endian casts, and removal
+    of unimplemented GPIO aliases. Both transport helpers now start at byte zero.
+    M5-M7 audits and all 32 actual-driver button/ramp tests pass.
 - [ ] **M8:** No SPI interrupt arbitration (Ethernet + DACs share bus)
   - **Codex review addition:** DAC transfers already use `beginTransaction()` /
     `endTransaction()`. No application ISR uses SPI in this source. The test checks

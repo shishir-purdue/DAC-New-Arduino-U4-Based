@@ -198,7 +198,7 @@ unsigned char _SPI_Read(unsigned char slaveDeviceId,
         SPI.beginTransaction(*settings);
 
         digitalWrite(slaveDeviceId, LOW);  // Assert slave select for the specific slave
-        SPI.transfer((data + 1), bytesNumber); // read data, overwrite from data[0] to data[bytesNumber]
+        SPI.transfer(data, bytesNumber); // Transfer exactly the three wire bytes.
         digitalWrite(slaveDeviceId, HIGH); // Deassert slave select
 
         SPI.endTransaction();
@@ -229,7 +229,7 @@ unsigned char _SPI_Write(unsigned char slaveDeviceId,
         SPI.beginTransaction(*settings);
 
         digitalWrite(slaveDeviceId, LOW);  // Assert slave select for the specific slave
-        for (unsigned char i = 1; i < bytesNumber + 1; i++) {
+        for (unsigned char i = 0; i < bytesNumber; i++) {
             SPI.transfer(data[i]); // Send each byte
         }
         digitalWrite(slaveDeviceId, HIGH); // Deassert slave select

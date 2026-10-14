@@ -2,7 +2,7 @@
 #include <SPI.h>
 #include <Ethernet.h>
 #include <Arduino.h>
-#include "ad5780.h"
+#include "AD5780.h"
 #include "Communication.h"
 #include <string.h>
 #include <errno.h>

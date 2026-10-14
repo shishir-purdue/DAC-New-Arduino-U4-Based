@@ -84,12 +84,9 @@ unsigned char AD5780_Init(unsigned char slaveDeviceId, SPISettings* settings)
 *******************************************************************************/
 void AD5780_EnableOutput(unsigned char slaveDeviceId, unsigned char state, SPISettings* settings)
 {
-    unsigned long oldControl = 0;
-    unsigned long newControl = 0;
-    
-    oldControl = AD5780_GetRegisterValue(slaveDeviceId, AD5780_REG_CTRL, 3, settings);
-    oldControl = (oldControl & 0xFFFFF) & ~(AD5780_CTRL_OPGND); // Remove read header and clear OPGND.
-    newControl = oldControl | AD5780_CTRL_OPGND * (!state);
+    unsigned long oldControl = AD5780_GetRegisterValue(slaveDeviceId, AD5780_REG_CTRL, 3, settings);
+    oldControl = (oldControl & 0xFFFFF) & ~AD5780_CTRL_OPGND;
+    unsigned long newControl = oldControl | (state ? 0 : AD5780_CTRL_OPGND);
     AD5780_SetRegisterValue(slaveDeviceId, AD5780_REG_CTRL, newControl, 3, settings);
 }
 
@@ -111,25 +108,15 @@ void AD5780_SetRegisterValue(
                              unsigned char bytesNumber,
                              SPISettings* settings)
 {
-    unsigned char writeCommand[4] = {0, 0, 0, 0};
-    unsigned char nullCommand[4] = {0, 0, 0, 0};
-    unsigned long spiWord         = 0;
-    unsigned char* dataPointer    = (unsigned char*)&spiWord;
-    unsigned char bytesNr         = bytesNumber;
-    
-    spiWord = AD5780_RW_(0) | 
-              AD5780_ADDR_REG(registerAddress) |
-              registerValue;
-    writeCommand[0] = 0x01;
-    while(bytesNr != 0)
-    {
-        writeCommand[bytesNr] = *dataPointer;
-        dataPointer ++;
-        bytesNr --;
-    }    
-    _SPI_Write(slaveDeviceId, writeCommand, bytesNumber, settings);
+    if (bytesNumber != 3) return;
+    const uint32_t word = AD5780_ADDR_REG(registerAddress) | (registerValue & 0xFFFFF);
+    unsigned char command[3] = {static_cast<unsigned char>(word >> 16),
+                                static_cast<unsigned char>(word >> 8),
+                                static_cast<unsigned char>(word)};
+    unsigned char nop[3] = {};
+    _SPI_Write(slaveDeviceId, command, 3, settings);
     delayMicroseconds(10);
-    _SPI_Write(slaveDeviceId, nullCommand, bytesNumber, settings); //Dummy Byte
+    _SPI_Write(slaveDeviceId, nop, 3, settings);
 }
 
 /***************************************************************************//**
@@ -148,30 +135,15 @@ unsigned long AD5780_GetRegisterValue(
                                         unsigned char bytesNumber,
                                         SPISettings* settings)
 {
-    unsigned char registerWord[4] = {0, 0, 0, 0}; 
-    unsigned long dataRead        = 0x0;
-    unsigned char i               = 0;
-    registerWord[0] = 0x01;
-    registerWord[1] = (AD5780_RW_(1) | AD5780_ADDR_REG(registerAddress)) >> 16;
-    _SPI_Write(slaveDeviceId, registerWord, 3, settings);  
-    registerWord[0] = 0x01;
-    registerWord[1] = 0x00;
-    registerWord[2] = 0x00;
-    registerWord[3] = 0x00;
+    if (bytesNumber != 3) return 0;
+    unsigned char command[3] = {
+        static_cast<unsigned char>((AD5780_RW_(1) | AD5780_ADDR_REG(registerAddress)) >> 16), 0, 0};
+    _SPI_Write(slaveDeviceId, command, 3, settings);
+    unsigned char response[3] = {};
     delayMicroseconds(10);
-    _SPI_Read(slaveDeviceId, registerWord, bytesNumber, settings);
-
-    // // Combine the bytes into a single 24-bit value (explicit handling)
-    // dataRead = (registerWord[0] << 16) | (registerWord[1] << 8) | (registerWord[2]);
-    
-    // // Extract the middle 18 bits (bits [18:1])
-    // dataRead = (dataRead >> 2) & 0x3FFFF;  // Shift by 2 to remove reserved bits and mask to get 18 bits
-
-    for(i = 0;i < bytesNumber;i ++) 
-    {
-        dataRead = (dataRead << 8) + registerWord[i + 1];
-    }
-    return(dataRead);
+    _SPI_Read(slaveDeviceId, response, 3, settings);
+    return (static_cast<uint32_t>(response[0]) << 16) |
+           (static_cast<uint32_t>(response[1]) << 8) | response[2];
 }
 
 /***************************************************************************//**

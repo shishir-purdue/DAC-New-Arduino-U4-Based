@@ -50,15 +50,6 @@
 /*****************************************************************************/
 /* GPIO                                                                      */
 /*****************************************************************************/
-#define AD5780_LDAC_OUT        GPIO1_PIN_OUT
-#define AD5780_LDAC_LOW        GPIO1_PIN_LOW
-#define AD5780_LDAC_HIGH       GPIO1_PIN_HIGH
-#define AD5780_CLR_OUT         GPIO2_PIN_OUT
-#define AD5780_CLR_LOW         GPIO2_PIN_LOW
-#define AD5780_CLR_HIGH	       GPIO2_PIN_HIGH
-#define AD5780_RESET_OUT       GPIO3_PIN_OUT
-#define AD5780_RESET_LOW       GPIO3_PIN_LOW
-#define AD5780_RESET_HIGH      GPIO3_PIN_HIGH
 
 /*****************************************************************************/
 /* AD5780                                                                    */
