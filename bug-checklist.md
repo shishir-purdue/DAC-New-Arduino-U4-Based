@@ -160,7 +160,11 @@ Robustness, usability, and code quality improvements. Not yet addressed.
     MSB-first wire frames without unused prefix or host-endian casts, and removal
     of unimplemented GPIO aliases. Both transport helpers now start at byte zero.
     M5-M7 audits and all 32 actual-driver button/ramp tests pass.
-- [ ] **M8:** No SPI interrupt arbitration (Ethernet + DACs share bus)
+- [x] **M8:** No SPI interrupt arbitration (Ethernet + DACs share bus)
+  - Reviewed, not a current defect: application SPI access is serialized in the
+    foreground; no application ISR uses SPI. M8 checks balanced transactions and
+    audits ISR registration; B6 verifies the cancellation hook performs no SPI.
+    Future SPI-using interrupts require a new ownership review.
   - **Codex review addition:** DAC transfers already use `beginTransaction()` /
     `endTransaction()`. No application ISR uses SPI in this source. The test checks
     balanced framing, then reports REVIEW for real interrupt contention; missing

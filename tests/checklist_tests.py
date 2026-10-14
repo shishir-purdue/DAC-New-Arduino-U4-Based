@@ -176,7 +176,9 @@ def run_case(case_id: str) -> None:
             run_host(related)
     elif case_id == "M8":
         run_host(case_id)
-        raise ReviewRequired("M8: SPI transaction balance passed. No application ISR uses SPI in this source. Interrupt arbitration requires target/core review plus logic-analyzer evidence if an ISR actually shares SPI; absence of usingInterrupt alone is not a demonstrated bug.")
+        application = main + driver + comm + code("Software/src/PhysicalControls.h")
+        assert not re.search(r"\b(?:attachInterrupt|ISR|IRQHandler)\s*\(", application), "M8: new ISR requires a shared-SPI ownership review"
+        run_host("B6")  # Cancellation hooks only sample GPIO/RAM, no nested SPI.
     else:
         run_host(case_id)
     print(f"PASS {case_id}: {DESCRIPTIONS[case_id]}")
