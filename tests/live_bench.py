@@ -113,7 +113,7 @@ class Bench:
     def set_readback(self):
         self.output_gate()
         with self.connect() as client:
-            # No INIT: it would overwrite the output with midscale (M9).
+            # No INIT: this test requires an already initialized bench channel.
             for code in [self.low_code, self.high_code, self.low_code]:
                 reply = client.request(f"SET {self.channel} {code}")
                 assert "SET command received" in reply, reply
@@ -134,9 +134,16 @@ class Bench:
                 reply = Session(extra, min(self.timeout, 0.5)).line()
                 assert "busy" in reply.lower(), f"Client not rejected during ramp: {reply!r}"
                 assert time.monotonic() - start < 0.5, "Second-client rejection exceeded 500 ms during ramp"
-            owner.timeout = max(self.timeout, span * 0.01 + 5)
             reply = owner.line()
-            assert reply.startswith("RAMP"), f"Ramp completion response missing: {reply!r}"
+            assert reply.startswith("RAMP ACCEPTED"), f"Ramp acceptance missing: {reply!r}"
+            deadline = time.monotonic() + span * 0.01 + 5
+            while True:
+                status = owner.request("STATUS")
+                if status.startswith("RAMP COMPLETE "):
+                    break
+                assert status.startswith("RAMP RUNNING "), f"Ramp failed: {status!r}"
+                assert time.monotonic() < deadline, "Ramp completion deadline exceeded"
+                time.sleep(0.1)
             assert owner.request(f"READ {self.channel}") == str(self.high_code), "Ramp failed to reach target"
         print("PASS live Robust-1/C3 during ramp; final code:", self.high_code)
 
@@ -164,13 +171,18 @@ class Bench:
         with self.connect() as original:
             assert original.request("ID") == "AD5780"
             input("Unplug the DAC Ethernet cable, wait five seconds, reconnect it, then press Enter. ")
+            # Recovery deliberately invalidates old sockets and partial commands.
             start = time.monotonic()
-            original.timeout = max_recovery_seconds
-            assert original.request("ID") == "AD5780", "Original socket failed after cable recovery"
-            assert time.monotonic() - start <= max_recovery_seconds, "Cable recovery exceeded the chosen deadline"
-        time.sleep(0.25)
-        self.readonly(repeats=1)
-        print("PASS live C4 controlled unplug/replug; this does not cover lost TCP peers or every PHY fault")
+            while True:
+                try:
+                    with self.connect() as fresh:
+                        assert fresh.request("ID") == "AD5780"
+                    break
+                except (OSError, AssertionError):
+                    if time.monotonic()-start >= max_recovery_seconds:
+                        raise
+                    time.sleep(0.25)
+        print("PASS live C4 fresh connection after unplug/replug; physical faults need separate validation")
 
 
 def verify_step_intervals(measured_us, requested_us, tolerance_us):

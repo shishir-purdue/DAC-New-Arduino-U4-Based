@@ -178,7 +178,12 @@ Robustness, usability, and code quality improvements. Not yet addressed.
     preserve-output policy. Actual analog transient acceptability needs an agreed
     startup policy and scope capture; a midscale write alone does not prove a glitch.
 - [x] **M10:** `atoi` overflow undefined for large values (use `strtol`)
-- [ ] **M11:** RAMP debug/response sent AFTER ramp completes (client may be gone)
+- [x] **M11:** RAMP debug/response sent AFTER ramp completes (client may be gone)
+  - After validating readback, reply `RAMP ACCEPTED` before the first step.
+    `STATUS` returns RUNNING/COMPLETE/ABORTED/FAILED. No unsolicited completion
+    reply can contaminate a later query. M11 tests acceptance, live status,
+    completion polling, and disconnect state. The tested Python helper implements
+    the new protocol and corrected V/s units; legacy callers must be updated.
 
 ---
 

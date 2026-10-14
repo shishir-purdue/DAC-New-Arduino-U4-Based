@@ -31,6 +31,8 @@ bool clientConnected = false;
 bool dacBusy = false; // Single-DAC lock: only one DAC operation at a time
 constexpr uint32_t CLIENT_IDLE_MS = 120000;
 uint32_t clientLastActivity = 0;
+const char* rampState = "IDLE";
+int rampChannel = 0, rampTarget = 0;
 
 const char HELP_MESSAGE[] =
 "#Help:\r\n"
@@ -42,6 +44,7 @@ const char HELP_MESSAGE[] =
 "  RAMP [DAC#] [BITCODE] [STEP_SIZE] [STEP_TIME]\r\n"
 "  HELP\r\n"
 "  ID\r\n"
+"  STATUS (last ramp state)\r\n"
 "All parameters must be integers.\r\n";
 
 // ================== Forward Declarations ================== //
@@ -62,6 +65,7 @@ void func_READ(int param);
 void func_SET(int p1, int p2);
 void func_HELP();
 void func_ID();
+void func_STATUS();
 void func_RAMP(int p1, int p2, int p3, int p4);
 
 #include "PhysicalControls.h"
@@ -324,6 +328,8 @@ void processCommand(char* cmdLine) {
   } else if (strcmp(command, "ID") == 0 && tokenCount == 1) {
     // ID
     func_ID();
+  } else if (strcmp(command, "STATUS") == 0 && tokenCount == 1) {
+    func_STATUS();
   } else {
     // Unknown command
     printHelp();
@@ -505,64 +511,44 @@ void func_HELP() {
 
 void func_RAMP(int p1, int p2, int p3, int p4) {
   if (dacBusy) {
-    DacLog.println("ERR! DAC busy, RAMP rejected.");
-    if (clientConnected && telnetClient.connected()) {
-      telnetClient.print("ERR! DAC busy, command rejected.\r\n");
-    }
+    telnetClient.print("ERR! DAC busy, command rejected.\r\n");
     return;
   }
   if (p3 <= 0 || p3 > VMAX || p4 < 0) {
     telnetClient.print("ERR! RAMP step_size must be 1..262143; step_time must be 0..2147483647 us.\r\n");
     return;
   }
-  dacBusy = true;
   const bool clamped = p2 > VMAX || p2 < VMIN;
-
-  // Called when RAMP command is received
-  // Print debug info on Serial
-  if(p2 > VMAX || p2 < VMIN) {
-    DacLog.println("WARN! Value out of bound! Auto corrected to Maximum / Minimum bound!");
-    if(p2 > VMAX) {
-      p2 = VMAX;
-    } else {
-      p2 = VMIN;
-    }
+  if (p2 > VMAX) p2 = VMAX;
+  if (p2 < VMIN) p2 = VMIN;
+  dacBusy = true;
+  rampChannel = p1; rampTarget = p2; rampState = "FAILED";
+  uint32_t initial;
+  if (!AD5780_ReadDacValueChecked(static_cast<unsigned char>(DAC_sync[p1-1]), &initial, &AD5780_spi_settings)) {
+    telnetClient.print("ERR! DAC readback invalid; RAMP not started.\r\n");
+    dacBusy = false;
+    return;
   }
-
-  if(p3 != 0) {
-    bool completed = AD5780_ramp((unsigned char)DAC_sync[p1 - 1], p2, p3, p4, &AD5780_spi_settings, rampAbortCheck);
-
-    if (completed) {
-      DacLog.print("func_RAMP completed with params: ");
-      DacLog.print(p1); DacLog.print(", ");
-      DacLog.print(p2); DacLog.print(", ");
-      DacLog.print(p3); DacLog.print(", ");
-      DacLog.println(p4);
-      if (clientConnected && telnetClient.connected()) {
-        if (clamped) telnetClient.print("WARN! Target clamped to DAC range. ");
-        telnetClient.print("RAMP command received with parameters: ");
-        telnetClient.print(p1); telnetClient.print(" ");
-        telnetClient.print(p2); telnetClient.print(" ");
-        telnetClient.print(p3); telnetClient.print(" ");
-        telnetClient.print(p4);
-        telnetClient.print("\r\n");
-      }
-    } else {
-      DacLog.println("ERR! RAMP failed: readback or interrupted operation.");
-      if (clientConnected && telnetClient.connected())
-        telnetClient.print("ERR! RAMP failed: invalid readback or interrupted operation.\r\n");
-    }
-  } else {
-    DacLog.println("ERR! step_size = 0, RAMP not executed.");
-
-    //Error respond
-    if (clientConnected && telnetClient.connected()) {
-      telnetClient.print("ERR! step_size = 0, RAMP not executed.");
-      telnetClient.print("\r\n");
-    }
-  }
-
+  rampState = "RUNNING";
+  if (clamped) telnetClient.print("WARN! Target clamped to DAC range. ");
+  telnetClient.print("RAMP ACCEPTED ");
+  telnetClient.print(p1); telnetClient.print(" ");
+  telnetClient.print(p2); telnetClient.print(" ");
+  telnetClient.print(p3); telnetClient.print(" ");
+  telnetClient.print(p4); telnetClient.print("\r\n");
+  bool completed = AD5780_ramp(static_cast<unsigned char>(DAC_sync[p1-1]), p2, p3, p4,
+                               &AD5780_spi_settings, rampAbortCheck, &initial);
+  rampState = completed ? "COMPLETE" : "ABORTED";
   dacBusy = false;
+  // One reply per command: completion is retrieved by STATUS, not an unsolicited
+  // line that could be mistaken for a later READ/SET response.
+}
+
+void func_STATUS() {
+  telnetClient.print("RAMP "); telnetClient.print(rampState);
+  telnetClient.print(" "); telnetClient.print(rampChannel);
+  telnetClient.print(" "); telnetClient.print(rampTarget);
+  telnetClient.print("\r\n");
 }
 
 void func_ID() {

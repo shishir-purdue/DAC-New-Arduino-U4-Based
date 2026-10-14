@@ -247,10 +247,12 @@ void AD5780_Setup(unsigned char slaveDeviceId, unsigned long setupWord, SPISetti
  *
  * @return none.
 *******************************************************************************/
-bool AD5780_ramp(unsigned char slaveDeviceId, unsigned long finval, unsigned long step_size, int del_t, SPISettings* settings, RampAbortCheck abortCheck) {
+bool AD5780_ramp(unsigned char slaveDeviceId, unsigned long finval, unsigned long step_size, int del_t, SPISettings* settings, RampAbortCheck abortCheck, const uint32_t* initialValue) {
     if (!step_size || step_size > 0x3FFFF || finval > 0x3FFFF || del_t < 0) return false;
     uint32_t initial;
-    if (!AD5780_ReadDacValueChecked(slaveDeviceId, &initial, settings)) return false;
+    if (initialValue) initial = *initialValue;
+    else if (!AD5780_ReadDacValueChecked(slaveDeviceId, &initial, settings)) return false;
+    if (initial > 0x3FFFF) return false;
     unsigned long current = initial;
 
     DacLog.print("current initial value:");

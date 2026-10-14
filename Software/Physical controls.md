@@ -132,39 +132,28 @@ before rounding. Copy this example into the notebook containing the existing
 connected `dac` object; it does not create a connection itself.
 
 ```python
-import math
-import time
-
-V_PER_BIT = 20.0 / 2**18
+from pathlib import Path
+import sys
+sys.path.insert(0, str(Path("Software/python").resolve()))  # From the repo root.
+from dac_client import ramp as ramp_dac
 
 def ramp(channel, voltage, speed):
-    """Ramp to voltage at speed in V/s."""
-    if channel not in (1, 2, 3, 4):
-        raise ValueError("channel must be 1-4")
-    if not math.isfinite(voltage) or not -10.0 <= voltage <= 10.0:
-        raise ValueError("voltage must be between -10 and +10 V")
-    if not math.isfinite(speed) or speed <= 0:
-        raise ValueError("speed must be finite and greater than zero")
-
-    bitcode = min(262143, int((voltage + 10.0) / V_PER_BIT))
-    step_size = 10  # DAC codes per step, approximately 0.763 mV
-    step_time = math.ceil(step_size * V_PER_BIT * 1_000_000 / speed)
-    if step_time > 2_147_483_647:
-        raise ValueError("speed is too slow for the firmware's delay range")
-
-    command = f"RAMP {channel:d} {bitcode:d} {step_size:d} {step_time:d}"
-    print(command)
-    time.sleep(dac.query_sleep)
-    response = dac.query(command)
-    time.sleep(dac.query_sleep)
-    return response
+    return ramp_dac(dac, channel, voltage, speed, timeout=3600)
 ```
 
-At 0.001 V/s this sends 762940 us per step; at 0.01 V/s it sends 76294 us.
-The query timeout must exceed the full ramp duration plus overhead (approximately
-1000 s for 0 to 1 V at 0.001 V/s). The response is sent after completion. The
-wrapper correction is identified from the supplied code; physical slew-rate
-verification is still pending.
+The implementation is in `Software/python/dac_client.py`; its five offline tests
+cover units, voltage boundaries, malformed inputs, status polling, aborts, and
+timeouts. At 0.001 V/s it sends 762940 us per step; at 0.01 V/s it sends 76294 us.
+
+**Protocol change:** RAMP now replies `RAMP ACCEPTED channel target step delay`
+after validating the starting readback and before the first step. This is an
+acceptance, not completion. `STATUS` returns `RAMP RUNNING/COMPLETE/ABORTED/FAILED
+channel target` (or IDLE before any ramp). There is no unsolicited completion
+line. The helper polls STATUS until complete by default; `wait=False` returns
+on acceptance. Its overall timeout is adjustable for slow ramps; the connection
+must also use a finite per-query timeout. A helper timeout does not automatically
+change outputs or disconnect; the ramp may still be running. Deliberately close
+the connection to abort. Physical slew-rate verification remains a bench task.
 
 ## Why the Ethernet library is local
 

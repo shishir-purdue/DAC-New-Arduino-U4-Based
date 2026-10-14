@@ -36,7 +36,9 @@ void addIntruder() { intruder = connectFake(); delayHook = nullptr; }
 void injectRead() { feedFake(owner, "READ 2\n"); delayHook = nullptr; }
 bool earlyReply = false;
 void inspectReply() {
+    if (delayCalls < 2) return; // Initial readback must be validated before acceptance.
     earlyReply = sockets[owner].tx.contains("RAMP") || sockets[owner].tx.contains("OK");
+    feedFake(owner,"STATUS\n");
     delayHook = nullptr;
 }
 #include "button_tests.h"
@@ -215,6 +217,13 @@ void run(const std::string& id) {
     } else if (id == "M11") {
         attachOwner(); delayHook = inspectReply; command("RAMP 1 10 1 1");
         require(earlyReply, "No ramp acknowledgement before the first blocking delay");
+        require(sockets[owner].tx.contains("RAMP ACCEPTED") && sockets[owner].tx.contains("RAMP RUNNING"),
+                "Acceptance/status unavailable while ramp was running");
+        require(!sockets[owner].tx.contains("RAMP COMPLETE"),"Unsolicited completion polluted query stream");
+        sockets[owner].tx.clear(); command("STATUS");
+        require(sockets[owner].tx.contains("RAMP COMPLETE 1 10"),"STATUS failed to report completion");
+        delayCalls=0; delayHook=dropOwner; command("RAMP 1 20 1 1000");
+        require(strcmp(rampState,"ABORTED")==0,"Disconnect failed to record aborted state");
     } else if (id == "A1") {
         owner = connectFake("ID\nREAD 1\n"); pump();
         require(sockets[owner].connected && sockets[owner].tx.contains("AD5780"), "Owner disconnected while its own command was still buffered");

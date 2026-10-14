@@ -120,6 +120,6 @@ void AD5780_Setup(unsigned char slaveDeviceId, unsigned long setupWord, SPISetti
 typedef bool (*RampAbortCheck)();
 
 /* Steps (ramp) to desired voltage. Returns true if completed, false if aborted. */
-bool AD5780_ramp(unsigned char slaveDeviceId, unsigned long finval, unsigned long step_size, int del_t, SPISettings* settings, RampAbortCheck abortCheck);
+bool AD5780_ramp(unsigned char slaveDeviceId, unsigned long finval, unsigned long step_size, int del_t, SPISettings* settings, RampAbortCheck abortCheck, const uint32_t* initialValue = nullptr);
 
 #endif	// AD5780_H_
