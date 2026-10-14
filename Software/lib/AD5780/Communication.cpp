@@ -1,3 +1,4 @@
+#include "DiagnosticLog.h"
 /***************************************************************************//**
  *   @file   Communication.c
  *   @brief  Implementation of Communication Driver.
@@ -190,7 +191,7 @@ unsigned char _SPI_Read(unsigned char slaveDeviceId,
                        SPISettings* settings)
 {
     if (bytesNumber != 3) {
-        Serial.print("Param invalid.");
+        DacLog.print("Param invalid.");
         return false;
     } else {
         // SPI begin should initialized previously.
@@ -221,7 +222,7 @@ unsigned char _SPI_Write(unsigned char slaveDeviceId,
                         SPISettings* settings)
 {
     if(bytesNumber != 3) {
-        Serial.print("Param invalid.");
+        DacLog.print("Param invalid.");
         return false;
     } else {
         // SPI begin should initialized previously.

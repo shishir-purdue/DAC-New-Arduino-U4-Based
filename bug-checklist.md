@@ -170,7 +170,59 @@ Robustness, usability, and code quality improvements. Not yet addressed.
     during that delay, the ramp writes another DAC value before checking again.
     A long delay also postpones connection handling for the full step wait.
   - Test A4 disconnects during the simulated step delay and detects the extra write.
-    This remains outside the preliminary fixes.
+    This remained outside the preliminary fixes; it is addressed by the physical-button follow-up below.
+
+## Physical recovery follow-up — Codex additions (2026-10-14)
+
+- **A5 — Codex addition: Ethernet driver can prevent button servicing.** Upstream
+  2.0.2 has unbounded command/register/transmit waits. The local fork adds bounded
+  waits and cancellation hooks, plus complete chip/socket reinitialization. Actual
+  driver fault-injection tests N1-N10 pass; controller-specific bench recovery is
+  still pending. An SPI-unresponsive chip may need an isolated hardware-reset wire;
+  the shared shield/Arduino RESET line must not be used to preserve DAC outputs.
+- **A6 — Codex addition: USB debug output can block local recovery.** The Minima
+  core can wait indefinitely for USB TX space. Application/driver diagnostics now
+  drop messages if they cannot fit immediately. B11 covers debug backpressure.
+- **Requested physical controls:** A1 NETWORK and A2 SAFE ZERO, active-low buttons
+  to GND. SAFE ZERO operates all channels concurrently at <=0.01 V/s, stays latched,
+  and requires a fresh NETWORK press after completion to rearm remote commands.
+  B1-B13 pass offline; physical button and analog tests remain pending.
+- **A4 follow-up:** fixed in this newly authorized scope: slice remote ramp waits
+  into <=1000 us segments and check cancellation again before the next write.
+  A4 and H4's bounded-wait criterion now pass. Analog timing still needs measurement.
+- **A3 follow-up:** PlatformIO configuration and a local Ethernet fork are present
+  and the Uno R4 target builds. The original source-audit test still returns REVIEW.
+- **W5500 follow-up:** NETWORK now also resets the PHY and restores auto-negotiation.
+  N1-N10 run with both W5100 and W5500 SPI/register doubles; N11-N12 verify PHY
+  recovery and failed readback. Isolated hardware reset still needs the shield schematic.
+- **Test tooling addition (fixed):** host build hashes were shared between the
+  firmware and network executables, allowing a stale executable after rebuilding
+  only one harness. Each executable now has its own hash file.
+- **A7 — Codex-introduced regression, fixed locally: SD left selected on Uno R4.**
+  New startup code wrote D4 HIGH before configuring OUTPUT; the R4 core's
+  `pinMode(OUTPUT)` clears the latch to LOW. That selected the shield's SD device
+  on the DAC/Ethernet SPI bus. Set OUTPUT before HIGH for D4 and D10. B14 now
+  models the actual core behavior and fails with the previous ordering. The user
+  subsequently confirmed correct zero and no automatic +10 V readback; no SPI
+  trace was captured to establish the electrical mechanism.
+- **A8 — Codex addition, guarded locally: invalid DAC responses became voltages.**
+  Masking a raw all-high response produced 262143 and could start either ramp
+  near +10 V despite a different actual output. READ and both ramp paths now
+  validate the returned DAC-register address before decoding. Invalid readback
+  gives an error and prevents ramp writes; SAFE ZERO remains latched. B15-B18
+  cover all-high/all-low/wrong-register responses and valid full-scale boundaries.
+  This is frame validation, not analog verification or comprehensive error detection.
+- **A9 — Client wrapper units (identified, corrected example supplied):** changing
+  speed from 0.001 to 0.01 V/s sent the same 1 us firmware delay. The supplied
+  Python wrapper computed seconds without multiplying by 1,000,000, then truncated
+  to zero and substituted 1. The corrected example in `Software/Physical controls.md`
+  sends 762940 / 76294 us respectively. B19/B20 verify firmware step/delay scaling;
+  physical timing with the corrected client remains to be measured. SAFE ZERO is
+  independently fixed at <=0.01 V/s and ignores remote ramp parameters.
+- Current original-checklist result: **12 PASS, 16 FAIL, 3 REVIEW**, plus **32/32**
+  dedicated button/driver cases passing. The historical results below describe
+  the earlier preliminary-only phase. The user tested the initial button firmware;
+  Codex has not flashed the latest readback correction.
 
 ## Test interpretation — Codex addition
 

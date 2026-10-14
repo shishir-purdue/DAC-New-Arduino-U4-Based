@@ -1,3 +1,4 @@
+#include "DiagnosticLog.h"
 #include <SPI.h>
 #include <Ethernet.h>
 #include <Arduino.h>
@@ -14,7 +15,7 @@
 #define TELNET_PORT 23
 
 // ================== Global Variables ================== //
-byte mac[] = { 0xA8, 0x61, 0x0A, 0xAE, 0x02, 0x0C }; // Your MAC address
+byte mac[] = { 0xA8, 0x61, 0x0A, 0xAE, 0xF2, 0x01 }; // MAC address on the DAC box label
 EthernetServer telnetServer(TELNET_PORT);
 EthernetClient telnetClient;
 
@@ -56,16 +57,25 @@ void func_HELP();
 void func_ID();
 void func_RAMP(int p1, int p2, int p3, int p4);
 
+#include "PhysicalControls.h"
+
 // ================== Setup and Loop ================== //
 void setup() {
 
-  Serial.begin(115200);
-  Serial.println("Beginning Serial...");
+  pinMode(NETWORK_RESET_BUTTON, INPUT_PULLUP);
+  pinMode(SAFE_ZERO_BUTTON, INPUT_PULLUP);
+  // Deselect both other SPI devices before starting the shared bus.
+  pinMode(ETHERNET_CS, OUTPUT);
+  digitalWrite(ETHERNET_CS, HIGH);
+  pinMode(SD_CS, OUTPUT);
+  digitalWrite(SD_CS, HIGH); // R4 pinMode(OUTPUT) clears the output latch.
+  DacLog.begin(115200);
+  DacLog.println("Beginning DacLog...");
   for (size_t i = 0; i < (sizeof(DAC_sync) / sizeof(*DAC_sync)); i++) {
       pinMode(DAC_sync[i], OUTPUT);
       digitalWrite(DAC_sync[i], HIGH);
   }
-  Serial.println("Beginning IO settings...");
+  DacLog.println("Beginning IO settings...");
   // Init configuration pins.
   pinMode(GLOBAL_PWR_EN, OUTPUT);
   pinMode(GLOBAL_CLR, OUTPUT);
@@ -74,46 +84,31 @@ void setup() {
   digitalWrite(GLOBAL_RST, HIGH);
   digitalWrite(GLOBAL_PWR_EN, HIGH);
 
-  Serial.println("Beginning SPI bus...");
+  DacLog.println("Beginning SPI bus...");
   SPI.begin();
 
-  Serial.println("Beginning AD5780 SPI settings...");
+  DacLog.println("Beginning AD5780 SPI settings...");
   if ((bool)AD5780_SPI_Init(false, SPI_1MHZ, false, true, &AD5780_spi_settings)) {  //1M for stability, SPI Mode 1 because sampling on Falling Edge
       if (AD5780_spi_settings.getBitOrder() == MSBFIRST && AD5780_spi_settings.getClockFreq() == SPI_1MHZ && AD5780_spi_settings.getDataMode() == SPI_MODE1) {
-          Serial.print("\nSPI init Success!\n");
+          DacLog.print("\nSPI init Success!\n");
       }
   } else {
       SPISettings AD5780_spi_settings;
-      Serial.print("\nSPI init fail!\n");
+      DacLog.print("\nSPI init fail!\n");
   }
 
-  // Attempt to obtain an IP address via DHCP
-  Serial.println("Attempting to get an IP addr... This can take a while...");
-  Ethernet.begin(mac, IPAddress(192,168,1,202));
+  // Static network configuration; failure leaves the local buttons operational.
+  restartNetwork();
 
-  Serial.print("Telnet Server IP: ");
-  Serial.println(Ethernet.localIP());
-
-  //   if (Ethernet.begin(mac) == 0) {
-  //     Serial.println("Failed to obtain IP via DHCP, consider using static IP.");
-  //     // You could set a static IP here if needed, for example:
-  //     // Ethernet.begin(mac, IPAddress(192,168,1,177));
-  //   } else {
-  //     Serial.print("Telnet Server IP: ");
-  //     Serial.println(Ethernet.localIP());
-  //   }
-
-  // Start listening on Telnet port 23
-  telnetServer.begin();
-  Serial.println("Telnet Server started on port 23.");
 }
 
 // Connection housekeeping only: never dispatch commands or start DAC operations.
 // Also called between ramp steps to enforce the same single-client policy.
 void serviceClientConnections() {
+  if (dacNetworkCancelled() || !networkEnabled) return;
   // Check if client is still connected
   if (clientConnected && (!telnetClient || !telnetClient.connected())) {
-    Serial.println("Client disconnected.");
+    DacLog.println("Client disconnected.");
     telnetClient.stop();
     telnetClient = EthernetClient();
     clientConnected = false;
@@ -125,18 +120,19 @@ void serviceClientConnections() {
   // accept() transfers each new socket once, even before it sends data.
   // available() can return the active owner again while its command is buffered.
   EthernetClient newClient = telnetServer.accept();
+  if (dacNetworkCancelled()) return;
   if (newClient) {
     if (!newClient.connected()) {
       newClient.stop();
     } else if (clientConnected || dacBusy) {
       // Reject: only one client allowed at a time
-      Serial.println("Second client rejected - server busy.");
+      DacLog.println("Second client rejected - server busy.");
       newClient.print("ERR! Server busy: only one connection allowed.\r\n");
       newClient.stop();
     } else {
       telnetClient = newClient;
       clientConnected = true;
-      Serial.println("Client connected.");
+      DacLog.println("Client connected.");
       telnetClient.print("Welcome to the Telnet server!\r\nType HELP for instructions.\r\n");
       inputPos = 0;
     }
@@ -144,9 +140,11 @@ void serviceClientConnections() {
 }
 
 void loop() {
-  // Maintain Ethernet link state (detect cable unplug/replug, DHCP renewal)
+  if (servicePhysicalControls()) return;
+  // Static IP: maintain() is a no-op, not a link recovery mechanism.
   Ethernet.maintain();
   serviceClientConnections();
+  if (servicePhysicalControls()) return;
 
   // If client is connected, attempt to read incoming data
   if (clientConnected && telnetClient.available()) {
@@ -170,6 +168,7 @@ void loop() {
 
 // ================== Command Processing ================== //
 void processCommand(char* cmdLine) {
+  if (dacNetworkCancelled() || !networkEnabled) return;
   // Break the command line into tokens (command and arguments)
   char* tokens[10];
   int tokenCount = 0;
@@ -195,14 +194,15 @@ void processCommand(char* cmdLine) {
   const char* command = tokens[0];
 
   // Debug print the received command and arguments
-  Serial.print("Received Command: ");
-  Serial.print(command);
+  DacLog.print("Received Command: ");
+  DacLog.print(command);
   for (int i = 1; i < tokenCount; i++) {
-    Serial.print(" ");
-    Serial.print(tokens[i]);
+    DacLog.print(" ");
+    DacLog.print(tokens[i]);
   }
-  Serial.println();
+  DacLog.println();
 
+  if (dacNetworkCancelled()) return;
   // Dispatch based on command
   if (strcmp(command, "INIT") == 0) {
     // INIT or INIT [number]
@@ -214,7 +214,7 @@ void processCommand(char* cmdLine) {
       if (param == -1 || isValidChannel(param)) {
         func_INIT(param);
       } else {
-        Serial.println("ERR! Invalid DAC channel.");
+        DacLog.println("ERR! Invalid DAC channel.");
         if (clientConnected && telnetClient.connected()) {
           telnetClient.print("ERR! Invalid DAC channel. Must be 1-4.\r\n");
         }
@@ -229,7 +229,7 @@ void processCommand(char* cmdLine) {
       if (isValidChannel(param)) {
         func_READ(param);
       } else {
-        Serial.println("ERR! Invalid DAC channel.");
+        DacLog.println("ERR! Invalid DAC channel.");
         if (clientConnected && telnetClient.connected()) {
           telnetClient.print("ERR! Invalid DAC channel. Must be 1-4.\r\n");
         }
@@ -245,7 +245,7 @@ void processCommand(char* cmdLine) {
       if (isValidChannel(p1)) {
         func_SET(p1, p2);
       } else {
-        Serial.println("ERR! Invalid DAC channel.");
+        DacLog.println("ERR! Invalid DAC channel.");
         if (clientConnected && telnetClient.connected()) {
           telnetClient.print("ERR! Invalid DAC channel. Must be 1-4.\r\n");
         }
@@ -267,7 +267,7 @@ void processCommand(char* cmdLine) {
       if (isValidChannel(p1)) {
         func_RAMP(p1, p2, p3, p4);
       } else {
-        Serial.println("ERR! Invalid DAC channel.");
+        DacLog.println("ERR! Invalid DAC channel.");
         if (clientConnected && telnetClient.connected()) {
           telnetClient.print("ERR! Invalid DAC channel. Must be 1-4.\r\n");
         }
@@ -303,7 +303,7 @@ void printHelp() {
     telnetClient.print(HELP_MESSAGE);
   }
   // Also print debug info to Serial
-  Serial.println("Displayed help message.");
+  DacLog.println("Displayed help message.");
 }
 
 bool isAllUpperCase(const char* str) {
@@ -321,9 +321,10 @@ bool isValidChannel(int ch) {
 }
 
 bool rampAbortCheck() {
+  if (dacNetworkCancelled() || !networkEnabled) return true;
   Ethernet.maintain();
   serviceClientConnections();
-  if (!clientConnected || !telnetClient || !telnetClient.connected()) {
+  if (dacNetworkCancelled() || !clientConnected || !telnetClient || !telnetClient.connected()) {
     return true;
   }
   return false;
@@ -333,7 +334,7 @@ bool rampAbortCheck() {
 
 void func_INIT(int param) {
   if (dacBusy) {
-    Serial.println("ERR! DAC busy, INIT rejected.");
+    DacLog.println("ERR! DAC busy, INIT rejected.");
     if (clientConnected && telnetClient.connected()) {
       telnetClient.print("ERR! DAC busy, command rejected.\r\n");
     }
@@ -342,8 +343,8 @@ void func_INIT(int param) {
   dacBusy = true;
 
   // Print debug info on Serial
-  Serial.print("func_INIT called with param: ");
-  Serial.println(param);
+  DacLog.print("func_INIT called with param: ");
+  DacLog.println(param);
 
   // Respond to client
   if (clientConnected && telnetClient.connected()) {
@@ -369,7 +370,7 @@ void func_INIT(int param) {
 
 void func_READ(int param) {
   if (dacBusy) {
-    Serial.println("ERR! DAC busy, READ rejected.");
+    DacLog.println("ERR! DAC busy, READ rejected.");
     if (clientConnected && telnetClient.connected()) {
       telnetClient.print("ERR! DAC busy, command rejected.\r\n");
     }
@@ -378,14 +379,20 @@ void func_READ(int param) {
   dacBusy = true;
 
   // Print debug info on Serial
-  Serial.print("func_READ called with param: ");
-  Serial.print(param);
+  DacLog.print("func_READ called with param: ");
+  DacLog.print(param);
 
-  unsigned long dac_val_unfiltered = AD5780_GetRegisterValue((unsigned char)DAC_sync[param - 1], AD5780_REG_DAC, 3, &AD5780_spi_settings);
-  unsigned long current_dac_values = (dac_val_unfiltered >> 2) & 0x3FFFF; 
+  uint32_t current_dac_values;
+  if (!AD5780_ReadDacValueChecked((unsigned char)DAC_sync[param - 1],
+                                 &current_dac_values, &AD5780_spi_settings)) {
+    if (clientConnected && telnetClient.connected())
+      telnetClient.print("ERR! DAC readback invalid; voltage unknown.\r\n");
+    dacBusy = false;
+    return;
+  }
   
-  Serial.print(", DAC read value is: ");
-  Serial.println(current_dac_values);
+  DacLog.print(", DAC read value is: ");
+  DacLog.println(current_dac_values);
 
   // Respond to client
   if (clientConnected && telnetClient.connected()) {
@@ -401,7 +408,7 @@ void func_READ(int param) {
 
 void func_SET(int p1, int p2) {
   if (dacBusy) {
-    Serial.println("ERR! DAC busy, SET rejected.");
+    DacLog.println("ERR! DAC busy, SET rejected.");
     if (clientConnected && telnetClient.connected()) {
       telnetClient.print("ERR! DAC busy, command rejected.\r\n");
     }
@@ -411,13 +418,13 @@ void func_SET(int p1, int p2) {
 
   // Called when SET command is received
   // Print debug info on Serial
-  Serial.print("func_SET called with params: ");
-  Serial.print(p1);
-  Serial.print(", ");
-  Serial.println(p2);
+  DacLog.print("func_SET called with params: ");
+  DacLog.print(p1);
+  DacLog.print(", ");
+  DacLog.println(p2);
 
   if(p2 > VMAX || p2 < VMIN) {
-    Serial.println("WARN! Value out of bound! Auto corrected to Maximum / Minimum bound!");
+    DacLog.println("WARN! Value out of bound! Auto corrected to Maximum / Minimum bound!");
     if(p2 > VMAX) {
       p2 = VMAX;
     } else {
@@ -442,13 +449,13 @@ void func_SET(int p1, int p2) {
 void func_HELP() {
   // Called when HELP command is received
   // Print debug info on Serial
-  Serial.println("func_HELP called.");
+  DacLog.println("func_HELP called.");
   printHelp();
 }
 
 void func_RAMP(int p1, int p2, int p3, int p4) {
   if (dacBusy) {
-    Serial.println("ERR! DAC busy, RAMP rejected.");
+    DacLog.println("ERR! DAC busy, RAMP rejected.");
     if (clientConnected && telnetClient.connected()) {
       telnetClient.print("ERR! DAC busy, command rejected.\r\n");
     }
@@ -459,7 +466,7 @@ void func_RAMP(int p1, int p2, int p3, int p4) {
   // Called when RAMP command is received
   // Print debug info on Serial
   if(p2 > VMAX || p2 < VMIN) {
-    Serial.println("WARN! Value out of bound! Auto corrected to Maximum / Minimum bound!");
+    DacLog.println("WARN! Value out of bound! Auto corrected to Maximum / Minimum bound!");
     if(p2 > VMAX) {
       p2 = VMAX;
     } else {
@@ -471,11 +478,11 @@ void func_RAMP(int p1, int p2, int p3, int p4) {
     bool completed = AD5780_ramp((unsigned char)DAC_sync[p1 - 1], p2, p3, p4, &AD5780_spi_settings, rampAbortCheck);
 
     if (completed) {
-      Serial.print("func_RAMP completed with params: ");
-      Serial.print(p1); Serial.print(", ");
-      Serial.print(p2); Serial.print(", ");
-      Serial.print(p3); Serial.print(", ");
-      Serial.println(p4);
+      DacLog.print("func_RAMP completed with params: ");
+      DacLog.print(p1); DacLog.print(", ");
+      DacLog.print(p2); DacLog.print(", ");
+      DacLog.print(p3); DacLog.print(", ");
+      DacLog.println(p4);
       if (clientConnected && telnetClient.connected()) {
         telnetClient.print("RAMP command received with parameters: ");
         telnetClient.print(p1); telnetClient.print(" ");
@@ -485,10 +492,12 @@ void func_RAMP(int p1, int p2, int p3, int p4) {
         telnetClient.print("\r\n");
       }
     } else {
-      Serial.println("ERR! RAMP aborted: client disconnect detected.");
+      DacLog.println("ERR! RAMP failed: readback or interrupted operation.");
+      if (clientConnected && telnetClient.connected())
+        telnetClient.print("ERR! RAMP failed: invalid readback or interrupted operation.\r\n");
     }
   } else {
-    Serial.println("ERR! step_size = 0, RAMP not executed.");
+    DacLog.println("ERR! step_size = 0, RAMP not executed.");
 
     //Error respond
     if (clientConnected && telnetClient.connected()) {
@@ -502,7 +511,7 @@ void func_RAMP(int p1, int p2, int p3, int p4) {
 
 void func_ID() {
   //No actual use, used for pure compatibility.
-  Serial.println("func_ID called.");
+  DacLog.println("func_ID called.");
 
   if (clientConnected && telnetClient.connected()) {
     telnetClient.print("AD5780");

@@ -112,6 +112,10 @@ unsigned long AD5780_GetRegisterValue(
                                       unsigned char bytesNumber,
                                       SPISettings* settings);
 
+/* Validates the returned register address before decoding an output code.
+ * Leaves *value unchanged on failure; performs no output writes. */
+bool AD5780_ReadDacValueChecked(unsigned char slaveDeviceId, uint32_t* value, SPISettings* settings);
+
 /* Writes to the DAC register. */
 void AD5780_SetDacValue(unsigned char slaveDeviceId, unsigned long value, SPISettings* settings);
 

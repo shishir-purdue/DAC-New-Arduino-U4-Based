@@ -98,28 +98,31 @@ def compiler_command() -> tuple[list[str], dict[str, str], bool]:
     raise RuntimeError("No C++17 compiler found. Install MSVC C++ Build Tools (Windows), g++, or clang++; source audits can still run separately.")
 
 
-def build_host() -> Path:
+def build_host(harness="firmware_tests") -> Path:
+    assert harness in {"firmware_tests", "network_tests"}
     build = HERE / ".build"
     build.mkdir(exist_ok=True)
-    binary = build / ("firmware_tests.exe" if os.name == "nt" else "firmware_tests")
-    sources = sorted(list((ROOT / "Software").rglob("*.cpp")) + list((ROOT / "Software").rglob("*.h")) + list((HERE / "host").glob("*")))
+    binary = build / (harness + (".exe" if os.name == "nt" else ""))
+    sources = sorted(list((ROOT / "Software").rglob("*.cpp")) + list((ROOT / "Software").rglob("*.h")) + list((HERE / "host").glob("*")) + list((HERE / "network_host").glob("*")))
     digest = hashlib.sha256()
     for path in sources + [Path(__file__)]:
         digest.update(str(path).encode()); digest.update(path.read_bytes())
-    stamp = build / "source.sha256"
+    stamp = build / (harness + "-source.sha256")
     if binary.exists() and stamp.exists() and stamp.read_text() == digest.hexdigest():
         return binary
     compiler, env, msvc = compiler_command()
-    source = HERE / "host/firmware_tests.cpp"
-    includes = [HERE / "host", ROOT / "Software/lib/AD5780"]
+    source = HERE / ("host/firmware_tests.cpp" if harness == "firmware_tests" else "network_host/network_tests.cpp")
+    includes = [HERE / ("host" if harness == "firmware_tests" else "network_host"), ROOT / "Software/lib/AD5780"]
+    if harness == "network_tests":
+        includes.append(ROOT / "Software/lib/Ethernet/src")
     if msvc:
         args = compiler + ["/nologo", "/std:c++17", "/EHsc", "/W4", "/wd4100", "/wd4996", "/utf-8"]
-        args += [f"/I{p}" for p in includes] + [str(source), f"/Fe:{binary}", f"/Fo:{build / 'firmware_tests.obj'}"]
+        args += [f"/I{p}" for p in includes] + [str(source), f"/Fe:{binary}", f"/Fo:{build / (harness + '.obj')}"]
     else:
         args = compiler + ["-std=c++17", "-Wall", "-Wextra", "-Wno-unused-parameter"]
         args += [f"-I{p}" for p in includes] + [str(source), "-o", str(binary)]
     result = subprocess.run(args, env=env, cwd=build, capture_output=True, text=True, timeout=90)
-    (build / "compile.log").write_text(result.stdout + result.stderr, encoding="utf-8")
+    (build / (harness + "-compile.log")).write_text(result.stdout + result.stderr, encoding="utf-8")
     if result.returncode:
         raise RuntimeError("Host compilation failed:\n" + result.stdout + result.stderr)
     stamp.write_text(digest.hexdigest())
@@ -127,7 +130,7 @@ def build_host() -> Path:
 
 
 def run_host(case_id: str) -> None:
-    result = subprocess.run([str(build_host()), case_id], capture_output=True, text=True, timeout=10)
+    result = subprocess.run([str(build_host("network_tests" if case_id.startswith("N") else "firmware_tests")), case_id], capture_output=True, text=True, timeout=10)
     assert result.returncode == 0, result.stdout + result.stderr or f"Host process exited with code {result.returncode} (no diagnostic output)"
 
 

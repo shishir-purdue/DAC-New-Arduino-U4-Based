@@ -92,3 +92,22 @@ H1/H5/M5/M6/M7/A3 are best tested offline. H2/H3/H6/M3/M10 malformed inputs shou
 also stay offline until those bugs are repaired. C4 requires manual cable
 unplug/replug. H4/M8/M9 require external timing/bus/analog evidence; the notebook
 provides assertion cells for entered measurements rather than inventing results.
+
+## Physical recovery button tests (2026-10-14)
+
+Run `python -m unittest discover -s tests -p test_buttons.py -v`, or open
+`physical_controls.ipynb` and run individual B1-B20 / N1-N12 cells. These 32
+offline cases never connect to hardware. They cover debouncing, preserved outputs
+during network reset, ramp preemption, concurrent 0.01 V/s zeroing, network absence,
+priority/latching, timer rollover, USB backpressure, and real Ethernet-driver wait
+timeouts/reset behavior. N1-N10 emulate both W5100 and W5500 registers; N11-N12
+cover W5500 PHY reset/readback failure. Electrical and analog behavior still need
+bench testing. See `Software/Physical controls.md`.
+
+B14-B18 cover the reported false-full-scale regression: the Uno R4 OUTPUT latch
+must leave SD deselected, invalid DAC frames must not produce numeric READ replies
+or start either ramp, and legitimate full-scale replies must remain accepted.
+
+B19-B20 verify remote RAMP increments/write counts for step sizes 1/10/100 in
+both directions, delay scaling from 10 to 10,000 microseconds per step, and no
+writes for a repeated same-target command. Hardware/client timing is not simulated.

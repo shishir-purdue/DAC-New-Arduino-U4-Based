@@ -9,10 +9,15 @@
 #include <stdexcept>
 using byte = unsigned char;
 constexpr int OUTPUT = 1, HIGH = 1, LOW = 0;
+constexpr int INPUT_PULLUP = 2, A1 = 15, A2 = 16;
+inline int gpioInputs[32] = {};
+inline int gpioModes[32] = {}, gpioOutputs[32] = {};
+inline int digitalRead(int pin) { return gpioInputs[pin]; }
 inline uint64_t fakeMicros = 0;
 inline uint32_t largestDelay = 0;
 inline unsigned delayCalls = 0;
 inline void (*delayHook)() = nullptr;
+inline int serialWriteSpace = 65535;
 struct TextBuffer {
     char data[65536] = {};
     size_t size = 0;
@@ -30,6 +35,12 @@ struct TextBuffer {
     template<class T> void println(T v) { print(v); print("\r\n"); }
     void println() { print("\r\n"); }
     void begin(int) {}
+    int availableForWrite() const { return serialWriteSpace; }
+    size_t write(const uint8_t* p, size_t n) {
+        if (n > static_cast<size_t>(serialWriteSpace)) throw std::runtime_error("Blocking serial write attempted");
+        for (size_t i = 0; i < n; ++i) print(static_cast<char>(p[i]));
+        return n;
+    }
     bool contains(const char* s) const { return std::strstr(data, s) != nullptr; }
 };
 inline TextBuffer Serial;

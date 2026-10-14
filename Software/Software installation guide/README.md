@@ -1,5 +1,45 @@
 # DAC (New) Arduino Uno R4 Software Install Guide
 
+## Open the configured project (recommended)
+
+The repository now contains a root `platformio.ini` for the **Arduino Uno R4
+Minima**. Open the **DAC Box repository root** in VS Code, install the recommended
+PlatformIO IDE extension, and let its first-time setup finish. Reload the window
+if prompted. There is no need to create a new project or copy source files.
+
+The configuration uses the existing `Software/src` and `Software/lib` folders,
+Renesas RA platform **1.9.0**, Arduino framework, and a local recovery fork of Ethernet **2.0.2** in
+`Software/lib/Ethernet`. PlatformIO installs the compiler automatically. Keep the
+local Ethernet library: it supplies the physical-button cancellation/reset support. USB upload uses DFU, and
+the serial monitor is set to **115200 baud**.
+
+In the PlatformIO sidebar, select `uno_r4_minima` and use **Build**, **Upload**, or
+**Monitor**. The equivalent commands in a PlatformIO Core terminal are:
+
+```text
+pio run -e uno_r4_minima
+pio device list
+pio run -e uno_r4_minima -t upload
+pio device monitor -b 115200
+```
+
+Connect the Minima using a USB data cable before uploading. No COM port is pinned,
+so PlatformIO can detect it even if Windows assigns a different port later.
+Close any serial monitor that is holding the port before upload. If automatic
+bootloader entry fails, double-press the board's reset button and retry Upload.
+
+The current firmware's Ethernet settings are **192.168.1.200**, TCP port **23**,
+and MAC **A8:61:0A:AE:F2:01** (`Software/src/main.cpp` and `PhysicalControls.h`). Check these against your
+bench network before using the Ethernet connection. The USB connection is for
+upload/debug logging; DAC commands are received over Ethernet.
+
+The initial configuration built successfully on 2026-10-13. The 2026-10-14
+physical-control firmware also builds successfully; build success does not validate
+physical DAC outputs. See [Physical controls](../Physical%20controls.md) for A1/A2
+button wiring, 0.01 V/s zeroing, and recovery behavior.
+
+The older manual project-creation walkthrough is preserved below for reference.
+
 ## Software assembly guide
 This part serves as how to properly install the necessary software.
 

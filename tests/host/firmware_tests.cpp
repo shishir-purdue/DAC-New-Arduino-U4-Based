@@ -38,8 +38,11 @@ void inspectReply() {
     earlyReply = sockets[owner].tx.contains("RAMP") || sockets[owner].tx.contains("OK");
     delayHook = nullptr;
 }
+#include "button_tests.h"
+
 void run(const std::string& id) {
     setup();
+    if (id.size() > 1 && id[0] == 'B') { runButtons(id); return; }
     if (id == "Mem-1") {
         attachOwner();
         const char* commands[] = {"ID", "HELP", "READ 1", "SET 1 100", "INIT 1", "RAMP 1 131072 1 0"};

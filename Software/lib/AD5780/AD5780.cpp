@@ -1,3 +1,4 @@
+#include "DiagnosticLog.h"
 /***************************************************************************//**
  *   @file   AD5780.c
  *   @brief  Implementation of AD5780 Driver.
@@ -182,6 +183,21 @@ unsigned long AD5780_GetRegisterValue(
  *
  * @return none.
 *******************************************************************************/
+bool AD5780_ReadDacValueChecked(unsigned char slaveDeviceId, uint32_t* value, SPISettings* settings)
+{
+    const unsigned long raw = AD5780_GetRegisterValue(slaveDeviceId, AD5780_REG_DAC, 3, settings);
+    // AD5780 datasheet Table 9: DB22:20 must identify the DAC register (001).
+    // R/W and DB1:0 are not voltage data. Do not reject a legitimate full scale.
+    // A floating/stuck-high MISO word (0xFFFFFF) must not become +10 V.
+    if ((raw & 0x700000UL) != AD5780_ADDR_REG(AD5780_REG_DAC)) {
+        DacLog.print("ERR! DAC readback invalid, raw=");
+        DacLog.println(raw);
+        return false;
+    }
+    *value = (raw >> 2) & 0x3FFFF;
+    return true;
+}
+
 void AD5780_SetDacValue(unsigned char slaveDeviceId, unsigned long value, SPISettings* settings)
 {
     AD5780_SetRegisterValue(slaveDeviceId,
@@ -252,19 +268,27 @@ void AD5780_Setup(unsigned char slaveDeviceId, unsigned long setupWord, SPISetti
  * @return none.
 *******************************************************************************/
 bool AD5780_ramp(unsigned char slaveDeviceId, unsigned long finval, unsigned long step_size, int del_t, SPISettings* settings, RampAbortCheck abortCheck) {
-    unsigned long raw_value = AD5780_GetRegisterValue(slaveDeviceId, AD5780_REG_DAC, 3, settings);
-    unsigned long current = (raw_value >> 2) & 0x3FFFF;
+    uint32_t initial;
+    if (!AD5780_ReadDacValueChecked(slaveDeviceId, &initial, settings)) return false;
+    unsigned long current = initial;
 
-    Serial.print("current initial value:");
-    Serial.println(current);
+    DacLog.print("current initial value:");
+    DacLog.println(current);
 
     if(current <= finval) {
         while (current < finval) {
             if (abortCheck && abortCheck()) {
-                Serial.println("RAMP aborted.");
+                DacLog.println("RAMP aborted.");
                 return false;
             }
-            delayMicroseconds(del_t);
+            uint32_t remainingUs = static_cast<uint32_t>(del_t);
+            while (remainingUs) {
+                uint32_t slice = remainingUs > 1000 ? 1000 : remainingUs;
+                delayMicroseconds(slice);
+                remainingUs -= slice;
+                if (abortCheck && abortCheck()) return false;
+            }
+            if (abortCheck && abortCheck()) return false;
 
             if((current + step_size) > finval) {
                 current = finval;
@@ -272,18 +296,23 @@ bool AD5780_ramp(unsigned char slaveDeviceId, unsigned long finval, unsigned lon
                 current += step_size;
             }
 
-            Serial.print("current ramp value:");
-            Serial.println(current);
 
             AD5780_SetDacValue(slaveDeviceId, current, settings);
         }
     } else {
         while (current > finval) {
             if (abortCheck && abortCheck()) {
-                Serial.println("RAMP aborted.");
+                DacLog.println("RAMP aborted.");
                 return false;
             }
-            delayMicroseconds(del_t);
+            uint32_t remainingUs = static_cast<uint32_t>(del_t);
+            while (remainingUs) {
+                uint32_t slice = remainingUs > 1000 ? 1000 : remainingUs;
+                delayMicroseconds(slice);
+                remainingUs -= slice;
+                if (abortCheck && abortCheck()) return false;
+            }
+            if (abortCheck && abortCheck()) return false;
 
             if((current - step_size) < finval) {
                 current = finval;
@@ -294,8 +323,6 @@ bool AD5780_ramp(unsigned char slaveDeviceId, unsigned long finval, unsigned lon
                     current -= step_size;
                 }
             }
-            Serial.print("current ramp value:");
-            Serial.println(current);
 
             AD5780_SetDacValue(slaveDeviceId, current, settings);
         }

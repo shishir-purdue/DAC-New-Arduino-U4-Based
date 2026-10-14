@@ -12,6 +12,8 @@ struct SPISettings {
 struct SPIClass {
     bool started = false, active = false, badFrame = false, invalidPin = false;
     bool corruptReads = false;
+    uint32_t forcedRead = 0xFFFFFFFFu; // Sentinel: use real simulated register.
+    int forcedReadPin = -1;
     int selected = -1, count = 0, transactions = 0, writes = 0;
     uint32_t word = 0, registers[16][8] = {}, pending[16] = {};
     int writePins[4096] = {}; uint32_t codes[4096] = {};
@@ -28,6 +30,8 @@ struct SPIClass {
     void transfer(void* ptr, size_t n) {
         auto p = static_cast<uint8_t*>(ptr);
         uint32_t response = selected < 0 || corruptReads ? 0 : pending[selected];
+        if (gpioModes[4] == OUTPUT && gpioOutputs[4] == LOW) response = 0xFFFFFF;
+        if (forcedRead != 0xFFFFFFFFu && (forcedReadPin < 0 || selected == forcedReadPin)) response = forcedRead;
         for (size_t i = 0; i < n; i++) { transfer(p[i]); p[i] = uint8_t(response >> (8 * (n - i - 1))); }
     }
     void select(int pin, int level) {
@@ -39,7 +43,8 @@ struct SPIClass {
         else if (selected == pin) {
             if (count != 3) badFrame = true;
             unsigned reg = (word >> 20) & 7;
-            if (word & (1u << 23)) pending[pin] = registers[pin][reg];
+            // Datasheet Table 9/10: readback includes register address bits.
+            if (word & (1u << 23)) pending[pin] = (reg << 20) | registers[pin][reg];
             else if (reg) {
                 registers[pin][reg] = word & 0xFFFFF;
                 if (reg == 1) {
@@ -52,5 +57,10 @@ struct SPIClass {
     }
 };
 inline SPIClass SPI;
-inline void pinMode(int, int) {}
-inline void digitalWrite(int pin, int value) { SPI.select(pin, value); }
+inline void pinMode(int pin, int mode) {
+    gpioModes[pin] = mode;
+    if (mode == INPUT_PULLUP) gpioInputs[pin] = HIGH;
+    // Uno R4 digital.cpp configures OUTPUT with the output-level bit cleared.
+    if (mode == OUTPUT) gpioOutputs[pin] = LOW;
+}
+inline void digitalWrite(int pin, int value) { gpioOutputs[pin] = value; SPI.select(pin, value); }
