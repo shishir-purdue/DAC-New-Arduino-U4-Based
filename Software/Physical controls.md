@@ -105,6 +105,12 @@ to rearm remote control. Rearming does not change the zeroed DAC registers.
 
 ## Remote RAMP timing versus SAFE ZERO
 
+An idle TCP connection expires after 120 seconds without received bytes; reconnect
+after expiry. Active DAC operations refresh that lease so long ramps can finish.
+`INIT` verifies a normally configured active channel without writing its output.
+Only an already ground-clamped channel is configured and verified at zero before
+releasing the clamp; incompatible active configurations return an error unchanged.
+
 The existing remote command is `RAMP channel target_code step_size step_time_us`.
 `step_size` is a positive integer number of DAC codes per write; `step_time_us`
 is the delay before each write, in microseconds. One code is nominally

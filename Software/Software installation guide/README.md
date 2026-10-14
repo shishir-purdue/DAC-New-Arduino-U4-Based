@@ -8,8 +8,9 @@ PlatformIO IDE extension, and let its first-time setup finish. Reload the window
 if prompted. There is no need to create a new project or copy source files.
 
 The configuration uses the existing `Software/src` and `Software/lib` folders,
-Renesas RA platform **1.9.0**, Arduino framework, and a local recovery fork of Ethernet **2.0.2** in
-`Software/lib/Ethernet`. PlatformIO installs the compiler automatically. Keep the
+Renesas RA platform **1.9.0**, Arduino core **1.6.0**, compiler package
+**1.70201.0**, DFU tool **1.11.0**, and a local recovery fork of Ethernet **2.0.2** in
+`Software/lib/Ethernet`. PlatformIO installs these pinned packages automatically. Keep the
 local Ethernet library: it supplies the physical-button cancellation/reset support. USB upload uses DFU, and
 the serial monitor is set to **115200 baud**.
 
@@ -36,7 +37,9 @@ upload/debug logging; DAC commands are received over Ethernet.
 The initial configuration built successfully on 2026-10-13. The 2026-10-14
 physical-control firmware also builds successfully; build success does not validate
 physical DAC outputs. See [Physical controls](../Physical%20controls.md) for A1/A2
-button wiring, 0.01 V/s zeroing, and recovery behavior.
+button wiring, 0.01 V/s zeroing, and recovery behavior. The full repair version
+uses `RAMP ACCEPTED` plus `STATUS` polling; update Python callers with the helper
+in `Software/python/dac_client.py` when uploading that version.
 
 The older manual project-creation walkthrough is preserved below for reference.
 

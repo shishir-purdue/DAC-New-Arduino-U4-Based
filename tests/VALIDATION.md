@@ -1,6 +1,63 @@
-# Validation record — 2026-10-13
+# Validation record
 
-## Physical controls update — 2026-10-14
+## Full repair phase — 2026-10-14
+
+Current result: **80/80 offline tests pass**, including **36/36 checklist cases**
+(zero FAIL or REVIEW), 32 button/actual-driver cases, seven live-helper tests with
+fake sockets, and five Python ramp-client tests. Overlapping coverage is intentional.
+Run from the repository root:
+
+```powershell
+python -m unittest discover -s tests -p 'test_*.py' -v
+python tests/checklist_tests.py --report tests/results/current.json
+pio run -e uno_r4_minima -t clean
+pio run -e uno_r4_minima
+```
+
+The suite uses stdlib unittest; pytest is optional. The clean target build passed
+with Renesas RA 1.9.0, Arduino core 1.6.0, compiler package 1.70201.0 (GCC 7.2.1),
+DFU tool 1.11.0, and vendored Ethernet 2.0.2 with recovery changes. Size: **73,096
+bytes flash / 3,716 bytes static RAM**. No firmware upload, networked bench run,
+or analog measurement was performed in this repair phase.
+
+The checklist notebook now includes A5–A9 and the current repair policies. Both
+notebooks are regenerated with empty outputs and live tests disabled. Both pass
+nbformat schema validation and nbclient execution: **51 code cells** in the bug
+checklist and **33 code cells** in physical controls, with zero cell errors. All
+live connections/output tests stayed disabled. Executed copies and the 36-case
+JSON report are kept locally under ignored `tests/results/`.
+
+| Item/group | Repair commit | Behavior verified |
+|---|---|---|
+| C4 | `34c6410` | Link/configuration loss, retry spacing, fresh connections, preserved DAC codes/latch |
+| C5/M3/M4/A4 | `e850f38` | Cooperative input/connection service, bounded parser, pre-write abort |
+| H1 | `494e5eb` | Explicit global fallback SPI settings |
+| H2/H3/H6/M10 | `74e5bd3` | Strict signed parsing and ramp bounds before DAC access |
+| H5 | `88454f7` | Matching public signature and masked control-register header |
+| M1 | `4760db0` | 120-second idle lease, renewal, long-ramp protection, rollover |
+| M2 | `dc2063c` | Remote clamping warnings and actual target |
+| M5/M6/M7 | `b73d9f1` | Canonical include, three-byte wire frames, removed template aliases |
+| M8 | `57ba763` | Foreground SPI ownership; reviewed as no current ISR-contention defect |
+| M9/A2 | `14c76c2` | Read-only active INIT; verified zero before cold clamp release; write/read fault detection |
+| M11/A9 | `0613ae4` | Early RAMP acceptance, explicit STATUS, corrected V/s helper and polling |
+| A3 | `69ac5ab` | Exact package pins, configuration audit, clean target build; stdlib test discovery |
+
+The preceding physical-control commit `892906e` supplies H4/A4 sliced waits,
+A5/A6 bounded Ethernet/USB behavior, and A7/A8 GPIO/readback protection. The full
+suite rechecks those behaviors alongside the new repairs. Preliminary fixes and
+C1/C2/C3/A1 remain covered. The obsolete lowercase test-header shim is removed.
+
+RAMP's response contract changed: acceptance precedes output stepping, completion
+requires STATUS polling, and no unsolicited completion reply is sent. Use the
+included client helper. INIT preserves normal active outputs; incompatible active
+modes fail unchanged. M1's 120-second idle lease is the chosen default policy.
+Electrical/analog bench evidence and isolated Ethernet-reset wiring remain outside
+the offline verification; a software pass does not establish those properties.
+
+## Historical physical-controls snapshot — 2026-10-14
+
+The remainder records earlier snapshots. Their failure counts and limitations
+describe those revisions, not the current full repair phase above.
 
 Latest readback correction, not flashed by Codex: 32 physical-control/driver tests pass (`test_buttons.py`),
 including twelve tests compiling the actual local Ethernet `socket.cpp` and `w5100.cpp`

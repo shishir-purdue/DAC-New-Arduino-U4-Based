@@ -18,16 +18,16 @@ markdown("""# DAC firmware bug checklist
 
 Run the setup cell, then any individual case. Each case is independent and runs
 against the current checked-out source. **AssertionError means the requirement
-failed**, including known bugs intentionally left open. **ReviewRequired means
-physical evidence is still needed**, not a pass. No hardware is accessed by the
-offline tests. The preliminary-only summary should pass after the first repair phase.
+failed**. All 36 checklist cases are expected to pass after the repair phase.
+No hardware is accessed by the offline tests. Physical measurements below are
+separate, optional evidence; an offline pass does not establish analog behavior.
 
-The CLI and optional pytest interface in `tests/README.md` are useful for repeatable
+The CLI and standard-library unittest runner in `tests/README.md` are useful for repeatable
 regressions. The host harness needs a C++17 compiler; it uses the actual C++ firmware
 with hardware doubles. This does not substitute for compiling/flashing the Uno R4.
 
 Run individual cells to inspect failures, or use `run_all()` to collect everything
-without stopping at the first known issue. Do not enable live output tests while
+without stopping at the first failure. Do not enable live output tests while
 outputs are connected to apparatus.
 """)
 code("""from pathlib import Path
@@ -44,22 +44,27 @@ print("Testing source in:", ROOT)
 """)
 markdown("## Preliminary regression summary")
 code("preliminary_results = run_all(PRELIMINARY, fail_on_error=True)\n")
-markdown("## Complete checklist summary\nOpen items intentionally report FAIL; bench-only evidence reports REVIEW.")
+markdown("## Complete checklist summary\nAll 36 software checks should pass. Failures remain visible and are never marked expected-success.")
 code("all_results = run_all()\n")
 
 details = {
     "Mem-1": "Counts C++ allocations across 6,000 dispatches plus source checks for allocation APIs. It does not measure real MCU heap fragmentation.",
-    "C4": "The presence of maintain() cannot prove PHY recovery. Use the optional cable test below. The current static-IP firmware does not use DHCP lease renewal.",
-    "C5": "Tests only the implemented disconnect callback. M4 checks command starvation; A4 checks disconnect during the step delay.",
-    "H4": "Policy test: a one-second delay must not be a single blocking microsecond wait. Use physical timing measurements below for accuracy; an exact failure duration is core-dependent.",
-    "M1": "Proposed criterion: release an idle/half-open owner within 120 seconds. Confirm the desired timeout policy before implementing a fix. The virtual clock avoids a two-minute real wait.",
-    "M8": "Verifies balanced SPI transactions, then requires bench review. No application ISR uses SPI in the current source. Missing interrupt registration is not by itself a confirmed bug.",
-    "M9": "Proposed preserve-output criterion intentionally fails on the existing midscale initialization. Decide the startup policy and capture the analog waveform before concluding that a transient is unacceptable.",
-    "M10": "Huge integers are tested on the host only. C atoi overflow behavior is not portable; the required behavior is rejection before any DAC access.",
+    "C4": "Injects link/configuration loss, absent hardware, and recovery. Verifies retry spacing, fresh connections, preserved DAC codes, and SAFE ZERO priority. Use the optional cable test for physical evidence.",
+    "C5": "Runs disconnect, command-service, pre-write abort, and second-client regressions. Long waits service input/network/buttons in bounded slices.",
+    "H4": "Checks bounded waits and cooperative service. B19/B20 separately verify virtual step/delay scaling; physical timing measurements below test actual accuracy.",
+    "M1": "The implemented policy releases an idle owner after 120 seconds without received bytes, while keeping long active ramps alive. Covers renewal, reconnect, and timer rollover.",
+    "M8": "Reviewed as no current ISR contention defect: verifies balanced foreground SPI transactions, absence of application SPI ISRs, and SPI-free cancellation hooks. A future SPI ISR needs a new ownership review.",
+    "M9": "INIT preserves normal active channels without writes. Cold ground-clamped channels are configured and verified at zero before release; incompatible active modes fail unchanged. Scope capture remains supplemental.",
+    "M10": "Huge integers are tested on the host only. Strict signed-32-bit parsing must reject overflow before any DAC access.",
     "A1": "Codex addition: existing connection reclassified as a second client. This overlaps Mem-2 and is repaired in that preliminary fix.",
-    "A2": "Codex addition: injected corrupt readback still produces an initialization-success reply.",
-    "A3": "Codex addition: no checked-in target/dependency build configuration. A configuration's presence would still need a real clean build.",
-    "A4": "Codex addition: disconnect after the abort check but during delay still permits one more write. This remains outside the preliminary repair scope.",
+    "A2": "Codex addition: injects corrupt readback and ignored register writes; INIT must report failure and retain a cold channel's clamp.",
+    "A3": "Codex addition: audits exact Uno R4/platform/core/compiler/uploader versions and the vendored Ethernet fork. A separate clean target build is recorded in VALIDATION.md.",
+    "A4": "Codex addition: disconnect during the simulated step delay must prevent the next DAC write.",
+    "A5": "Codex addition: bounded/cancellable actual Ethernet-driver waits, chip/PHY reset, socket-cache cleanup, and a stopped-timebase fallback.",
+    "A6": "Codex addition: USB diagnostic backpressure must not prevent commands or local button servicing.",
+    "A7": "Codex-introduced regression, fixed: models Uno R4 OUTPUT mode clearing the latch; SD must be deselected before SPI traffic.",
+    "A8": "Codex addition: invalid register frames must fail READ and both ramp paths without output writes. Valid full-scale codes remain accepted.",
+    "A9": "Client-wrapper addition: checks V/s-to-microseconds conversion, voltage boundaries, input rejection, acceptance/status polling, aborts, and timeouts without a connection.",
 }
 for case_id, description in DESCRIPTIONS.items():
     markdown(f"## {case_id} — {description}\n\nMode: **{MODES[case_id]}**. " + details.get(case_id, "Failure output states the observed discrepancy."))
@@ -72,8 +77,7 @@ flashed on your board; otherwise the test does not establish which source it ran
 Only set `outputs_isolated` and `allow_output_changes` after disconnecting the
 test output from apparatus. Choose a small explicit code window; no default
 voltage is assumed. Output tests leave the last code in place and do not call INIT.
-Malformed ramp/overflow cases stay offline because the current firmware accepts
-them and can hang or alter outputs unexpectedly.
+Malformed ramp/overflow and driver fault-injection cases stay in the offline suite.
 """)
 code("""from live_bench import (Bench, verify_step_intervals, verify_init_waveform,
                         verify_bus_capture)
@@ -103,14 +107,15 @@ for title, call, changes in live_cases:
     markdown("### " + title + ("\nChanges output and leaves its final code in place." if changes else ""))
     guard = "bench.enabled and bench.allow_output_changes" if changes else "bench.enabled"
     code(f'if {guard}:\n    {call}\nelse:\n    print("NOT RUN: live test disabled")\n')
-markdown("### Manual cable recovery (C4)\nEnable this separately: it prompts you to unplug and reconnect the cable while preserving the original TCP socket.")
+markdown("### Manual cable recovery (C4)\nEnable this separately: it prompts you to unplug and reconnect the cable, then verifies recovery using a fresh TCP connection.")
 code('RUN_CABLE_TEST = False\nif bench.enabled and RUN_CABLE_TEST:\n    bench.cable_recovery()\nelse:\n    print("NOT RUN: manual cable test disabled")\n')
 markdown("""## External measurement assertions
 
 These are **not simulated measurements**. Fill in values from a scope/logic analyzer
 and retain the original capture with firmware revision, instrument settings,
 sample rate, and chosen acceptance limits. Empty data is reported as NOT RUN.
-Use the actual relevant interrupt workload when evaluating M8. The M9 trace must
+For M8, capture shared-bus activity during network and DAC work; include any SPI
+interrupt workload added in future firmware. The M9 trace must
 cover before INIT through settling; choose capture resolution suitable for glitches.
 """)
 code("""# H4: measured time between actual DAC updates, in microseconds.
