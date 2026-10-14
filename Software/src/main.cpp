@@ -108,10 +108,9 @@ void setup() {
   Serial.println("Telnet Server started on port 23.");
 }
 
-void loop() {
-  // Maintain Ethernet link state (detect cable unplug/replug, DHCP renewal)
-  Ethernet.maintain();
-
+// Connection housekeeping only: never dispatch commands or start DAC operations.
+// Also called between ramp steps to enforce the same single-client policy.
+void serviceClientConnections() {
   // Check if client is still connected
   if (clientConnected && (!telnetClient || !telnetClient.connected())) {
     Serial.println("Client disconnected.");
@@ -142,6 +141,12 @@ void loop() {
       inputPos = 0;
     }
   }
+}
+
+void loop() {
+  // Maintain Ethernet link state (detect cable unplug/replug, DHCP renewal)
+  Ethernet.maintain();
+  serviceClientConnections();
 
   // If client is connected, attempt to read incoming data
   if (clientConnected && telnetClient.available()) {
@@ -317,7 +322,8 @@ bool isValidChannel(int ch) {
 
 bool rampAbortCheck() {
   Ethernet.maintain();
-  if (clientConnected && (!telnetClient || !telnetClient.connected())) {
+  serviceClientConnections();
+  if (!clientConnected || !telnetClient || !telnetClient.connected()) {
     return true;
   }
   return false;
