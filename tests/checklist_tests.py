@@ -24,7 +24,7 @@ DESCRIPTIONS = {
     "C1": "Invalid channels perform no SPI; valid channels 1 through 4 work",
     "C2": "SPI begins before DAC transactions",
     "C3": "Second-client rejection leaves owner and ramp operational (overlaps Robust-1)",
-    "C4": "Review cable/link recovery; maintain() alone is only DHCP lease maintenance",
+    "C4": "Link/configuration loss discards stale clients and retries recovery without changing DAC outputs",
     "C5": "Disconnect callback aborts ramp and releases lock (partial fix; see M4/A4)",
     "H1": "No local SPI settings variable shadows global settings in setup",
     "H2": "Reject negative ramp step before output changes",
@@ -169,8 +169,7 @@ def run_case(case_id: str) -> None:
         assert configs, "A3: no PlatformIO project or Arduino CLI sketch profile checked in; target/dependencies are manual"
         raise ReviewRequired("A3: configuration exists; run a clean target build and review dependency pinning before closing")
     elif case_id == "C4":
-        assert "Ethernet.maintain()" in main, "C4: maintenance callback missing"
-        raise ReviewRequired("C4: maintain() handles DHCP leases, not link recovery; static IP is configured. Run the notebook's manual unplug/replug check; do not infer recovery from this source call.")
+        run_host(case_id)
     elif case_id == "M8":
         run_host(case_id)
         raise ReviewRequired("M8: SPI transaction balance passed. No application ISR uses SPI in this source. Interrupt arbitration requires target/core review plus logic-analyzer evidence if an ISR actually shares SPI; absence of usingInterrupt alone is not a demonstrated bug.")

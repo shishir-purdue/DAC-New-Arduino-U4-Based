@@ -48,6 +48,11 @@ See the [W5500 datasheet, PHYCFGR, page 42](https://docs.wiznet.io/assets/files/
 
 No DAC registers, clear/reset pins, or DAC power pins are changed by NETWORK.
 Holding the button performs one reset; release and press again for another try.
+Outside SAFE ZERO, link or MAC/IP configuration loss also triggers automatic
+recovery: health checks run every 250 ms and reset attempts are spaced at least
+five seconds apart. The interrupted ramp is aborted, never resumed automatically.
+No automatic attempt clears the SAFE ZERO latch. The button remains an immediate
+manual retry/rearm path.
 If Ethernet remains unavailable, normal network work stays disabled and SAFE ZERO
 remains available. A typical reset includes a 560 ms shield startup delay.
 

@@ -44,6 +44,15 @@ optional and have not been run.
 
 ## Critical (C1-C5) — Fix Now
 
+### Repair phase (2026-10-14)
+
+- C4 implemented: foreground link and MAC/IP health checks every 250 ms, failed
+  client/partial command invalidation, and full network recovery at most once per
+  five seconds. No automatic reset during DAC operations or a latched SAFE ZERO.
+  Host C4 covers link loss/return, lost configuration, absent hardware, fresh
+  connections, and latch preservation. Physical cable/controller testing remains
+  supplemental; software tests do not prove recovery of an SPI-unresponsive chip.
+
 These cause crashes, freezes, or hardware risk. **Current phase.**
 
 - [x] **C1: No bounds check on DAC channel index -> out-of-bounds array access**
@@ -63,7 +72,7 @@ These cause crashes, freezes, or hardware risk. **Current phase.**
 - [x] **C3: Second client connection crashes/hangs the system**
   - Resolved by preliminary fix Mem-2/Robust-1 (single-client policy with `stop()`)
 
-- [ ] **C4: No `Ethernet.maintain()` -> link drops never recovered**
+- [x] **C4: No `Ethernet.maintain()` -> link drops never recovered**
   - Cable unplug/replug, transient link loss, PHY desync all go undetected
   - Board becomes unreachable after network glitch - matches "random freeze" symptom
   - **File:** `main.cpp` loop()

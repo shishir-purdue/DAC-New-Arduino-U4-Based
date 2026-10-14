@@ -34,6 +34,9 @@ bool networkFault = false, networkEnabled = false;
 bool safeZeroActive = false, safeZeroLatched = false;
 uint32_t safeCodes[4] = {};
 uint32_t safeLastStep = 0;
+constexpr uint32_t NETWORK_HEALTH_MS = 250;
+constexpr uint32_t NETWORK_RETRY_MS = 5000;
+uint32_t networkLastHealth = 0, networkLastRestart = 0;
 
 void pollRecoveryButtons() {
     uint32_t now = millis();
@@ -62,6 +65,7 @@ void forgetNetworkClient() {
 }
 
 bool restartNetwork() {
+    networkLastRestart = networkLastHealth = millis();
     forgetNetworkClient();
     networkResetRequested = false;
     networkFault = false;
@@ -89,6 +93,29 @@ bool restartNetwork() {
     if (!networkEnabled) networkFault = true;
     DacLog.println(networkEnabled ? "Network ready: 192.168.1.200:23." : "Network listener failed/cancelled.");
     return networkEnabled;
+}
+
+// Health checks run only in foreground, between complete SPI transactions.
+void serviceNetworkHealth() {
+    if (!networkEnabled || dacNetworkCancelled()) return;
+    uint32_t now = millis();
+    if (uint32_t(now - networkLastHealth) < NETWORK_HEALTH_MS) return;
+    networkLastHealth = now;
+    if (Ethernet.linkStatus() == LinkOFF) {
+        networkFault = true;
+        return;
+    }
+    byte actualMac[6];
+    Ethernet.MACAddress(actualMac);
+    if (memcmp(actualMac, mac, sizeof(actualMac)) != 0 ||
+        Ethernet.localIP() != IPAddress(192,168,1,200)) networkFault = true;
+}
+
+void serviceNetworkRecovery() {
+    // Never restart inside a DAC handler, or silently rearm the safe-zero latch.
+    if (!networkFault || dacBusy || safeZeroActive || safeZeroLatched || safeZeroRequested) return;
+    if (uint32_t(uint32_t(millis()) - networkLastRestart) >= NETWORK_RETRY_MS)
+        restartNetwork();
 }
 
 void beginSafeZero() {

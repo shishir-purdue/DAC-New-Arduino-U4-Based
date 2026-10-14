@@ -115,6 +115,26 @@ void run(const std::string& id) {
         attachOwner(); command(id == "H2" ? "RAMP 1 100 -5 1" : "RAMP 1 100 1 -1");
         require(SPI.writes == 0, "Negative ramp argument was accepted and changed the DAC");
         require(largestDelay < 1000000, "Negative delay became a huge unsigned wait");
+    } else if (id == "C4") {
+        seedCodes(157286,131072,131072,131072); attachOwner();
+        feedFake(owner,"SET 1 "); pump(6);
+        fakeLinkStatus = LinkOFF; fakeMicros += NETWORK_HEALTH_MS*1000; loop();
+        require(networkFault && !clientConnected && inputPos==0 && SPI.writes==0,
+                "Link loss retained stale commands or disturbed DAC outputs");
+        int resets=networkResetCalls;
+        fakeLinkStatus=LinkON; fakeMicros += NETWORK_RETRY_MS*1000; loop();
+        require(networkEnabled && !networkFault && networkResetCalls==resets+1 && dacCode(0)==157286,
+                "Link return failed automatic recovery or changed DAC output");
+        owner=connectFake("ID\n"); pump();
+        require(sockets[owner].tx.contains("AD5780"), "Recovered listener did not accept fresh client");
+        // Configuration loss also requires a full reset, and retries are bounded.
+        fakeMac[0]^=1; fakeMicros+=NETWORK_HEALTH_MS*1000; loop();
+        require(networkFault, "Lost controller configuration not detected");
+        fakeNetworkMissing=true; fakeMicros+=NETWORK_RETRY_MS*1000; loop();
+        resets=networkResetCalls; pump();
+        require(networkFault && networkResetCalls==resets, "Missing controller caused a tight retry loop");
+        press(A2); fakeMicros+=NETWORK_RETRY_MS*1000; loop();
+        require(networkResetCalls==resets && safeZeroLatched, "Automatic recovery overrode safe-zero latch");
     } else if (id == "H4") {
         attachOwner(); command("RAMP 1 2 1 1000000");
         require(largestDelay < 1000000, "One-second step is passed straight to delayMicroseconds; bounded/cooperative wait policy not implemented");

@@ -10,6 +10,8 @@ struct IPAddress {
     bool operator!=(const IPAddress& other) const { return std::memcmp(octets, other.octets, sizeof(octets)) != 0; }
 };
 enum EthernetHardwareStatus { EthernetNoHardware, EthernetW5500 };
+enum EthernetLinkStatus { Unknown, LinkON, LinkOFF };
+inline EthernetLinkStatus fakeLinkStatus = LinkON;
 inline bool fakeNetworkMissing = false;
 inline int networkResetCalls = 0, networkCalls = 0;
 inline byte fakeMac[6] = {};
@@ -77,6 +79,7 @@ struct EthernetClass {
     void begin(byte* mac, IPAddress) { networkCalls++; digitalWrite(10, HIGH); std::memcpy(fakeMac, mac, 6); if (networkBeginHook) networkBeginHook(); }
     void MACAddress(byte* out) { networkCalls++; std::memcpy(out, fakeMac, 6); }
     EthernetHardwareStatus hardwareStatus() { networkCalls++; return fakeNetworkMissing ? EthernetNoHardware : EthernetW5500; }
+    EthernetLinkStatus linkStatus() { networkCalls++; return fakeLinkStatus; }
     void setRetransmissionTimeout(uint16_t) { networkCalls++; }
     void setRetransmissionCount(uint8_t) { networkCalls++; }
     IPAddress localIP() { networkCalls++; return IPAddress(192,168,1,200); }

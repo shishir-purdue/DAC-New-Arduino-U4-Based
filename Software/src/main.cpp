@@ -140,7 +140,9 @@ void serviceClientConnections() {
 }
 
 void loop() {
-  if (servicePhysicalControls()) return;
+  if (servicePhysicalControls()) { serviceNetworkRecovery(); return; }
+  serviceNetworkHealth();
+  if (servicePhysicalControls()) { serviceNetworkRecovery(); return; }
   // Static IP: maintain() is a no-op, not a link recovery mechanism.
   Ethernet.maintain();
   serviceClientConnections();
@@ -322,6 +324,8 @@ bool isValidChannel(int ch) {
 
 bool rampAbortCheck() {
   if (dacNetworkCancelled() || !networkEnabled) return true;
+  serviceNetworkHealth();
+  if (dacNetworkCancelled()) return true;
   Ethernet.maintain();
   serviceClientConnections();
   if (dacNetworkCancelled() || !clientConnected || !telnetClient || !telnetClient.connected()) {
