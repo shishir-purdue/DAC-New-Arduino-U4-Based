@@ -176,7 +176,9 @@ they never perform nested DAC/SPI work. Network failures latch the network offli
 The application uses static IP; DHCP and DNS are not part of the recovery path.
 
 Remote ramp delays are sliced into at most 1000 us waits and checked again before
-each DAC write. USB diagnostics drop messages when the TX buffer has no room,
+each DAC write. Callbacks also service up to 64 input bytes, dispatch informational
+commands, and reject busy DAC commands immediately. Oversized or NUL-containing
+lines are discarded entirely through the next newline. USB diagnostics drop messages when the TX buffer has no room,
 instead of blocking local controls behind an unresponsive USB host.
 
 These controls address software/network failures while the MCU and DAC path work.

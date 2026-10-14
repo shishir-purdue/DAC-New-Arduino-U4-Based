@@ -153,9 +153,17 @@ void run(const std::string& id) {
         feedFake(owner, line.c_str()); pump();
         require(SPI.writes == 0, "Overflowed line executed its truncated valid prefix");
         require(sockets[owner].tx.contains("ERR"), "Oversized line did not produce an explicit error");
+        feedFake(owner,"SET 1 17\r\n"); pump();
+        require(SPI.writes==1 && dacCode(0)==17, "Parser did not recover at the next line");
+        // A NUL byte cannot turn a longer malformed line into a valid prefix.
+        auto& s=sockets[owner]; const char binary[]={'S','E','T',' ','1',' ','9','\0','x','\n'};
+        memcpy(s.rx+s.length,binary,sizeof(binary)); s.length+=sizeof(binary); pump();
+        require(SPI.writes==1, "Embedded NUL executed a truncated command");
     } else if (id == "M4") {
         attachOwner(); delayHook = injectRead; command("RAMP 1 10 1 1");
         require(sockets[owner].pos == sockets[owner].length, "Command arriving during ramp was not serviced; RX can accumulate");
+        require(sockets[owner].tx.contains("busy"), "Command during ramp was not explicitly rejected");
+        require(dacCode(0)==10 && !dacBusy && !SPI.badFrame, "Nested command interrupted ramp/lock/SPI framing");
     } else if (id == "M8") {
         attachOwner(); command("INIT"); command("SET 2 100"); command("READ 2"); command("RAMP 2 105 1 1");
         require(!SPI.badFrame && !SPI.active && !SPI.invalidPin, "SPI transaction framing is unbalanced");

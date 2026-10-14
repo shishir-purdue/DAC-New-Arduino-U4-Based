@@ -61,6 +61,7 @@ void forgetNetworkClient() {
     clientConnected = false;
     inputPos = 0;
     inputLine[0] = '\0';
+    inputDiscarding = false;
     networkEnabled = false;
 }
 

@@ -24,6 +24,7 @@ SPISettings AD5780_spi_settings;
 
 static char inputLine[128]; // Static buffer for storing input line from client
 int inputPos = 0;
+bool inputDiscarding = false;
 bool clientConnected = false;
 bool dacBusy = false; // Single-DAC lock: only one DAC operation at a time
 
@@ -41,6 +42,7 @@ const char HELP_MESSAGE[] =
 
 // ================== Forward Declarations ================== //
 void processCommand(char* cmdLine);
+void serviceCommandInput();
 bool isInteger(char* str);
 void printHelp();
 bool isAllUpperCase(const char* str);
@@ -114,6 +116,7 @@ void serviceClientConnections() {
     clientConnected = false;
     inputPos = 0;
     inputLine[0] = '\0';
+    inputDiscarding = false;
     // Only the DAC handler may release its operation lock, including on abort.
   }
 
@@ -135,6 +138,7 @@ void serviceClientConnections() {
       DacLog.println("Client connected.");
       telnetClient.print("Welcome to the Telnet server!\r\nType HELP for instructions.\r\n");
       inputPos = 0;
+      inputDiscarding = false;
     }
   }
 }
@@ -148,22 +152,37 @@ void loop() {
   serviceClientConnections();
   if (servicePhysicalControls()) return;
 
-  // If client is connected, attempt to read incoming data
-  if (clientConnected && telnetClient.available()) {
+  serviceCommandInput();
+}
+
+void serviceCommandInput() {
+  // Bounded receive work also runs between ramp steps/delay slices. Complete
+  // commands are dispatched now (busy operations reject), never queued to run
+  // unexpectedly after the ramp. TCP flow control handles a sustained sender.
+  unsigned budget = 64;
+  while (budget-- && clientConnected && !dacNetworkCancelled() && telnetClient.available()) {
     char c = telnetClient.read();
     if (c == '\r' || c == '\n') {
-      // User pressed enter, so we have a command to process
-      if (inputPos > 0) {
-        inputLine[inputPos] = '\0'; // Null-terminate the string
-        processCommand(inputLine);
+      if (inputDiscarding) {
+        inputDiscarding = false;
         inputPos = 0;
+      } else if (inputPos > 0) {
+        // A local copy allows ramp callbacks to receive/reject another command
+        // without overwriting the outer command or its token storage.
+        char commandLine[sizeof(inputLine)];
+        inputLine[inputPos] = '\0';
+        memcpy(commandLine, inputLine, inputPos + 1);
+        inputPos = 0;
+        processCommand(commandLine);
       }
-    } else {
-      // Accumulate characters into inputLine buffer
-      if (inputPos < (int)(sizeof(inputLine) - 1)) {
+    } else if (!inputDiscarding) {
+      if (c == '\0' || inputPos >= int(sizeof(inputLine) - 1)) {
+        inputDiscarding = true;
+        inputPos = 0;
+        telnetClient.print("ERR! Invalid or oversized command; discarded through newline.\r\n");
+      } else {
         inputLine[inputPos++] = c;
       }
-      // If the buffer is full and no newline, we could handle it by truncation or just ignore overflow.
     }
   }
 }
@@ -328,6 +347,7 @@ bool rampAbortCheck() {
   if (dacNetworkCancelled()) return true;
   Ethernet.maintain();
   serviceClientConnections();
+  serviceCommandInput();
   if (dacNetworkCancelled() || !clientConnected || !telnetClient || !telnetClient.connected()) {
     return true;
   }

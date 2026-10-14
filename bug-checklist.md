@@ -46,6 +46,12 @@ optional and have not been run.
 
 ### Repair phase (2026-10-14)
 
+- C5/M3/M4: ramp callbacks now service bounded batches of input between steps
+  and <=1 ms delay slices. Busy DAC commands are rejected immediately, not
+  retained for execution after a ramp. Parser storage is independent of a nested
+  callback; oversized/NUL-containing lines are discarded through the terminator.
+  C5, M3, M4, A4, all preliminary regressions, and 32 button/driver tests pass.
+
 - C4 implemented: foreground link and MAC/IP health checks every 250 ms, failed
   client/partial command invalidation, and full network recovery at most once per
   five seconds. No automatic reset during DAC operations or a latched SAFE ZERO.
@@ -84,7 +90,7 @@ These cause crashes, freezes, or hardware risk. **Current phase.**
     and the notebook includes a manual cable test. See the
     [official implementation](https://github.com/arduino-libraries/Ethernet/blob/master/src/Ethernet.cpp).
 
-- [ ] **C5: `AD5780_ramp()` is a long blocking call that freezes all I/O**
+- [x] **C5: `AD5780_ramp()` is a long blocking call that freezes all I/O**
   - During ramp (up to 262143 steps), loop() is completely blocked
   - Cannot detect client disconnect, accept connections, or maintain Ethernet
   - Socket RX buffer overflows, lost commands, unrecoverable link drops
@@ -133,8 +139,8 @@ Robustness, usability, and code quality improvements. Not yet addressed.
 
 - [ ] **M1:** No client disconnect timeout (ungraceful disconnect blocks new connections)
 - [ ] **M2:** Clamping warning goes to Serial only; remote operator uninformed
-- [ ] **M3:** Input buffer overflow silently truncated (could form wrong command)
-- [ ] **M4:** Single-byte-per-loop read risks data loss during blocking operations
+- [x] **M3:** Input buffer overflow silently truncated (could form wrong command)
+- [x] **M4:** Single-byte-per-loop read risks data loss during blocking operations
 - [ ] **M5:** Include filename case mismatch (`ad5780.h` vs `AD5780.h`)
 - [ ] **M6:** Dead code - `writeCommand[0]`/`registerWord[0] = 0x01` never transmitted
 - [ ] **M7:** Undefined GPIO macros (`GPIO1_PIN_OUT`, etc.) from ADI template

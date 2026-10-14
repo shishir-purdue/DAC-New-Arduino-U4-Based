@@ -25,7 +25,7 @@ DESCRIPTIONS = {
     "C2": "SPI begins before DAC transactions",
     "C3": "Second-client rejection leaves owner and ramp operational (overlaps Robust-1)",
     "C4": "Link/configuration loss discards stale clients and retries recovery without changing DAC outputs",
-    "C5": "Disconnect callback aborts ramp and releases lock (partial fix; see M4/A4)",
+    "C5": "Cooperative ramp services connections/input and aborts on disconnect (with M4/A4)",
     "H1": "No local SPI settings variable shadows global settings in setup",
     "H2": "Reject negative ramp step before output changes",
     "H3": "Reject negative ramp delay before output changes or unsigned wait",
@@ -170,6 +170,9 @@ def run_case(case_id: str) -> None:
         raise ReviewRequired("A3: configuration exists; run a clean target build and review dependency pinning before closing")
     elif case_id == "C4":
         run_host(case_id)
+    elif case_id == "C5":
+        for related in ("C5", "M4", "A4", "Robust-1"):
+            run_host(related)
     elif case_id == "M8":
         run_host(case_id)
         raise ReviewRequired("M8: SPI transaction balance passed. No application ISR uses SPI in this source. Interrupt arbitration requires target/core review plus logic-analyzer evidence if an ISR actually shares SPI; absence of usingInterrupt alone is not a demonstrated bug.")
