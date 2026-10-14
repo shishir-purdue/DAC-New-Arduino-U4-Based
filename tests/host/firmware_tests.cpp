@@ -55,6 +55,8 @@ void run(const std::string& id) {
             intruder = connectFake(); pump(2);
             require(sockets[intruder].stopped, "Silent second client leaked a socket");
         }
+        intruder = connectFake(); sockets[intruder].connected = false; pump(2);
+        require(sockets[intruder].stopped, "Already-disconnected accepted socket leaked");
         feedFake(owner, "ID\nID\n"); pump();
         require(sockets[owner].connected && sockets[owner].tx.contains("AD5780"), "Active owner was rejected as a second client");
     } else if (id == "Mem-3") {

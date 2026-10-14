@@ -120,10 +120,13 @@ void loop() {
     dacBusy = false;
   }
 
-  // Always check for new connections (single-client policy)
-  EthernetClient newClient = telnetServer.available();
-  if (newClient && newClient.connected()) {
-    if (clientConnected) {
+  // accept() transfers each new socket once, even before it sends data.
+  // available() can return the active owner again while its command is buffered.
+  EthernetClient newClient = telnetServer.accept();
+  if (newClient) {
+    if (!newClient.connected()) {
+      newClient.stop();
+    } else if (clientConnected) {
       // Reject: only one client allowed at a time
       Serial.println("Second client rejected - server busy.");
       newClient.print("ERR! Server busy: only one connection allowed.\r\n");
