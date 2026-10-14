@@ -5,6 +5,8 @@
 #include "ad5780.h"
 #include "Communication.h"
 #include <string.h>
+#include <errno.h>
+#include <stdint.h>
 
 #define GLOBAL_PWR_EN 9
 #define GLOBAL_CLR 8
@@ -44,6 +46,7 @@ const char HELP_MESSAGE[] =
 void processCommand(char* cmdLine);
 void serviceCommandInput();
 bool isInteger(char* str);
+bool parseInteger(char* str, int& value);
 void printHelp();
 bool isAllUpperCase(const char* str);
 bool isValidChannel(int ch);
@@ -213,6 +216,13 @@ void processCommand(char* cmdLine) {
   }
 
   const char* command = tokens[0];
+  int arguments[9] = {};
+  for (int i = 1; i < tokenCount; ++i) {
+    if (!parseInteger(tokens[i], arguments[i-1])) {
+      telnetClient.print("ERR! Expected an integer in the signed 32-bit range.\r\n");
+      return;
+    }
+  }
 
   // Debug print the received command and arguments
   DacLog.print("Received Command: ");
@@ -231,7 +241,7 @@ void processCommand(char* cmdLine) {
       // No parameter
       func_INIT(-1);
     } else if (tokenCount == 2 && isInteger(tokens[1])) {
-      int param = atoi(tokens[1]);
+      int param = arguments[0];
       if (param == -1 || isValidChannel(param)) {
         func_INIT(param);
       } else {
@@ -246,7 +256,7 @@ void processCommand(char* cmdLine) {
   } else if (strcmp(command, "READ") == 0) {
     // READ [number]
     if (tokenCount == 2 && isInteger(tokens[1])) {
-      int param = atoi(tokens[1]);
+      int param = arguments[0];
       if (isValidChannel(param)) {
         func_READ(param);
       } else {
@@ -261,8 +271,8 @@ void processCommand(char* cmdLine) {
   } else if (strcmp(command, "SET") == 0) {
     // SET [number] [number]
     if (tokenCount == 3 && isInteger(tokens[1]) && isInteger(tokens[2])) {
-      int p1 = atoi(tokens[1]);
-      int p2 = atoi(tokens[2]);
+      int p1 = arguments[0];
+      int p2 = arguments[1];
       if (isValidChannel(p1)) {
         func_SET(p1, p2);
       } else {
@@ -274,17 +284,17 @@ void processCommand(char* cmdLine) {
     } else {
       printHelp();
     }
-  } else if (strcmp(command, "HELP") == 0) {
+  } else if (strcmp(command, "HELP") == 0 && tokenCount == 1) {
     // HELP
     func_HELP();
   } else if (strcmp(command, "RAMP") == 0) {
     // RAMP [number] [number] [number] [number]
     if (tokenCount == 5 && isInteger(tokens[1]) && isInteger(tokens[2]) &&
                           isInteger(tokens[3]) && isInteger(tokens[4])) {
-      int p1 = atoi(tokens[1]);
-      int p2 = atoi(tokens[2]);
-      int p3 = atoi(tokens[3]);
-      int p4 = atoi(tokens[4]);
+      int p1 = arguments[0];
+      int p2 = arguments[1];
+      int p3 = arguments[2];
+      int p4 = arguments[3];
       if (isValidChannel(p1)) {
         func_RAMP(p1, p2, p3, p4);
       } else {
@@ -296,7 +306,7 @@ void processCommand(char* cmdLine) {
     } else {
       printHelp();
     }
-  } else if (strcmp(command, "ID") == 0) {
+  } else if (strcmp(command, "ID") == 0 && tokenCount == 1) {
     // ID
     func_ID();
   } else {
@@ -311,10 +321,21 @@ bool isInteger(char* str) {
   // Check if string represents an integer
   if (*str == '\0') return false;
   if (*str == '-' || *str == '+') str++;  // Allow signed values
+  if (*str == '\0') return false;
   while (*str) {
     if (!isdigit((unsigned char)*str)) return false;
     str++;
   }
+  return true;
+}
+
+bool parseInteger(char* str, int& value) {
+  if (!isInteger(str)) return false;
+  errno = 0;
+  char* end;
+  long parsed = strtol(str, &end, 10);
+  if (errno == ERANGE || *end != '\0' || parsed < INT32_MIN || parsed > INT32_MAX) return false;
+  value = static_cast<int>(parsed);
   return true;
 }
 
@@ -483,6 +504,10 @@ void func_RAMP(int p1, int p2, int p3, int p4) {
     if (clientConnected && telnetClient.connected()) {
       telnetClient.print("ERR! DAC busy, command rejected.\r\n");
     }
+    return;
+  }
+  if (p3 <= 0 || p3 > VMAX || p4 < 0) {
+    telnetClient.print("ERR! RAMP step_size must be 1..262143; step_time must be 0..2147483647 us.\r\n");
     return;
   }
   dacBusy = true;

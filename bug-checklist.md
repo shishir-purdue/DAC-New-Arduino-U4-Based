@@ -114,19 +114,24 @@ Incorrect output or undefined behavior. Not yet addressed.
   - **Codex clarification:** The global is default-constructed, not indeterminate;
     the local fallback does not update it. The configured valid parameters do not
     currently enter this error branch. Test H1 is a source audit.
-- [ ] **H2: Negative `step_size` silently becomes ~4 billion (unsigned overflow)**
+- [x] **H2: Negative `step_size` silently becomes ~4 billion (unsigned overflow)**
   - `int p3` -> `unsigned long step_size` conversion; `-5` becomes 4,294,967,291
   - Instant uncontrolled voltage jump on industrial equipment
-- [ ] **H3: Negative `del_t` becomes a ~71-minute freeze**
+- [x] **H3: Negative `del_t` becomes a ~71-minute freeze**
   - `delayMicroseconds()` takes `unsigned long`; `-1` -> 71 minutes per step
   - **Codex clarification:** Exact duration depends on the target core's argument
     type and implementation; the confirmed defect is missing negative-delay validation.
     The host test uses a virtual clock and never sleeps for this converted delay.
-- [ ] **H4: `delayMicroseconds()` used for potentially large delays - inaccurate**
+- [x] **H4: `delayMicroseconds()` used for potentially large delays - inaccurate**
+  - Repair: bounded <=1000 us slices with cooperative input/network/button service;
+    H4 and B2/B9/B19/B20 cover bounds, cancellation, and accumulated delays.
   - Only reliable for short durations; use `delay()` for ms-range waits
 - [ ] **H5: Header/implementation signature mismatch on `AD5780_EnableOutput`**
   - `AD5780.h:98` missing `SPISettings*` parameter vs `AD5780.cpp:84`
-- [ ] **H6: `isInteger()` accepts bare sign characters (`"-"`, `"+"`)**
+- [x] **H6: `isInteger()` accepts bare sign characters (`"-"`, `"+"`)**
+  - H2/H3/H6/M10 repair: strict signed-32-bit `strtol` parsing before dispatch,
+    positive bounded ramp step, nonnegative delay, and driver-side guards.
+    Boundary/overflow/sign/junk tests verify no SPI access on rejection.
   - `atoi("-")` returns 0, feeds `DAC_sync[-1]` -> out-of-bounds
   - **Codex clarification:** Existing C1 validation now rejects channel zero, so
     that historical out-of-bounds route is blocked. Bare signs still pass numeric
@@ -154,7 +159,7 @@ Robustness, usability, and code quality improvements. Not yet addressed.
   - **Codex test note:** The offline test detects the code overwrite under a proposed
     preserve-output policy. Actual analog transient acceptability needs an agreed
     startup policy and scope capture; a midscale write alone does not prove a glitch.
-- [ ] **M10:** `atoi` overflow undefined for large values (use `strtol`)
+- [x] **M10:** `atoi` overflow undefined for large values (use `strtol`)
 - [ ] **M11:** RAMP debug/response sent AFTER ramp completes (client may be gone)
 
 ---

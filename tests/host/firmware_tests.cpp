@@ -141,6 +141,15 @@ void run(const std::string& id) {
     } else if (id == "H6") {
         char minus[] = "-", plus[] = "+", good[] = "-12";
         require(!isInteger(minus) && !isInteger(plus) && isInteger(good), "Bare '+' or '-' is accepted as an integer");
+        attachOwner();
+        for (auto cmd : {"SET 1 +", "SET 1 -", "RAMP 1 10 -1 1", "RAMP 1 10 1 -1",
+                         "RAMP 1 10 0 1", "RAMP 1 10 262144 1", "RAMP 1 10 1 2147483648",
+                         "SET 1 -2147483649", "READ 4294967297", "SET 1 12x"}) command(cmd);
+        require(SPI.transactions==0 && !dacBusy, "Malformed/range-invalid argument touched DAC or leaked lock");
+        int parsed=7; char max[]="2147483647", min[]="-2147483648", overflow[]="2147483648";
+        require(parseInteger(max,parsed) && parsed==INT32_MAX && parseInteger(min,parsed) && parsed==INT32_MIN,
+                "Signed 32-bit boundaries rejected");
+        require(!parseInteger(overflow,parsed) && parsed==INT32_MIN, "Overflow accepted or changed output parameter");
     } else if (id == "M1") {
         attachOwner(); fakeMicros += 120000000; pump();
         intruder = connectFake("ID\n"); pump();
