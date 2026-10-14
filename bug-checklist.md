@@ -149,7 +149,8 @@ Robustness, usability, and code quality improvements. Not yet addressed.
   - Policy: 120 seconds without received bytes while idle releases the socket and
     partial input. A running DAC operation refreshes the lease so long ramps are
     not cut off. M1 covers renewal, expiry, reconnect, long operations, and rollover.
-- [ ] **M2:** Clamping warning goes to Serial only; remote operator uninformed
+- [x] **M2:** Clamping warning goes to Serial only; remote operator uninformed
+  - SET/RAMP responses include WARN and the actual clamped target; M2 covers both bounds and operations.
 - [x] **M3:** Input buffer overflow silently truncated (could form wrong command)
 - [x] **M4:** Single-byte-per-loop read risks data loss during blocking operations
 - [ ] **M5:** Include filename case mismatch (`ad5780.h` vs `AD5780.h`)

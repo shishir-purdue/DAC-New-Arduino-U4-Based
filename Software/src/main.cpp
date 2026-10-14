@@ -475,6 +475,7 @@ void func_SET(int p1, int p2) {
     return;
   }
   dacBusy = true;
+  const bool clamped = p2 > VMAX || p2 < VMIN;
 
   // Called when SET command is received
   // Print debug info on Serial
@@ -496,6 +497,7 @@ void func_SET(int p1, int p2) {
 
   // Respond to client
   if (clientConnected && telnetClient.connected()) {
+    if (clamped) telnetClient.print("WARN! Target clamped to DAC range. ");
     telnetClient.print("SET command received with parameters: ");
     telnetClient.print(p1);
     telnetClient.print(" ");
@@ -526,6 +528,7 @@ void func_RAMP(int p1, int p2, int p3, int p4) {
     return;
   }
   dacBusy = true;
+  const bool clamped = p2 > VMAX || p2 < VMIN;
 
   // Called when RAMP command is received
   // Print debug info on Serial
@@ -548,6 +551,7 @@ void func_RAMP(int p1, int p2, int p3, int p4) {
       DacLog.print(p3); DacLog.print(", ");
       DacLog.println(p4);
       if (clientConnected && telnetClient.connected()) {
+        if (clamped) telnetClient.print("WARN! Target clamped to DAC range. ");
         telnetClient.print("RAMP command received with parameters: ");
         telnetClient.print(p1); telnetClient.print(" ");
         telnetClient.print(p2); telnetClient.print(" ");

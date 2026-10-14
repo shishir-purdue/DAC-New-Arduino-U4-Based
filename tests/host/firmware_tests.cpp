@@ -175,6 +175,11 @@ void run(const std::string& id) {
     } else if (id == "M2") {
         attachOwner(); command("SET 1 262144");
         require(sockets[owner].tx.contains("WARN") || sockets[owner].tx.contains("ERR"), "Clamped target is echoed but no explicit warning/error reaches client");
+        require(dacCode(0)==262143 && sockets[owner].tx.contains("262143"),"Clamped value not reported accurately");
+        sockets[owner].tx.clear(); command("SET 1 -1");
+        require(dacCode(0)==0 && sockets[owner].tx.contains("WARN"),"Negative target clamp not reported");
+        sockets[owner].tx.clear(); command("RAMP 1 262144 262143 0");
+        require(dacCode(0)==262143 && sockets[owner].tx.contains("WARN"),"Ramp clamp not reported");
     } else if (id == "M3") {
         attachOwner(); std::string line = "SET 1 42" + std::string(140, ' ') + "BAD\n";
         feedFake(owner, line.c_str()); pump();
