@@ -120,7 +120,7 @@ void loop() {
     clientConnected = false;
     inputPos = 0;
     inputLine[0] = '\0';
-    dacBusy = false;
+    // Only the DAC handler may release its operation lock, including on abort.
   }
 
   // accept() transfers each new socket once, even before it sends data.
@@ -129,7 +129,7 @@ void loop() {
   if (newClient) {
     if (!newClient.connected()) {
       newClient.stop();
-    } else if (clientConnected) {
+    } else if (clientConnected || dacBusy) {
       // Reject: only one client allowed at a time
       Serial.println("Second client rejected - server busy.");
       newClient.print("ERR! Server busy: only one connection allowed.\r\n");
@@ -137,7 +137,6 @@ void loop() {
     } else {
       telnetClient = newClient;
       clientConnected = true;
-      dacBusy = false;
       Serial.println("Client connected.");
       telnetClient.print("Welcome to the Telnet server!\r\nType HELP for instructions.\r\n");
       inputPos = 0;

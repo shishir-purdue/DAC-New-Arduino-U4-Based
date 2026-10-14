@@ -80,6 +80,8 @@ void run(const std::string& id) {
         require(SPI.transactions == 0 && dacBusy, "Busy handlers touched SPI or released another operation's lock");
         dropOwner(); loop();
         require(dacBusy, "Client cleanup released an in-progress DAC operation's lock");
+        intruder = connectFake(); loop();
+        require(sockets[intruder].stopped && !clientConnected && dacBusy, "New connection took ownership during an in-progress operation");
         dacBusy = false; attachOwner(); command("SET 1 10");
         require(!dacBusy && SPI.writes == 1, "Successful operation did not release its lock");
         command("RAMP 1 10 0 1"); require(!dacBusy, "Invalid ramp leaked its lock");
