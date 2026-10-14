@@ -145,7 +145,10 @@ Incorrect output or undefined behavior. Not yet addressed.
 
 Robustness, usability, and code quality improvements. Not yet addressed.
 
-- [ ] **M1:** No client disconnect timeout (ungraceful disconnect blocks new connections)
+- [x] **M1:** No client disconnect timeout (ungraceful disconnect blocks new connections)
+  - Policy: 120 seconds without received bytes while idle releases the socket and
+    partial input. A running DAC operation refreshes the lease so long ramps are
+    not cut off. M1 covers renewal, expiry, reconnect, long operations, and rollover.
 - [ ] **M2:** Clamping warning goes to Serial only; remote operator uninformed
 - [x] **M3:** Input buffer overflow silently truncated (could form wrong command)
 - [x] **M4:** Single-byte-per-loop read risks data loss during blocking operations

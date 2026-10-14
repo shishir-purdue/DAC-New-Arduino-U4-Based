@@ -25,6 +25,7 @@ int owner = -1, intruder = -1;
 void attachOwner() {
     owner = connectFake(); sockets[owner].accepted = true;
     telnetClient = EthernetClient(owner); clientConnected = true;
+    clientLastActivity = millis();
 }
 void pump(int n = 512) { for (int i = 0; i < n; i++) loop(); }
 void dropOwner() {
@@ -156,9 +157,21 @@ void run(const std::string& id) {
                 "Signed 32-bit boundaries rejected");
         require(!parseInteger(overflow,parsed) && parsed==INT32_MIN, "Overflow accepted or changed output parameter");
     } else if (id == "M1") {
-        attachOwner(); fakeMicros += 120000000; pump();
+        attachOwner(); fakeMicros += 119000000; pump();
+        require(clientConnected,"Idle timeout closed an active lease too early");
+        feedFake(owner,"ID\n"); pump(); fakeMicros+=119000000; pump();
+        require(clientConnected,"Received command failed to renew idle lease");
+        fakeMicros+=1000000; pump();
+        require(sockets[owner].stopped && !clientConnected && inputPos==0,
+                "Silent half-open owner retained after idle timeout");
         intruder = connectFake("ID\n"); pump();
-        require(sockets[owner].stopped, "Silent half-open owner is still retained after 120 seconds (proposed bench timeout policy)");
+        require(sockets[intruder].tx.contains("AD5780"),"Idle timeout did not free socket for new owner");
+        owner=intruder; dacBusy=true; fakeMicros+=130000000; serviceClientConnections();
+        require(clientConnected && dacBusy,"Idle timeout interrupted a long running operation");
+        dacBusy=false; serviceClientConnections(); require(clientConnected,"No idle grace after long operation");
+        fakeMicros=((uint64_t(1)<<32)-1000)*1000; clientLastActivity=millis();
+        fakeMicros+=120000000; serviceClientConnections();
+        require(!clientConnected,"Idle timeout failed across millis rollover");
     } else if (id == "M2") {
         attachOwner(); command("SET 1 262144");
         require(sockets[owner].tx.contains("WARN") || sockets[owner].tx.contains("ERR"), "Clamped target is echoed but no explicit warning/error reaches client");

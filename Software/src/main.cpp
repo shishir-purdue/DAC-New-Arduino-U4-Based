@@ -29,6 +29,8 @@ int inputPos = 0;
 bool inputDiscarding = false;
 bool clientConnected = false;
 bool dacBusy = false; // Single-DAC lock: only one DAC operation at a time
+constexpr uint32_t CLIENT_IDLE_MS = 120000;
+uint32_t clientLastActivity = 0;
 
 const char HELP_MESSAGE[] =
 "#Help:\r\n"
@@ -111,6 +113,17 @@ void setup() {
 // Also called between ramp steps to enforce the same single-client policy.
 void serviceClientConnections() {
   if (dacNetworkCancelled() || !networkEnabled) return;
+  uint32_t now = millis();
+  // A legitimately long ramp does not require another command as a heartbeat.
+  if (clientConnected && dacBusy) clientLastActivity = now;
+  if (clientConnected && !dacBusy && uint32_t(now-clientLastActivity) >= CLIENT_IDLE_MS) {
+    telnetClient.stop();
+    telnetClient = EthernetClient();
+    clientConnected = false;
+    inputPos = 0;
+    inputDiscarding = false;
+    inputLine[0] = '\0';
+  }
   // Check if client is still connected
   if (clientConnected && (!telnetClient || !telnetClient.connected())) {
     DacLog.println("Client disconnected.");
@@ -138,6 +151,7 @@ void serviceClientConnections() {
     } else {
       telnetClient = newClient;
       clientConnected = true;
+      clientLastActivity = now;
       DacLog.println("Client connected.");
       telnetClient.print("Welcome to the Telnet server!\r\nType HELP for instructions.\r\n");
       inputPos = 0;
@@ -165,6 +179,7 @@ void serviceCommandInput() {
   unsigned budget = 64;
   while (budget-- && clientConnected && !dacNetworkCancelled() && telnetClient.available()) {
     char c = telnetClient.read();
+    clientLastActivity = millis();
     if (c == '\r' || c == '\n') {
       if (inputDiscarding) {
         inputDiscarding = false;
