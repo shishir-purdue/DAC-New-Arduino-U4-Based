@@ -152,6 +152,7 @@ def run_case(case_id: str) -> None:
         declared = re.search(pattern, header).group(1)
         defined = re.search(pattern, driver).group(1)
         assert re.sub(r"\s+", "", declared) == re.sub(r"\s+", "", defined), f"H5: declaration ({declared}) != definition ({defined})"
+        run_host(case_id)
     elif case_id == "M5":
         names = {p.name for p in (ROOT / "Software/lib/AD5780").iterdir()}
         for name in re.findall(r'#include\s+"([^"]+)"', main):

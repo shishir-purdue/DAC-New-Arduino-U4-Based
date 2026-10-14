@@ -138,6 +138,11 @@ void run(const std::string& id) {
     } else if (id == "H4") {
         attachOwner(); command("RAMP 1 2 1 1000000");
         require(largestDelay < 1000000, "One-second step is passed straight to delayMicroseconds; bounded/cooperative wait policy not implemented");
+    } else if (id == "H5") {
+        SPI.forcedRead=0xA00016; // R/W header must not turn the write into another read.
+        AD5780_EnableOutput(2,1,&AD5780_spi_settings);
+        require(SPI.registers[2][2]==0x12 && SPI.writes==0 && !SPI.badFrame,
+                "EnableOutput failed to strip read header or changed DAC code");
     } else if (id == "H6") {
         char minus[] = "-", plus[] = "+", good[] = "-12";
         require(!isInteger(minus) && !isInteger(plus) && isInteger(good), "Bare '+' or '-' is accepted as an integer");

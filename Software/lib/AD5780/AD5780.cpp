@@ -88,7 +88,7 @@ void AD5780_EnableOutput(unsigned char slaveDeviceId, unsigned char state, SPISe
     unsigned long newControl = 0;
     
     oldControl = AD5780_GetRegisterValue(slaveDeviceId, AD5780_REG_CTRL, 3, settings);
-    oldControl = oldControl & ~(AD5780_CTRL_OPGND); // Clears OPGND bit.
+    oldControl = (oldControl & 0xFFFFF) & ~(AD5780_CTRL_OPGND); // Remove read header and clear OPGND.
     newControl = oldControl | AD5780_CTRL_OPGND * (!state);
     AD5780_SetRegisterValue(slaveDeviceId, AD5780_REG_CTRL, newControl, 3, settings);
 }

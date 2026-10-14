@@ -126,7 +126,9 @@ Incorrect output or undefined behavior. Not yet addressed.
   - Repair: bounded <=1000 us slices with cooperative input/network/button service;
     H4 and B2/B9/B19/B20 cover bounds, cancellation, and accumulated delays.
   - Only reliable for short durations; use `delay()` for ms-range waits
-- [ ] **H5: Header/implementation signature mismatch on `AD5780_EnableOutput`**
+- [x] **H5: Header/implementation signature mismatch on `AD5780_EnableOutput`**
+  - Declaration now matches; readback header is masked before the control write.
+    H5 checks the public call and R/W-bit handling without any DAC code write.
   - `AD5780.h:98` missing `SPISettings*` parameter vs `AD5780.cpp:84`
 - [x] **H6: `isInteger()` accepts bare sign characters (`"-"`, `"+"`)**
   - H2/H3/H6/M10 repair: strict signed-32-bit `strtol` parsing before dispatch,
