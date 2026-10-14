@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import configparser
 import hashlib
 import json
 import os
@@ -32,25 +33,30 @@ DESCRIPTIONS = {
     "H4": "Long step waits use bounded/cooperative timing (policy check; timing needs bench)",
     "H5": "EnableOutput public declaration matches definition",
     "H6": "Bare plus/minus signs are not integers",
-    "M1": "Recover from a silent owner within proposed 120-second timeout policy",
+    "M1": "Expire idle clients after 120 seconds while preserving active ramps",
     "M2": "Client receives explicit warning/error when target is clamped",
     "M3": "Oversized command cannot execute a truncated valid prefix",
     "M4": "Command injected during ramp is serviced before ramp returns",
     "M5": "Local include capitalization matches actual filename",
     "M6": "No unused frame-prefix assignments",
     "M7": "GPIO aliases resolve to defined symbols",
-    "M8": "Balanced SPI transactions; interrupt contention requires a separate bench review",
-    "M9": "INIT preserves output under proposed no-change policy (verify intended startup policy)",
+    "M8": "Balanced foreground SPI transactions and SPI-free cancellation hooks",
+    "M9": "INIT preserves active outputs and verifies cold initialization at zero",
     "M10": "Reject integer overflow before DAC access",
     "M11": "Acknowledge ramp before first blocking delay",
     "A1": "Active client is not reclassified as a second client",
     "A2": "INIT detects bad register readback instead of reporting success",
     "A3": "Repository contains a reproducible target/dependency build configuration",
     "A4": "No additional DAC write after disconnect during step delay",
+    "A5": "Ethernet waits are bounded and cancellable; recovery clears controller/socket state",
+    "A6": "USB diagnostic backpressure does not block physical controls",
+    "A7": "Uno R4 startup leaves SD deselected on the shared SPI bus",
+    "A8": "Malformed readback cannot become a voltage or a ramp starting value",
+    "A9": "Python V/s conversion and acceptance/status protocol are validated offline",
 }
 MODES = {key: "host behavior" for key in DESCRIPTIONS}
 MODES.update({key: "source audit" for key in ["H1", "H5", "M5", "M6", "M7", "A3"]})
-MODES.update({"C4": "bench review", "M8": "host + bench review"})
+MODES.update({"C4": "host behavior", "M8": "source + host ownership audit", "A9": "offline Python behavior"})
 
 
 class ReviewRequired(unittest.SkipTest):
@@ -166,9 +172,16 @@ def run_case(case_id: str) -> None:
         undefined = [s for s in symbols if not re.search(r"#\s*define\s+" + s + r"\b", all_code)]
         assert not undefined, f"M7: template aliases refer to undefined GPIO symbols: {sorted(undefined)} (currently unused)"
     elif case_id == "A3":
-        configs = list(ROOT.rglob("platformio.ini")) + list(ROOT.rglob("sketch.yaml"))
-        assert configs, "A3: no PlatformIO project or Arduino CLI sketch profile checked in; target/dependencies are manual"
-        raise ReviewRequired("A3: configuration exists; run a clean target build and review dependency pinning before closing")
+        config = configparser.ConfigParser()
+        config.read(ROOT / "platformio.ini")
+        env = config["env:uno_r4_minima"]
+        assert env["platform"] == "renesas-ra@1.9.0" and env["board"] == "uno_r4_minima"
+        assert env["framework"] == "arduino" and env["upload_protocol"] == "dfu"
+        pins = set(env["platform_packages"].split())
+        assert pins == {"framework-arduinorenesas-uno@1.6.0", "toolchain-gccarmnoneeabi@1.70201.0", "tool-dfuutil-arduino@1.11.0"}, "A3: package versions are not pinned"
+        assert config["platformio"]["lib_dir"] == "Software/lib"
+        assert "version=2.0.2" in (ROOT / "Software/lib/Ethernet/library.properties").read_text()
+        assert (ROOT / "Software/lib/Ethernet/src/utility/DacNetworkGuard.h").is_file()
     elif case_id == "C4":
         run_host(case_id)
     elif case_id == "C5":
@@ -179,6 +192,15 @@ def run_case(case_id: str) -> None:
         application = main + driver + comm + code("Software/src/PhysicalControls.h")
         assert not re.search(r"\b(?:attachInterrupt|ISR|IRQHandler)\s*\(", application), "M8: new ISR requires a shared-SPI ownership review"
         run_host("B6")  # Cancellation hooks only sample GPIO/RAM, no nested SPI.
+    elif case_id == "A5":
+        for related in ["B6", "B13", *[f"N{i}" for i in range(1,13)]]:
+            run_host(related)
+    elif case_id in {"A6", "A7", "A8"}:
+        for related in {"A6": ["B11"], "A7": ["B14"], "A8": ["B15","B16","B17","B18"]}[case_id]:
+            run_host(related)
+    elif case_id == "A9":
+        result = subprocess.run([sys.executable, "-m", "unittest", "discover", "-s", str(HERE), "-p", "test_ramp_client.py", "-q"], capture_output=True, text=True, timeout=30)
+        assert result.returncode == 0, result.stdout + result.stderr
     else:
         run_host(case_id)
     print(f"PASS {case_id}: {DESCRIPTIONS[case_id]}")
