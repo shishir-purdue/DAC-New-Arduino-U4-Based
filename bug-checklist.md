@@ -169,7 +169,11 @@ Robustness, usability, and code quality improvements. Not yet addressed.
     `endTransaction()`. No application ISR uses SPI in this source. The test checks
     balanced framing, then reports REVIEW for real interrupt contention; missing
     `usingInterrupt()` alone does not prove a current bug.
-- [ ] **M9:** `func_INIT` sets DAC to mid-scale during init (possible transient)
+- [x] **M9:** `func_INIT` sets DAC to mid-scale during init (possible transient)
+  - Policy: an active normal channel is verified read-only; no reset, clamp, or
+    DAC-code write. A channel already ground-clamped at power-on is configured
+    and verified at exact zero before releasing its clamp. Incompatible active
+    modes are rejected unchanged. M9 covers active/all/cold/repeated/incompatible cases.
   - **Codex test note:** The offline test detects the code overwrite under a proposed
     preserve-output policy. Actual analog transient acceptability needs an agreed
     startup policy and scope capture; a midscale write alone does not prove a glitch.
@@ -187,7 +191,9 @@ Robustness, usability, and code quality improvements. Not yet addressed.
   - Fixed as part of preliminary **Mem-2**, not as a separate out-of-scope repair.
     Test A1 feeds multiple commands over one connection and verifies it remains open.
 
-- [ ] **A2 — Codex addition: INIT reports success without verifying initialization**
+- [x] **A2 — Codex addition: INIT reports success without verifying initialization**
+  - Control/data readbacks are checked before releasing a cold channel's clamp;
+    failed control or DAC writes return ERR. No resets are used. A2 fault injection passes.
   - `AD5780_Init()` discards control-register readbacks and always returns 1;
     `func_INIT()` prints success without checking a result. A missing/misconfigured
     DAC can therefore appear initialized.

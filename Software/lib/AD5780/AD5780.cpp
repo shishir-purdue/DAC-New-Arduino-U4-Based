@@ -54,21 +54,29 @@
  * @return 1.
 *******************************************************************************/
 unsigned char AD5780_Init(unsigned char slaveDeviceId, SPISettings* settings)
-{  
-    //Trigger hardware reset
-    AD5780_SetRegisterValue(slaveDeviceId, AD5780_CMD_WR_SOFT_CTRL, AD5780_SOFT_CTRL_RESET, 3, settings);
-    delayMicroseconds(1000);
-
-    //Software init
-    AD5780_SetRegisterValue(slaveDeviceId, AD5780_REG_CTRL, AD5780_CTRL_BIN2SC | AD5780_CTRL_OPGND | AD5780_CTRL_RBUF , 3, settings);
-    AD5780_GetRegisterValue(slaveDeviceId, AD5780_REG_CTRL, 3, settings);
-    AD5780_SetDacValue(slaveDeviceId, 0x1FFFF, settings);
-    delayMicroseconds(10);
-    AD5780_SetRegisterValue(slaveDeviceId, AD5780_REG_CTRL, AD5780_CTRL_BIN2SC | AD5780_CTRL_RBUF , 3, settings);
-    AD5780_GetRegisterValue(slaveDeviceId, AD5780_REG_CTRL, 3, settings);
-    AD5780_SetDacValue(slaveDeviceId, 0x1FFFF, settings);
-
-    return(1);    
+{
+    const unsigned long rawControl = AD5780_GetRegisterValue(slaveDeviceId, AD5780_REG_CTRL, 3, settings);
+    const unsigned long control = rawControl & 0xFFFFF;
+    constexpr unsigned long normal = AD5780_CTRL_BIN2SC | AD5780_CTRL_RBUF;
+    if ((rawControl & 0x700000) != AD5780_ADDR_REG(AD5780_REG_CTRL) ||
+        (control & ~0x3EUL) || (control & AD5780_CTRL_SDODIS)) return 0;
+    uint32_t existing;
+    if (!AD5780_ReadDacValueChecked(slaveDeviceId, &existing, settings)) return 0;
+    // Repeated INIT is a read-only verification of a normally operating channel.
+    if (control == normal) return 1;
+    // Changing an active/tristated configuration could reinterpret its DAC code.
+    // Only a channel already clamped to ground may be initialized to zero.
+    if (!(control & AD5780_CTRL_OPGND)) return 0;
+    const unsigned long clamped = normal | AD5780_CTRL_OPGND;
+    AD5780_SetRegisterValue(slaveDeviceId, AD5780_REG_CTRL, clamped, 3, settings);
+    unsigned long checked = AD5780_GetRegisterValue(slaveDeviceId, AD5780_REG_CTRL, 3, settings);
+    if ((checked & 0x7FFFFF) != (AD5780_ADDR_REG(AD5780_REG_CTRL) | clamped)) return 0;
+    AD5780_SetDacValue(slaveDeviceId, 131072, settings); // Exact offset-binary zero, while clamped.
+    uint32_t zero;
+    if (!AD5780_ReadDacValueChecked(slaveDeviceId, &zero, settings) || zero != 131072) return 0;
+    AD5780_SetRegisterValue(slaveDeviceId, AD5780_REG_CTRL, normal, 3, settings);
+    checked = AD5780_GetRegisterValue(slaveDeviceId, AD5780_REG_CTRL, 3, settings);
+    return (checked & 0x7FFFFF) == (AD5780_ADDR_REG(AD5780_REG_CTRL) | normal);
 }
 
 /***************************************************************************//**

@@ -394,37 +394,25 @@ bool rampAbortCheck() {
 
 void func_INIT(int param) {
   if (dacBusy) {
-    DacLog.println("ERR! DAC busy, INIT rejected.");
-    if (clientConnected && telnetClient.connected()) {
-      telnetClient.print("ERR! DAC busy, command rejected.\r\n");
-    }
+    telnetClient.print("ERR! DAC busy, command rejected.\r\n");
     return;
   }
   dacBusy = true;
-
-  // Print debug info on Serial
-  DacLog.print("func_INIT called with param: ");
-  DacLog.println(param);
-
-  // Respond to client
-  if (clientConnected && telnetClient.connected()) {
-    if (param == -1) {
-      for (unsigned char i = 0; i < (sizeof(DAC_sync) / sizeof(*DAC_sync)); i++) {
-          AD5780_Init(DAC_sync[i], &AD5780_spi_settings);
-      }
-      telnetClient.print("Initialized all channels. ");      
-      telnetClient.print("INIT command received with no parameter.\r\n");
-    } else {
-      AD5780_Init((unsigned char)DAC_sync[param - 1], &AD5780_spi_settings);
-      telnetClient.print("Initialized pin ");
-      telnetClient.print(DAC_sync[param - 1]);
-
-      telnetClient.print(". INIT command received with parameter (Channel): ");
-      telnetClient.print(param);
-      telnetClient.print("\r\n");
+  int first = param == -1 ? 0 : param-1;
+  int last = param == -1 ? 4 : param;
+  for (int i = first; i < last; ++i) {
+    if (!AD5780_Init(static_cast<unsigned char>(DAC_sync[i]), &AD5780_spi_settings)) {
+      telnetClient.print("ERR! INIT verification/configuration failed for channel ");
+      telnetClient.print(i+1);
+      telnetClient.print("; stopped without resetting DACs.\r\n");
+      dacBusy = false;
+      return;
     }
   }
-
+  telnetClient.print("Initialized ");
+  if (param == -1) telnetClient.print("all channels");
+  else { telnetClient.print("channel "); telnetClient.print(param); }
+  telnetClient.print("; active outputs preserved.\r\n");
   dacBusy = false;
 }
 

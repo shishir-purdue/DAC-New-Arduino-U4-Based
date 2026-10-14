@@ -12,11 +12,13 @@ struct SPISettings {
 struct SPIClass {
     bool started = false, active = false, badFrame = false, invalidPin = false;
     bool corruptReads = false;
+    bool ignoreDacWrites = false, ignoreControlWrites = false;
     uint32_t forcedRead = 0xFFFFFFFFu; // Sentinel: use real simulated register.
     int forcedReadPin = -1;
     int selected = -1, count = 0, transactions = 0, writes = 0;
     uint32_t word = 0, registers[16][8] = {}, pending[16] = {};
     int writePins[4096] = {}; uint32_t codes[4096] = {};
+    SPIClass() { for (int pin : {2,3,5,6}) registers[pin][2]=0x0E; }
     void begin() { started = true; }
     void beginTransaction(const SPISettings&) {
         if (!started || active) badFrame = true;
@@ -46,6 +48,7 @@ struct SPIClass {
             // Datasheet Table 9/10: readback includes register address bits.
             if (word & (1u << 23)) pending[pin] = (reg << 20) | registers[pin][reg];
             else if (reg) {
+                if ((reg==1 && ignoreDacWrites) || (reg==2 && ignoreControlWrites)) { selected=-1; return; }
                 registers[pin][reg] = word & 0xFFFFF;
                 if (reg == 1) {
                     if (writes < 4096) { writePins[writes] = pin; codes[writes] = (word >> 2) & 0x3FFFF; }

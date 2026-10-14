@@ -46,7 +46,7 @@ void run(const std::string& id) {
     if (id.size() > 1 && id[0] == 'B') { runButtons(id); return; }
     if (id == "Mem-1") {
         attachOwner();
-        const char* commands[] = {"ID", "HELP", "READ 1", "SET 1 100", "INIT 1", "RAMP 1 131072 1 0"};
+        const char* commands[] = {"ID", "HELP", "READ 1", "SET 1 131071", "INIT 1", "RAMP 1 131072 1 0"};
         size_t before = allocations;
         for (int i = 0; i < 1000; i++) for (auto cmd : commands) { delayCalls = 0; command(cmd); }
         require(allocations == before, "Command dispatch allocated heap memory");
@@ -201,8 +201,14 @@ void run(const std::string& id) {
         require(!SPI.badFrame && !SPI.active && !SPI.invalidPin, "SPI transaction framing is unbalanced");
         // Interrupt contention is NOT emulated. Notebook reports REVIEW separately.
     } else if (id == "M9") {
-        attachOwner(); command("SET 1 100"); int before = SPI.writes; command("INIT 1");
+        attachOwner(); seedCodes(100,200,300,400); int before = SPI.writes; command("INIT 1");
         require(SPI.registers[2][1] == (100u << 2) && SPI.writes == before, "INIT overwrote existing output with midscale; startup/transient policy needs approval and scope measurement");
+        command("INIT"); require(SPI.writes==before && dacCode(3)==400, "INIT-all changed an active output");
+        SPI.registers[2][2]=0x0E; command("INIT 1");
+        require(dacCode(0)==131072 && SPI.registers[2][2]==0x12, "Cold clamped channel failed zero initialization");
+        before=SPI.writes; command("INIT 1"); require(SPI.writes==before,"Repeated INIT is not idempotent");
+        SPI.registers[2][2]=0x02; sockets[owner].tx.clear(); command("INIT 1");
+        require(SPI.writes==before && sockets[owner].tx.contains("ERR"), "Active incompatible coding was changed");
     } else if (id == "M10") {
         attachOwner(); command("SET 1 999999999999999999999999999999999999");
         require(SPI.writes == 0, "Out-of-range numeric token was not rejected before DAC access");
@@ -215,6 +221,12 @@ void run(const std::string& id) {
     } else if (id == "A2") {
         attachOwner(); SPI.corruptReads = true; command("INIT 1");
         require(sockets[owner].tx.contains("ERR") && !sockets[owner].tx.contains("Initialized"), "INIT reports success even with mismatched register readback");
+        require(SPI.writes==0 && !dacBusy,"Bad readback caused DAC writes/lock leak");
+        SPI.corruptReads=false; SPI.ignoreControlWrites=true; sockets[owner].tx.clear(); command("INIT 1");
+        require(sockets[owner].tx.contains("ERR") && SPI.writes==0,"Control write failure ignored");
+        SPI.ignoreControlWrites=false; SPI.ignoreDacWrites=true; sockets[owner].tx.clear(); command("INIT 1");
+        require(sockets[owner].tx.contains("ERR") && (SPI.registers[2][2]&AD5780_CTRL_OPGND),
+                "DAC write/readback failure released ground clamp");
     } else if (id == "A4") {
         attachOwner();
         // First delay is register read latency. Disconnect on the first step delay.

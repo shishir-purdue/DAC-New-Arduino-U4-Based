@@ -13,7 +13,10 @@ void release(int pin) {
 uint32_t dacCode(int channel) { return SPI.registers[DAC_sync[channel]][1] >> 2; }
 void seedCodes(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
     uint32_t codes[] = {a,b,c,d};
-    for (int i = 0; i < 4; ++i) SPI.registers[DAC_sync[i]][1] = codes[i] << 2;
+    for (int i = 0; i < 4; ++i) {
+        SPI.registers[DAC_sync[i]][1] = codes[i] << 2;
+        SPI.registers[DAC_sync[i]][2] = 0x12;
+    }
 }
 void runButtons(const std::string& id) {
     if (id == "B1") {
