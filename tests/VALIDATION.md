@@ -26,9 +26,45 @@ Both regenerated notebooks pass nbformat validation and code-cell syntax checks;
 their saved outputs are empty and live tests remain disabled.
 
 Uno R4 Minima build passed: **73,304 bytes flash / 3,724 bytes static RAM**, using
-the existing pinned packages. The fix has not been uploaded or tested on the
-physical instrument. USB diagnostics and a subsequent isolated bench check are
-needed to determine whether it resolves this particular live failure.
+the existing pinned packages.
+
+### USB and upload follow-up — 2026-10-16
+
+After the user connected USB, COM5 identified an Arduino device (VID 2341,
+PID 0069). A 90-second read-only serial capture at 115200 showed `Network ready`
+repeated approximately every five seconds; the cycle continued after the user's
+NETWORK-button press. The user explicitly confirmed isolated outputs and approved
+uploading. PlatformIO/DFU then successfully uploaded the 73,304-byte firmware from
+commit `97cdb73`.
+
+Post-upload USB messages now explicitly report `Network link startup timed out;
+retrying.` followed by `Network ready`, approximately ten seconds apart. This
+confirms the new grace logic is running but **does not establish restored
+connectivity**: a TCP verification timed out before receiving a greeting, and
+Windows reported the neighbor at 192.168.1.200 unreachable. Configuration checks
+pass before each listener-ready message; first-link negotiation remains unresolved.
+The user was asked to check the Ethernet cable and socket LEDs. No SET, INIT,
+or RAMP commands were sent during this investigation. Physical output voltages
+were not measured. Connection recovery remains pending that bench evidence.
+
+Local captures are in ignored `tests/results/serial-network-2026-10-16.log` and
+`tests/results/network-after-upload-2026-10-16.log`; the latter records the first
+failed TCP verification, not a successful run.
+
+### Connection restored after cable reconnection
+
+The user then reported the Ethernet cable connected. A fresh TCP connection at
+13:33:56 received both welcome lines and five `AD5780` replies to `ID` over
+20 seconds. USB diagnostics showed normal command processing with no network
+restart during that interval. The test socket and USB monitor were closed at
+13:34:16 so the user's notebook could connect. The successful capture is
+`tests/results/network-cable-connected-2026-10-16.log` (local/ignored).
+
+Connectivity is restored with firmware `97cdb73` and the cable connected. This
+confirms welcome/ID responsiveness on the bench; it does not separately establish
+which part of the earlier failure was caused by the startup regression versus
+the disconnected cable. The user's existing notebook socket must be recreated
+after the firmware restart. No output-setting commands or analog tests were run.
 
 ## Full repair phase — 2026-10-14
 
