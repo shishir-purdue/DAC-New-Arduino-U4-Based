@@ -43,6 +43,8 @@ uint32_t networkLastHealth = 0, networkLastRestart = 0;
 uint32_t networkReadyAt = 0;
 bool networkLinkSeenUp = false;
 
+#include "BenchControls.h"
+
 void pollRecoveryButtons() {
     uint32_t now = millis();
     if (safeButton.sample(now)) safeZeroRequested = true;
@@ -51,6 +53,7 @@ void pollRecoveryButtons() {
         if (!safeZeroRequested && !safeZeroActive && !safeButton.raw && !safeButton.down)
             networkResetRequested = true;
     }
+    pollBenchInput();
 }
 
 // Called inside Ethernet SPI transactions: do not log, reset, or access DACs here.

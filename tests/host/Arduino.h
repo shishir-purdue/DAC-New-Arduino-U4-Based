@@ -19,6 +19,15 @@ inline unsigned delayCalls = 0;
 inline void (*delayHook)() = nullptr;
 inline int serialWriteSpace = 65535;
 struct TextBuffer {
+    char rx[512] = {};
+    size_t rxPos = 0, rxSize = 0;
+    void feed(const char* text) {
+        size_t n = std::strlen(text);
+        if (n > sizeof(rx)-rxSize) throw std::runtime_error("Serial RX fixture overflow");
+        std::memcpy(rx+rxSize, text, n); rxSize += n;
+    }
+    int available() const { return int(rxSize-rxPos); }
+    int read() { return available() ? rx[rxPos++] : -1; }
     char data[65536] = {};
     size_t size = 0;
     void clear() { size = 0; data[0] = 0; }

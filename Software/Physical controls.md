@@ -186,7 +186,7 @@ hardware.
 
 ## Verification and bench procedure
 
-Run `python -m unittest discover -s tests -p test_buttons.py -v` for the 33 offline
+Run `python -m unittest discover -s tests -p test_buttons.py -v` for the 34 offline
 button and actual-Ethernet-driver tests. `tests/physical_controls.ipynb` gives each
 test its own cell. N1-N10 run against both W5100 and W5500 register transports;
 N11-N12 cover W5500 PHY reset and failed readback. These are simulations, not
@@ -236,3 +236,40 @@ preserve-output guarantee.
 6. Test simultaneous presses, held buttons, and recovery after a missing Ethernet
    shield (change the stack only with power off). Record scope evidence; a host test
    cannot establish electrical bus behavior or analog output accuracy.
+
+## Optional USB bench actions (2026-10-16)
+
+Build `pio run -e uno_r4_minima_bench` to include action emulation at 115200 baud.
+Upload that environment only when restarting the board is acceptable. The normal
+`uno_r4_minima` build does not consume USB commands. Pins and physical buttons
+remain the same in both builds.
+
+Send one newline-terminated command and wait for its `BENCH` response:
+
+| USB command | Response / meaning |
+| --- | --- |
+| `BENCH STATUS` | `BENCH STATUS READY`, `OFFLINE`, `ACTIVE`, or `LATCHED`. |
+| `BENCH NETWORK` | `BENCH OK NETWORK`: network reset requested; wait for a fresh TCP connection. |
+| `BENCH SAFEZERO` | `BENCH OK SAFEZERO`: all-channel zero ramp requested. |
+
+`BENCH ERR ...` indicates rejection. NETWORK is rejected while SAFE ZERO is
+requested, active, or physically held. A new NETWORK action after completion
+rearms. `LATCHED` alone does not prove successful zeroing: invalid DAC readback
+also latches, so verify all four final codes and analog voltage.
+
+The USB parser only queues the same action flags used by physical buttons. It
+performs no SPI and no logging within Ethernet cancellation hooks. Replies wait
+for TX space in foreground code; missing USB TX space does not block physical
+buttons. Malformed/oversized lines are discarded in full. B22 exercises the
+shared reset/zero/preemption/priority paths and parser recovery in the host build.
+
+The separate clone in `../malab` contains the Keysight 34461A driver and
+`notebooks/ad5780_core_bench.ipynb`. Commands, measurements and assertions are
+written directly in notebook cells. USB access needs `pyserial`; close serial
+monitors before opening that port from the notebook. Emulation does not test the
+electrical switch contacts, debounce, or a physically failed Ethernet controller.
+
+Validation: both builds compile; the bench image uses 73,960 bytes flash and
+3,828 bytes static RAM. All 82 outer-repository regression tests pass. Live
+upload/output tests are paused at the user's request. No bench firmware has been
+uploaded and no new DAC output-changing command has been sent in this task.

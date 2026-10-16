@@ -19,7 +19,43 @@ void seedCodes(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
     }
 }
 void runButtons(const std::string& id) {
-    if (id == "B21") {
+    if (id == "B22") {
+        seedCodes(ZERO_CODE+2,ZERO_CODE-2,ZERO_CODE,ZERO_CODE);
+        int resets = networkResetCalls;
+        Serial.feed("BENCH NETWORK\n"); pump(3);
+        require(networkResetCalls == resets+1 && SPI.writes == 0 && Serial.contains("BENCH OK NETWORK"),
+                "USB network action failed or changed DAC codes");
+        attachOwner();
+        delayHook = []() { Serial.feed("BENCH SAFEZERO\n"); delayHook = nullptr; };
+        command("RAMP 1 200000 10 1000000");
+        require(SPI.writes == 0 && safeZeroRequested && !dacBusy, "USB safe action did not preempt remote ramp");
+        pump(3);
+        require(safeZeroActive && safeZeroLatched && Serial.contains("BENCH OK SAFEZERO"), "USB safe ramp failed to start");
+        Serial.feed("BENCH NETWORK\n"); pump(3);
+        require(safeZeroActive && networkResetCalls == resets+1 && Serial.contains("BENCH ERR SAFE ZERO"),
+                "USB network action overrode active safe ramp");
+        advanceButtons(SAFE_STEP_US); advanceButtons(SAFE_STEP_US);
+        Serial.feed("BENCH STATUS\n"); pump(3);
+        require(Serial.contains("BENCH STATUS LATCHED") && !safeZeroActive && safeZeroLatched,
+                "USB status did not expose completed safe latch");
+        Serial.feed("BENCH NETWORK\n"); pump(3);
+        require(!safeZeroLatched && networkEnabled && dacCode(0)==ZERO_CODE && dacCode(1)==ZERO_CODE,
+                "USB explicit rearm failed or changed zero codes");
+        // Malformed/truncated serial lines cannot execute their valid prefix.
+        resets=networkResetCalls; Serial.feed("BENCH NETWORK                               trailing\n"); pump(4);
+        require(networkResetCalls==resets && Serial.contains("BENCH ERR INVALID LINE"), "Truncated USB command executed");
+        Serial.feed("BENCH STATUS\n"); pump(3);
+        require(Serial.contains("BENCH STATUS READY"), "USB parser did not recover after discarded line");
+        // A pending USB reply must never prevent a real SAFE button action.
+        seedCodes(ZERO_CODE+1,ZERO_CODE,ZERO_CODE,ZERO_CODE);
+        serialWriteSpace=0; Serial.feed("BENCH STATUS\n"); pump(3);
+        require(benchReply[0], "USB response was dropped instead of deferred");
+        press(A2); advanceButtons(SAFE_STEP_US);
+        require(safeZeroLatched && dacCode(0)==ZERO_CODE, "USB backpressure blocked physical SAFE ZERO");
+        serialWriteSpace=65535; flushBenchReply();
+        require(!benchReply[0], "Deferred USB response was never released");
+        require(!SPI.active && !SPI.badFrame, "USB action nested SPI transactions");
+    } else if (id == "B21") {
         seedCodes(157286,100,262143,0);
         fakeLinkStatus = LinkOFF; // PHY is still negotiating after reset.
         restartNetwork();

@@ -165,6 +165,7 @@ void serviceClientConnections() {
 }
 
 void loop() {
+  flushBenchReply(); // Bench build only; never called inside an SPI transaction.
   if (servicePhysicalControls()) { serviceNetworkRecovery(); return; }
   serviceNetworkHealth();
   if (servicePhysicalControls()) { serviceNetworkRecovery(); return; }
@@ -384,6 +385,7 @@ bool isValidChannel(int ch) {
 }
 
 bool rampAbortCheck() {
+  flushBenchReply();
   if (dacNetworkCancelled() || !networkEnabled) return true;
   serviceNetworkHealth();
   if (dacNetworkCancelled()) return true;

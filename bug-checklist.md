@@ -4,7 +4,7 @@ Target: Arduino Uno R4 Minima, W5500 Ethernet shield, four AD5780 DACs.
 Updated 2026-10-16 after the network startup regression fix, in the priority order below.
 
 All **36 software checklist cases pass offline**. The complete regression suite
-has **81 passing tests**; the pinned Uno R4 target also builds successfully.
+has **82 passing tests**; the pinned Uno R4 target also builds successfully.
 Checked items mean the stated software behavior is verified, not that physical
 voltages, electrical faults, or timing have been measured. M8 was reviewed as
 not a current defect. See [validation history](tests/VALIDATION.md) for earlier
@@ -145,6 +145,49 @@ bench checks. All A items are explicitly identified as Codex additions.
   polling, aborts, and timeouts. B19/B20 verify firmware step/delay behavior.
 
 ## Physical controls and remaining bench evidence
+
+### Open live findings — Codex additions, 2026-10-16
+
+- [ ] **A13 — Remote ramp is slow on real hardware.** The 0.1 V/s main-client
+  run moved about 0.0785 V/s. Firmware waits count requested sleep slices but
+  exclude repeated network servicing overhead. Correct actual elapsed timing,
+  then verify rates/paths through `voltsource.AD5780.ramp` with the meter.
+- [ ] **A14 — Nominal voltage conversion misses the ±0.5 mV acceptance limit.**
+  Latest zero/+10 V readings differ by about +5.8/+4.4 mV. User authorized
+  investigation/calibration, retaining ±0.5 mV. Determine offset/gain/stability
+  and attainable endpoints; do not label raw nominal readback as analog accuracy.
+
+Track actual live evidence and local commits in
+[the live fix ledger](tests/LIVE_FIX_LEDGER.md). Offline checkmarks below do not
+override these newly measured failures.
+
+### Remote-driver findings — Codex additions, 2026-10-16
+
+- [x] **A10 — The supplied AD5780 `get_voltage()` returns a raw-code string.**
+  The new driver in the separate `malab` clone returns nominal volts; `get_code()`
+  provides the integer explicitly. Existing code must remove any extra conversion.
+  The new offline notebook checks endpoints, zero and SET/READ agreement.
+- [x] **A11 — Socket reads assume a whole reply and return `None` on failure.**
+  The scoped AD5780/Keysight transport uses `sendall`, newline buffering, finite
+  exchange deadlines and explicit exceptions. It closes uncertain sessions and
+  never automatically replays output commands. Legacy drivers retain their old
+  transport; this fix is scoped to the new drivers.
+- [x] **A12 — Old ramp wrapper accepts invalid rates and uses incorrect time units.**
+  The supplied `voltsource.py` ramp is replaced in the new AD5780 driver by finite
+  positive V/s validation, microsecond conversion and ACK/STATUS completion checks.
+  It retains channel-first arguments. This overlaps A9; offline tests additionally
+  cover transport failures, abort/failure status and overall completion deadlines.
+
+The nested clone contains `notebooks/driver_offline_tests.ipynb` (18 groups,
+executed successfully in Jupyter) and `notebooks/ad5780_core_bench.ipynb` (visible
+commands/assertions and meter traces for the user's three core test groups).
+These files belong to the separate malab Git repository. The Keysight 34461A
+at 192.168.1.71 was identified and read successfully before live work was paused;
+this is communication evidence only. No DAC accuracy/ramp/button-emulation bench
+pass is claimed yet. The optional firmware USB interface has host test B22;
+the outer suite now has 82 passing tests. Both firmware builds compile.
+
+### Physical verification
 
 NETWORK uses A1→GND; SAFE ZERO uses A2→GND, with pull-ups and 25 ms debounce.
 SAFE ZERO moves all channels concurrently toward code 131072 at at most 0.01 V/s,
