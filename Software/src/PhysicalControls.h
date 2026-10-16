@@ -34,6 +34,7 @@ bool networkFault = false, networkEnabled = false;
 bool safeZeroActive = false, safeZeroLatched = false;
 uint32_t safeCodes[4] = {};
 uint32_t safeLastStep = 0;
+uint32_t safeStepPeriod = SAFE_STEP_US;
 constexpr uint32_t NETWORK_HEALTH_MS = 250;
 constexpr uint32_t NETWORK_RETRY_MS = 5000;
 // Resetting the PHY restarts link negotiation. Give it time to establish its
@@ -147,7 +148,10 @@ void beginSafeZero() {
     // This runs only after the interrupted handler has returned/released SPI.
     // Do not INIT, CLR, RESET, or change power: those could step the outputs.
     dacBusy = true;
+    safeStepPeriod = SAFE_STEP_US;
     for (uint8_t i = 0; i < 4; ++i) {
+        uint32_t period = (channelCalibration[i].stepPicovolts + 9999) / 10000;
+        if (period > safeStepPeriod) safeStepPeriod = period;
         if (!AD5780_ReadDacValueChecked(static_cast<unsigned char>(DAC_sync[i]),
                                        &safeCodes[i], &AD5780_spi_settings)) {
             // Validate ALL starting values before writing any channel. An
@@ -165,17 +169,18 @@ void beginSafeZero() {
 
 void serviceSafeZero() {
     uint32_t now = micros();
-    if (uint32_t(now - safeLastStep) < SAFE_STEP_US) return;
+    if (uint32_t(now - safeLastStep) < safeStepPeriod) return;
     // No accumulated catch-up after a delay: each output moves by at most 1 LSB.
     safeLastStep = now;
     bool remaining = false;
     for (uint8_t i = 0; i < 4; ++i) {
-        if (safeCodes[i] != ZERO_CODE) {
-            if (safeCodes[i] < ZERO_CODE) ++safeCodes[i];
+        const uint32_t target = channelCalibration[i].zeroCode;
+        if (safeCodes[i] != target) {
+            if (safeCodes[i] < target) ++safeCodes[i];
             else --safeCodes[i];
             AD5780_SetDacValue(static_cast<unsigned char>(DAC_sync[i]), safeCodes[i], &AD5780_spi_settings);
         }
-        remaining |= safeCodes[i] != ZERO_CODE;
+        remaining |= safeCodes[i] != target;
     }
     if (!remaining) {
         safeZeroActive = false; dacBusy = false;

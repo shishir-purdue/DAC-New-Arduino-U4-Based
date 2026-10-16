@@ -16,6 +16,8 @@
 #define SPI_1MHZ 1000000
 #define TELNET_PORT 23
 
+#include "DeviceCalibration.h"
+
 // ================== Global Variables ================== //
 byte mac[] = { 0xA8, 0x61, 0x0A, 0xAE, 0xF2, 0x01 }; // MAC address on the DAC box label
 EthernetServer telnetServer(TELNET_PORT);
@@ -66,6 +68,7 @@ void func_SET(int p1, int p2);
 void func_HELP();
 void func_ID();
 void func_STATUS();
+void func_CAL(int channel);
 void func_RAMP(int p1, int p2, int p3, int p4);
 
 #include "PhysicalControls.h"
@@ -331,6 +334,9 @@ void processCommand(char* cmdLine) {
     func_ID();
   } else if (strcmp(command, "STATUS") == 0 && tokenCount == 1) {
     func_STATUS();
+  } else if (strcmp(command, "CAL") == 0 && tokenCount == 2) {
+    if (isValidChannel(arguments[0])) func_CAL(arguments[0]);
+    else telnetClient.print("ERR! Invalid DAC channel. Must be 1-4.\r\n");
   } else {
     // Unknown command
     printHelp();
@@ -409,7 +415,7 @@ void func_INIT(int param) {
   int first = param == -1 ? 0 : param-1;
   int last = param == -1 ? 4 : param;
   for (int i = first; i < last; ++i) {
-    if (!AD5780_Init(static_cast<unsigned char>(DAC_sync[i]), &AD5780_spi_settings)) {
+    if (!AD5780_Init(static_cast<unsigned char>(DAC_sync[i]), &AD5780_spi_settings, channelCalibration[i].zeroCode)) {
       telnetClient.print("ERR! INIT verification/configuration failed for channel ");
       telnetClient.print(i+1);
       telnetClient.print("; stopped without resetting DACs.\r\n");
@@ -551,6 +557,16 @@ void func_STATUS() {
   telnetClient.print(" "); telnetClient.print(rampChannel);
   telnetClient.print(" "); telnetClient.print(rampTarget);
   telnetClient.print("\r\n");
+}
+
+void func_CAL(int channel) {
+  const DacCalibration& cal = channelCalibration[channel-1];
+  char reply[112];
+  snprintf(reply, sizeof(reply), "CAL %d %lld %lu %lu %d\r\n", channel,
+           static_cast<long long>(cal.offsetNanovolts),
+           static_cast<unsigned long>(cal.stepPicovolts),
+           static_cast<unsigned long>(cal.zeroCode), cal.measured ? 1 : 0);
+  telnetClient.print(reply);
 }
 
 void func_ID() {

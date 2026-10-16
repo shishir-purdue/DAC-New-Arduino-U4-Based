@@ -53,8 +53,9 @@
  * @param slaveDeviceId - The ID of the selected slave device.
  * @return 1.
 *******************************************************************************/
-unsigned char AD5780_Init(unsigned char slaveDeviceId, SPISettings* settings)
+unsigned char AD5780_Init(unsigned char slaveDeviceId, SPISettings* settings, uint32_t zeroCode)
 {
+    if (zeroCode > 0x3FFFF) return 0;
     const unsigned long rawControl = AD5780_GetRegisterValue(slaveDeviceId, AD5780_REG_CTRL, 3, settings);
     const unsigned long control = rawControl & 0xFFFFF;
     constexpr unsigned long normal = AD5780_CTRL_BIN2SC | AD5780_CTRL_RBUF;
@@ -71,9 +72,9 @@ unsigned char AD5780_Init(unsigned char slaveDeviceId, SPISettings* settings)
     AD5780_SetRegisterValue(slaveDeviceId, AD5780_REG_CTRL, clamped, 3, settings);
     unsigned long checked = AD5780_GetRegisterValue(slaveDeviceId, AD5780_REG_CTRL, 3, settings);
     if ((checked & 0x7FFFFF) != (AD5780_ADDR_REG(AD5780_REG_CTRL) | clamped)) return 0;
-    AD5780_SetDacValue(slaveDeviceId, 131072, settings); // Exact offset-binary zero, while clamped.
+    AD5780_SetDacValue(slaveDeviceId, zeroCode, settings); // Calibrated zero, while clamped.
     uint32_t zero;
-    if (!AD5780_ReadDacValueChecked(slaveDeviceId, &zero, settings) || zero != 131072) return 0;
+    if (!AD5780_ReadDacValueChecked(slaveDeviceId, &zero, settings) || zero != zeroCode) return 0;
     AD5780_SetRegisterValue(slaveDeviceId, AD5780_REG_CTRL, normal, 3, settings);
     checked = AD5780_GetRegisterValue(slaveDeviceId, AD5780_REG_CTRL, 3, settings);
     return (checked & 0x7FFFFF) == (AD5780_ADDR_REG(AD5780_REG_CTRL) | normal);

@@ -19,7 +19,30 @@ void seedCodes(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
     }
 }
 void runButtons(const std::string& id) {
-    if (id == "B23") {
+    if (id == "B24") {
+        channelCalibration[0]={-9992845256LL,76283553,130996,true};
+        seedCodes(130998,ZERO_CODE,ZERO_CODE,ZERO_CODE); attachOwner();
+        command("CAL 1");
+        require(sockets[owner].tx.contains("CAL 1 -9992845256 76283553 130996 1"),
+                "CAL did not report the same profile used by physical controls");
+        require(SPI.writes==0, "Reading calibration changed DAC outputs");
+        press(A2); advanceButtons(SAFE_STEP_US); advanceButtons(SAFE_STEP_US);
+        require(dacCode(0)==130996 && safeZeroLatched && !safeZeroActive,
+                "SAFE ZERO used nominal rather than calibrated zero");
+        release(A2); restartNetwork(); attachOwner();
+        SPI.registers[DAC_sync[0]][2]=0x0E; SPI.writes=0;
+        command("INIT 1");
+        require(dacCode(0)==130996 && SPI.registers[DAC_sync[0]][2]==0x12,
+                "Cold INIT did not verify calibrated zero before releasing clamp");
+        seedCodes(140000,ZERO_CODE,ZERO_CODE,ZERO_CODE); SPI.writes=0; command("INIT 1");
+        require(dacCode(0)==140000 && SPI.writes==0, "Calibration changed active INIT preservation");
+        channelCalibration[0].stepPicovolts=80000000;
+        seedCodes(130997,ZERO_CODE,ZERO_CODE,ZERO_CODE); SPI.writes=0;
+        press(A2); advanceButtons(7630);
+        require(SPI.writes==0 && safeStepPeriod==8000, "Calibrated step violated 0.01 V/s ceiling");
+        advanceButtons(370);
+        require(dacCode(0)==130996 && !safeZeroActive, "Calibrated safe step failed");
+    } else if (id == "B23") {
         // Service cost is wall-clock time, not additional requested ramp delay.
         for (bool wrap : {false,true}) {
             seedCodes(ZERO_CODE,ZERO_CODE,ZERO_CODE,ZERO_CODE);

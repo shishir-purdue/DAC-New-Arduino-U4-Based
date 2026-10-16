@@ -83,7 +83,7 @@
 /******************************************************************************/
 
 /* Initializes the communication with the device. */
-unsigned char AD5780_Init(unsigned char slaveDeviceId, SPISettings* settings);
+unsigned char AD5780_Init(unsigned char slaveDeviceId, SPISettings* settings, uint32_t zeroCode = 131072);
 
 /* The part is placed in normal mode or its output is clamped to the ground. */
 void AD5780_EnableOutput(unsigned char slaveDeviceId, unsigned char state, SPISettings* settings);
