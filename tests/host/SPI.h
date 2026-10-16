@@ -18,6 +18,7 @@ struct SPIClass {
     int selected = -1, count = 0, transactions = 0, writes = 0;
     uint32_t word = 0, registers[16][8] = {}, pending[16] = {};
     int writePins[4096] = {}; uint32_t codes[4096] = {};
+    uint64_t writeTimes[4096] = {};
     SPIClass() { for (int pin : {2,3,5,6}) registers[pin][2]=0x0E; }
     void begin() { started = true; }
     void beginTransaction(const SPISettings&) {
@@ -51,7 +52,7 @@ struct SPIClass {
                 if ((reg==1 && ignoreDacWrites) || (reg==2 && ignoreControlWrites)) { selected=-1; return; }
                 registers[pin][reg] = word & 0xFFFFF;
                 if (reg == 1) {
-                    if (writes < 4096) { writePins[writes] = pin; codes[writes] = (word >> 2) & 0x3FFFF; }
+                    if (writes < 4096) { writePins[writes] = pin; codes[writes] = (word >> 2) & 0x3FFFF; writeTimes[writes] = fakeMicros; }
                     writes++;
                 }
             }

@@ -258,57 +258,33 @@ bool AD5780_ramp(unsigned char slaveDeviceId, unsigned long finval, unsigned lon
     DacLog.print("current initial value:");
     DacLog.println(current);
 
-    if(current <= finval) {
-        while (current < finval) {
-            if (abortCheck && abortCheck()) {
-                DacLog.println("RAMP aborted.");
-                return false;
-            }
-            uint32_t remainingUs = static_cast<uint32_t>(del_t);
-            while (remainingUs) {
-                uint32_t slice = remainingUs > 1000 ? 1000 : remainingUs;
-                delayMicroseconds(slice);
-                remainingUs -= slice;
-                if (abortCheck && abortCheck()) return false;
-            }
+    // Anchor steps to elapsed wall time, including SPI/network servicing.
+    // If a whole interval is missed, resume from now rather than emitting a
+    // burst of overdue steps. Unsigned subtraction handles micros() rollover.
+    const uint32_t interval = static_cast<uint32_t>(del_t);
+    uint32_t anchor = micros();
+    while (current != finval) {
+        if (abortCheck && abortCheck()) return false;
+        uint32_t elapsed = uint32_t(uint32_t(micros()) - anchor);
+        while (elapsed < interval) {
+            uint32_t remainingUs = interval - elapsed;
+            uint32_t slice = remainingUs > 1000 ? 1000 : remainingUs;
+            delayMicroseconds(slice);
+            // Last service also checks cancellation immediately before writing.
             if (abortCheck && abortCheck()) return false;
-
-            if((current + step_size) > finval) {
-                current = finval;
-            } else {
-                current += step_size;
-            }
-
-
-            AD5780_SetDacValue(slaveDeviceId, current, settings);
+            elapsed = uint32_t(uint32_t(micros()) - anchor);
         }
-    } else {
-        while (current > finval) {
-            if (abortCheck && abortCheck()) {
-                DacLog.println("RAMP aborted.");
-                return false;
-            }
-            uint32_t remainingUs = static_cast<uint32_t>(del_t);
-            while (remainingUs) {
-                uint32_t slice = remainingUs > 1000 ? 1000 : remainingUs;
-                delayMicroseconds(slice);
-                remainingUs -= slice;
-                if (abortCheck && abortCheck()) return false;
-            }
-            if (abortCheck && abortCheck()) return false;
-
-            if((current - step_size) < finval) {
-                current = finval;
-            } else {
-                if (current < step_size) {
-                    current = finval;
-                } else {
-                    current -= step_size;
-                }
-            }
-
-            AD5780_SetDacValue(slaveDeviceId, current, settings);
+        uint32_t writeAt = micros();
+        if (current < finval) {
+            const unsigned long distance = finval - current;
+            current += distance < step_size ? distance : step_size;
+        } else {
+            const unsigned long distance = current - finval;
+            current -= distance < step_size ? distance : step_size;
         }
+        AD5780_SetDacValue(slaveDeviceId, current, settings);
+        anchor += interval;
+        if (!interval || uint32_t(writeAt-anchor) >= interval) anchor = micros();
     }
     return true;
 }

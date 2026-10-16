@@ -29,6 +29,7 @@ CASES = {
     "B20": "remote delay scales in microseconds per step; repeated same target does no writes",
     "B21": "delayed PHY link startup can connect without repeated network resets",
     "B22": "opt-in USB actions share network/safe-zero paths and preserve priority",
+    "B23": "ramp elapsed-time schedule includes service overhead, wraps safely, and avoids catch-up bursts",
     "N1": "actual Ethernet driver: stuck socket command times out",
     "N2": "actual Ethernet driver: socket command cancelled by local request",
     "N3": "actual Ethernet driver: unstable RX size times out",

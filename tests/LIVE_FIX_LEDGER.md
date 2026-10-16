@@ -42,8 +42,8 @@ source checks and fault doubles are supporting evidence, not substitute live pas
 
 | ID | Finding / action | Commit | Verification |
 |---|---|---|---|
-| BASE-USB | Preserve prepared optional USB action interface and host regression | pending | Builds and B22 pass; live upload pending |
-| BASE-API | Preserve scoped socket/AD5780/Keysight drivers and notebook tests | pending | 18 offline groups; meter identity/read succeeds |
+| BASE-USB | Preserve prepared optional USB action interface and host regression | firmware `ec00fad` | Builds and B22 pass; live upload pending |
+| BASE-API | Preserve scoped socket/AD5780/Keysight drivers and notebook tests | malab `7cafaac` | 18 offline groups; meter identity/read succeeds |
 | LIVE-1 | Ramp delay counts sleeping time but omits service overhead | pending | Confirmed slow trace; fix and main-API retest pending |
 | LIVE-2 | Analog voltage differs from nominal code conversion | pending | Zero/+10 V discrepancies; range survey and calibration pending |
 | LIVE-3 | Recovery actions need public AD5780 API access | pending | Current USB helper is separate; integration and live test pending |
@@ -60,3 +60,21 @@ build/audit/fault evidence in addition to their observable live behavior.
 Append dated run identifiers, imported API path, code/firmware revisions, measured
 results and remaining failures here as they become available. Keep the goal open
 until the requirement-by-requirement audit is complete.
+
+### 20261016T190817Z — baseline through the required API
+
+`malab/notebooks/results/20261016T190817Z/` contains the executed notebook,
+manifest and CSV data. D01 fails ±0.5 mV. Fitted CH1 volts/code is
+0.00007628355320380396; volts at code 0 is -9.992845256292616. Maximum fit residual
+is 11.94 µV; candidate zero code is 130996. The minimum hardware output is about
+-9.99285 V, so exact -10 V is physically unattainable without changing references.
+Do not silently clamp a calibrated -10 V request and call it accurate.
+
+D02 fails: expected 2.00669 s, observed 2.766 s. Both cases end with a nominal-zero
+SET through `voltsource.AD5780`; measured true zero is still uncorrected.
+
+LIVE-1 repair replaces sleep accounting with an elapsed-time schedule. A whole
+missed interval resets the schedule instead of causing a burst of overdue writes.
+B23 failed before repair and passes after repair, including service cost, timer
+rollover and long stalls. All 83 offline tests pass; both target builds pass.
+Live retest and the final calibrated acceptance suite remain pending.

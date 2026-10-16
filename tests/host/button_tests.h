@@ -19,7 +19,29 @@ void seedCodes(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
     }
 }
 void runButtons(const std::string& id) {
-    if (id == "B22") {
+    if (id == "B23") {
+        // Service cost is wall-clock time, not additional requested ramp delay.
+        for (bool wrap : {false,true}) {
+            seedCodes(ZERO_CODE,ZERO_CODE,ZERO_CODE,ZERO_CODE);
+            fakeMicros=wrap ? (uint64_t(1)<<32)-500 : 0;
+            SPI.writes=0; delayCalls=0;
+            uint32_t initial=ZERO_CODE; uint64_t started=fakeMicros;
+            auto costlyService=[]() { fakeMicros+=200; return false; };
+            require(AD5780_ramp(DAC_sync[0],ZERO_CODE+100,10,1000,&AD5780_spi_settings,costlyService,&initial),
+                    "Elapsed-time ramp failed");
+            require(SPI.writes==10 && dacCode(0)==ZERO_CODE+100, "Timing repair changed steps/endpoint");
+            require(fakeMicros-started<=10210, "Ramp added service overhead to every requested delay");
+            for(int i=1;i<SPI.writes;i++) require(SPI.writeTimes[i]-SPI.writeTimes[i-1]==1000,
+                    "Steady callback cost changed requested step interval");
+        }
+        seedCodes(ZERO_CODE,ZERO_CODE,ZERO_CODE,ZERO_CODE); SPI.writes=0; delayCalls=0;
+        uint32_t initial=ZERO_CODE;
+        // Noncapturing callback models an occasional long service stall.
+        auto stallOnce=[]() { if(SPI.writes==1) fakeMicros+=6000; return false; };
+        require(AD5780_ramp(DAC_sync[0],ZERO_CODE+30,10,1000,&AD5780_spi_settings,stallOnce,&initial),
+                "Ramp failed after long service");
+        require(SPI.writeTimes[2]-SPI.writeTimes[1]>=1000, "Long stall caused a catch-up burst");
+    } else if (id == "B22") {
         seedCodes(ZERO_CODE+2,ZERO_CODE-2,ZERO_CODE,ZERO_CODE);
         int resets = networkResetCalls;
         Serial.feed("BENCH NETWORK\n"); pump(3);
@@ -269,7 +291,7 @@ void runButtons(const std::string& id) {
                 require(SPI.codes[i] == (direction > 0 ? start+distance : start-distance),
                         "Ramp did not use requested step_size or clamp the last step");
             }
-            require(fakeMicros-before == 10+uint64_t(count)*1010,
+            require(fakeMicros-before == 20+uint64_t(count)*1000,
                     "Requested ramp delays were skipped or repeated");
             require(dacCode(0)==target && !dacBusy, "Ramp failed to finish at target");
             std::cout << "direction=" << direction << " step=" << step
@@ -283,7 +305,7 @@ void runButtons(const std::string& id) {
             uint64_t before = fakeMicros;
             char cmd[80]; std::snprintf(cmd,sizeof(cmd),"RAMP 1 %u 10 %u",ZERO_CODE+1000,waitUs);
             command(cmd);
-            require(SPI.writes == 100 && fakeMicros-before == 10+100ULL*(waitUs+10),
+            require(SPI.writes == 100 && fakeMicros-before == 20+100ULL*waitUs,
                     "STEP_TIME is not applied as microseconds per DAC step");
             std::cout << "step=10 wait_us=" << waitUs << " writes=" << SPI.writes
                       << " simulated_delay_us=" << fakeMicros-before << "\n";
