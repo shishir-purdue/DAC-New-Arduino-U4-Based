@@ -45,9 +45,9 @@ source checks and fault doubles are supporting evidence, not substitute live pas
 | BASE-USB | Preserve prepared optional USB action interface and host regression | firmware `ec00fad` | Builds and B22 pass; live upload pending |
 | BASE-API | Preserve scoped socket/AD5780/Keysight drivers and notebook tests | malab `7cafaac` | 18 offline groups; meter identity/read succeeds |
 | LIVE-1 | Ramp delay counts sleeping time but omits service overhead | firmware `59db0a8` | Main-API D02: 2.031 s vs 2.00669 s; broader acceptance pending |
-| LIVE-2 | Analog voltage differs from nominal code conversion | firmware `92c0308`, malab `65253ab` | Calibration stored; live test exposed formatter defect, see LIVE-4 |
+| LIVE-2 | Analog voltage differs from nominal code conversion | firmware `92c0308`, malab `65253ab` | V01 passes through main API; maximum request error about 0.050 mV |
 | LIVE-3 | Recovery actions need public AD5780 API access | pending | Current USB helper is separate; integration and live test pending |
-| LIVE-4 | Codex-introduced: nano printf does not support `%lld` in new CAL reply | pending | Live run rejected malformed reply before output command; explicit integer formatter added |
+| LIVE-4 | Codex-introduced: nano printf does not support `%lld` in new CAL reply | firmware `f37169b` | Main API reads exact integer profile; V01 and D02 pass |
 
 ## Live case coverage
 
@@ -92,3 +92,18 @@ The real Uno R4 nano printf emitted `ld` for the new 64-bit offset, shifting lat
 fields; host printf had accepted it. D02 and V01 fail before any SET/RAMP because
 the main API rejects invalid calibration. Replace `%lld` with an allocation-free
 decimal formatter and retain this failed run. This is a Codex-introduced defect.
+
+### 20261016T192111Z — calibrated main-API acceptance
+
+Firmware `f37169b` uploaded (74,356 bytes flash, 3,924 RAM). D02 passes at
+2.031 s vs 2.006427 s. V01 passes all 11 independent validation points from -9 V
+to +10 V, including small voltages of both signs and repeated zero. Maximum error
+to requested voltage is about 0.050 mV. +10 V measured 9.999981683 V. An impossible
+-10 V request raises ValueError and leaves the code unchanged. Calibrated CH1 zero
+code is 130996; other three channels still have nominal, unmeasured calibration.
+
+Recovery API integration adds `network_reset`, `safe_zero` / `safe_ramp`, and
+`get_recovery_status` on `voltsource.AD5780`. The optional serial port stays
+independent of TCP. A separate FAILED state distinguishes safe-zero readback
+failure from successful completion. Offline suite: 85 outer tests, 24 API groups.
+Live recovery and full checklist coverage remain pending.

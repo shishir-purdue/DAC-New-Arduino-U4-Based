@@ -38,7 +38,8 @@ void pollBenchInput() {
                     queueBenchReply("BENCH OK NETWORK");
                 }
             } else if (strcmp(benchInput, "BENCH STATUS") == 0) {
-                queueBenchReply(safeZeroActive ? "BENCH STATUS ACTIVE" :
+                queueBenchReply(safeZeroFailed ? "BENCH STATUS FAILED" :
+                    safeZeroActive ? "BENCH STATUS ACTIVE" :
                     safeZeroLatched ? "BENCH STATUS LATCHED" :
                     networkEnabled && !networkFault ? "BENCH STATUS READY" : "BENCH STATUS OFFLINE");
             } else queueBenchReply("BENCH ERR UNKNOWN COMMAND");

@@ -19,7 +19,18 @@ void seedCodes(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
     }
 }
 void runButtons(const std::string& id) {
-    if (id == "B24") {
+    if (id == "B25") {
+        seedCodes(ZERO_CODE+100,ZERO_CODE,ZERO_CODE,ZERO_CODE);
+        SPI.forcedRead=0xFFFFFF;
+        Serial.feed("BENCH SAFEZERO\n"); pump(3);
+        Serial.feed("BENCH STATUS\n"); pump(3);
+        require(safeZeroFailed && safeZeroLatched && !safeZeroActive && SPI.writes==0,
+                "Invalid safe-zero starting readback did not fail unchanged");
+        require(Serial.contains("BENCH STATUS FAILED"), "Failed safe-zero was reported as completed");
+        SPI.forcedRead=0xFFFFFFFF;
+        Serial.feed("BENCH NETWORK\n"); pump(3);
+        require(!safeZeroFailed && !safeZeroLatched && SPI.writes==0, "Explicit rearm retained failed state or wrote DAC");
+    } else if (id == "B24") {
         char formatted[24];
         calibrationIntegerText(INT64_MIN,formatted);
         require(std::strcmp(formatted,"-9223372036854775808")==0, "Signed calibration formatter overflowed");

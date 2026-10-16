@@ -32,6 +32,7 @@ RecoveryButton networkButton(NETWORK_RESET_BUTTON), safeButton(SAFE_ZERO_BUTTON)
 bool networkResetRequested = false, safeZeroRequested = false;
 bool networkFault = false, networkEnabled = false;
 bool safeZeroActive = false, safeZeroLatched = false;
+bool safeZeroFailed = false;
 uint32_t safeCodes[4] = {};
 uint32_t safeLastStep = 0;
 uint32_t safeStepPeriod = SAFE_STEP_US;
@@ -81,6 +82,7 @@ bool restartNetwork() {
     networkFault = false;
     networkLinkSeenUp = false;
     safeZeroLatched = false; // Only called after completion for rearming.
+    safeZeroFailed = false;
     Ethernet.reset(); // Clear ALL socket caches and force chip reset/detection.
     Ethernet.init(ETHERNET_CS);
     Ethernet.begin(mac, IPAddress(192,168,1,200));
@@ -144,6 +146,7 @@ void beginSafeZero() {
     safeZeroRequested = false;
     networkResetRequested = false;
     safeZeroLatched = true;
+    safeZeroFailed = false;
     forgetNetworkClient();
     // This runs only after the interrupted handler has returned/released SPI.
     // Do not INIT, CLR, RESET, or change power: those could step the outputs.
@@ -157,6 +160,7 @@ void beginSafeZero() {
             // Validate ALL starting values before writing any channel. An
             // unknown starting voltage cannot be ramped without risking a jump.
             safeZeroActive = false;
+            safeZeroFailed = true;
             dacBusy = false;
             DacLog.println("SAFE ZERO blocked: invalid DAC readback; latched.");
             return;
