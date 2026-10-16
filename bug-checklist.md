@@ -199,7 +199,7 @@ mapping and [fix/commit ledger](tests/LIVE_FIX_LEDGER.md) for measured evidence.
   It retains channel-first arguments. This overlaps A9; offline tests additionally
   cover transport failures, abort/failure status and overall completion deadlines.
 
-The nested clone contains 25 offline driver groups and the current
+The nested clone contains 27 offline driver groups and the current
 [visible acceptance notebook](malab/notebooks/live_acceptance.ipynb). Final
 behavioral cases import `AD5780` through `malab.instruments.voltsource`. Their
 commands/assertions are directly in cells, with executed notebooks and CSV data
@@ -221,6 +221,40 @@ does not establish that wiring. These physical limits are separate from the
 software checklist. Live uploads and output tests were performed on the authorized isolated bench.
 CH1 has meter evidence; CH2–4 have register evidence. Button action emulation
 does not establish electrical contacts/debounce or recovery of a damaged chip.
+
+### Dashboard findings — Codex additions, 2026-10-16
+
+- [x] **A19 — A cold output can accept SET/RAMP while still clamped to ground.**
+  Observed after the dashboard firmware upload: register values changed but the
+  meter stayed near zero. The dashboard now initializes only the selected channel
+  before an explicit Set/Ramp, with validation before initialization. Connecting
+  remains read-only; already active channels preserve their value during INIT.
+  Driver callers still have the explicit `initialize()` API. The independent
+  meter is displayed separately from register-derived values.
+- [x] **A20 — Ethernet disconnect could stall the dashboard while closing USB.**
+  Reproduced after NETWORK; a diagnostic stack identified Windows' USB CloseHandle.
+  Network disconnect, ramp abort, and network transport/protocol errors now close
+  only TCP, preserving independent USB recovery. Full `close()` still releases
+  both transports. This avoids the observed close stall in the live control path;
+  it does not claim to repair the underlying Windows USB driver. Offline group 27
+  checks transport separation; dashboard D03/D04 cover the real recovery flow.
+- [x] **A21 — Busy READ prevented live register monitoring during ramps.**
+  New read-only `VALUES` telemetry reports four tracked codes and their source
+  without touching SPI. `BENCH VALUES` supplies the same data while SAFE ZERO has
+  disabled Ethernet. Unknown data is explicit; a completed write is not presented
+  as checked readback. B27 and offline group 26 cover the protocol; dashboard D02
+  compares live progress to the CH1 meter.
+
+The dashboard notebook contains each test's commands and assertions directly.
+The browser's visible layout is checked separately from HTTP state/action tests.
+
+- [x] **A22 — Duplicate Windows localhost listeners could share a dashboard port.**
+  A launcher probe from a restricted process failed to find the running server
+  and started a second instance. Windows allowed both HTTP sockets to bind.
+  New server starts use an exclusive socket; a regression rejects a second bind.
+  The launcher probes IPv4 loopback explicitly and was verified to reuse the
+  running server. The exclusive-bind fix applies at the next launch; the user's
+  working dashboard session is preserved.
 
 Test tooling also fixes separate source-digest stamps for the two host executables,
 preventing stale binaries, and uses stdlib unittest so pytest is optional.

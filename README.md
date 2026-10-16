@@ -28,3 +28,14 @@ The `malab` folder is a separate ignored Git checkout, not bundled by this repo.
 Both repositories' local commits are needed on the bench computer. No pushes
 were performed for this validation work. CH1 is calibrated for this labeled box;
 CH2–4 remain nominal. See the ledger for the actual hardware coverage limits.
+
+## Local dashboard
+
+Run `./malab/tools/start_dashboard.ps1` from this folder, then use Chrome at
+**http://localhost:8765**. The four-channel dashboard shows a passive network
+health signal, live device values, CH1's independent Keysight measurement,
+voltage/ramp controls, and USB recovery actions. See
+[dashboard instructions](malab/dashboard/README.md) and its
+[visible acceptance notebook](malab/notebooks/dashboard_acceptance.ipynb).
+The firmware's `VALUES` command supplies ramp telemetry without SPI reads;
+`BENCH VALUES` supplies safe-zero telemetry while Ethernet is disabled.

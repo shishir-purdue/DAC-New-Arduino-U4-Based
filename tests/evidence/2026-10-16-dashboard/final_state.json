@@ -1,0 +1,77 @@
+{
+  "now": 1792184429.5101285,
+  "network": {
+    "state": "good",
+    "address": "192.168.1.200",
+    "last_ok": 1792184429.4794586,
+    "latency_ms": 16.0,
+    "error": null
+  },
+  "channels": [
+    {
+      "channel": 1,
+      "voltage": -4.9472120000615405e-06,
+      "code": 130996,
+      "source": "readback",
+      "at": 1792184429.4794586,
+      "calibrated": true,
+      "limits": [
+        -9.992845256,
+        10
+      ]
+    },
+    {
+      "channel": 2,
+      "voltage": 0.0,
+      "code": 131072,
+      "source": "readback",
+      "at": 1792184429.4794586,
+      "calibrated": false,
+      "limits": [
+        -10,
+        9.999923706054688
+      ]
+    },
+    {
+      "channel": 3,
+      "voltage": 0.0,
+      "code": 131072,
+      "source": "readback",
+      "at": 1792184429.4794586,
+      "calibrated": false,
+      "limits": [
+        -10,
+        9.999923706054688
+      ]
+    },
+    {
+      "channel": 4,
+      "voltage": 0.0,
+      "code": 131072,
+      "source": "readback",
+      "at": 1792184429.4794586,
+      "calibrated": false,
+      "limits": [
+        -10,
+        9.999923706054688
+      ]
+    }
+  ],
+  "meter": {
+    "state": "good",
+    "address": "192.168.1.71",
+    "voltage": 1.77676901e-05,
+    "at": 1792184429.4090207,
+    "error": null
+  },
+  "recovery": {
+    "state": "READY",
+    "at": 1792184429.4490933,
+    "error": null
+  },
+  "ramp": {
+    "state": "ABORTED",
+    "channel": 1,
+    "target_code": 130996
+  }
+}

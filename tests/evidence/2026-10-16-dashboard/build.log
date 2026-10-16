@@ -1,0 +1,60 @@
+Processing uno_r4_minima (platform: renesas-ra@1.9.0; board: uno_r4_minima; framework: arduino)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/renesas-ra/uno_r4_minima.html
+PLATFORM: Renesas RA (1.9.0) > Arduino Uno R4 Minima
+HARDWARE: RA4M1 48MHz, 32KB RAM, 256KB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, jlink)
+PACKAGES: 
+ - framework-arduinorenesas-uno @ 1.6.0 
+ - tool-dfuutil-arduino @ 1.11.0 
+ - toolchain-gccarmnoneeabi @ 1.70201.0 (7.2.1)
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 24 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- AD5780
+|-- Ethernet @ 2.0.2
+|-- SPI
+Building in release mode
+Compiling .pio\build\uno_r4_minima\src\main.cpp.o
+Linking .pio\build\uno_r4_minima\firmware.elf
+Checking size .pio\build\uno_r4_minima\firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=         ]  11.8% (used 3852 bytes from 32768 bytes)
+Flash: [===       ]  28.3% (used 74116 bytes from 262144 bytes)
+Building .pio\build\uno_r4_minima\firmware.bin
+========================= [SUCCESS] Took 4.53 seconds =========================
+
+Processing uno_r4_minima_bench (platform: renesas-ra@1.9.0; board: uno_r4_minima; framework: arduino)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/renesas-ra/uno_r4_minima.html
+PLATFORM: Renesas RA (1.9.0) > Arduino Uno R4 Minima
+HARDWARE: RA4M1 48MHz, 32KB RAM, 256KB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, jlink)
+PACKAGES: 
+ - framework-arduinorenesas-uno @ 1.6.0 
+ - tool-dfuutil-arduino @ 1.11.0 
+ - toolchain-gccarmnoneeabi @ 1.70201.0 (7.2.1)
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 24 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- AD5780
+|-- Ethernet @ 2.0.2
+|-- SPI
+Building in release mode
+Checking size .pio\build\uno_r4_minima_bench\firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=         ]  12.1% (used 3956 bytes from 32768 bytes)
+Flash: [===       ]  28.8% (used 75380 bytes from 262144 bytes)
+========================= [SUCCESS] Took 1.35 seconds =========================
+
+Environment          Status    Duration
+-------------------  --------  ------------
+uno_r4_minima        SUCCESS   00:00:04.529
+uno_r4_minima_bench  SUCCESS   00:00:01.351
+========================= 2 succeeded in 00:00:05.880 =========================

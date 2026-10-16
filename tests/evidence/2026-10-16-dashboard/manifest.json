@@ -1,0 +1,28 @@
+{
+  "run": "C:\\Users\\G41Lab\\Documents\\DAC Box\\malab\\notebooks\\results\\dashboard_20261016T205855Z",
+  "cases": [
+    "D01",
+    "D02",
+    "D03",
+    "D04"
+  ],
+  "results": "PASS",
+  "offline_groups": 27,
+  "firmware_regressions": 87,
+  "dashboard_unit_tests": 9,
+  "visual_check": "User confirmed four DAC cards, Keysight reading and Network good visible; subsequently confirmed controls work after refresh.",
+  "firmware_sha256": "92eca50b1494ba0c360cac14599132d9328f8fad5c5bb3582f4e3c6eba5e47b0",
+  "max_request_error_mV": 0.05628791999999494,
+  "max_display_error_mV": 0.062412597000793824,
+  "final_meter": 1.77676901e-05,
+  "revisions": {
+    "DAC Box": {
+      "head": "890e8bc5eb360f2750c87cf54184711811fe6e85",
+      "dirty": true
+    },
+    "malab": {
+      "head": "c06fb4c98df50203ed132449eeb91cdae7b095ff",
+      "dirty": true
+    }
+  }
+}

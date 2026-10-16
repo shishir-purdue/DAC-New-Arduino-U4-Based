@@ -1,0 +1,188 @@
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+C:\Users\G41Lab\anaconda3\Lib\site-packages\zmq\_future.py:693: RuntimeWarning: Proactor event loop does not implement add_reader family of methods required for zmq. Registering an additional selector thread for add_reader support via tornado. Use `asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())` to avoid this warning.
+  self._get_loop()
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+RUN driver_offline_tests.ipynb 1
+RUN driver_offline_tests.ipynb 3
+RUN driver_offline_tests.ipynb 5
+RUN driver_offline_tests.ipynb 7
+RUN driver_offline_tests.ipynb 9
+RUN driver_offline_tests.ipynb 11
+RUN driver_offline_tests.ipynb 13
+RUN driver_offline_tests.ipynb 15
+RUN driver_offline_tests.ipynb 17
+RUN driver_offline_tests.ipynb 19
+RUN driver_offline_tests.ipynb 21
+RUN driver_offline_tests.ipynb 23
+RUN driver_offline_tests.ipynb 25
+RUN driver_offline_tests.ipynb 27
+RUN driver_offline_tests.ipynb 29
+RUN driver_offline_tests.ipynb 31
+RUN driver_offline_tests.ipynb 33
+RUN driver_offline_tests.ipynb 35
+RUN driver_offline_tests.ipynb 37
+RUN driver_offline_tests.ipynb 39
+RUN driver_offline_tests.ipynb 41
+RUN driver_offline_tests.ipynb 43
+RUN driver_offline_tests.ipynb 45
+RUN driver_offline_tests.ipynb 47
+RUN driver_offline_tests.ipynb 49
+RUN driver_offline_tests.ipynb 51
+RUN driver_offline_tests.ipynb 53
+RUN driver_offline_tests.ipynb 55
+Imports: C:\Users\G41Lab\Documents\DAC Box\malab\__init__.py
+
+ValueError: channel must be 1..4
+ValueError: channel must be 1..4
+ValueError: channel must be 1..4
+ValueError: channel must be an integer, not bool
+ValueError: channel must be an integer
+ValueError: channel must be an integer
+ValueError: voltage must be finite and between -10 and +10 V
+ValueError: voltage must be finite and between -10 and +10 V
+ValueError: voltage must be finite and between -10 and +10 V
+ValueError: voltage must be finite and between -10 and +10 V
+ValueError: voltage must be finite and between -10 and +10 V
+ValueError: voltage must be finite and between -10 and +10 V
+ValueError: voltage must be finite and between -10 and +10 V
+ValueError: speed in V/s must be finite and positive
+ValueError: speed in V/s must be finite and positive
+ValueError: speed in V/s must be finite and positive
+ValueError: speed in V/s must be finite and positive
+ValueError: speed in V/s must be finite and positive
+ValueError: speed in V/s must be finite and positive
+ValueError: Requested speed is too slow for the device delay range
+ValueError: command must be one nonempty line without CR/LF/NUL
+ValueError: command must be one nonempty line without CR/LF/NUL
+ValueError: command must be one nonempty line without CR/LF/NUL
+ValueError: command must be one nonempty line without CR/LF/NUL
+
+CommandError: ERR! DAC busy.
+
+InstrumentTimeout: Instrument reply timed out; connection closed, command outcome may be unknown
+InstrumentConnectionError: No live connection; connect explicitly (commands are never replayed)
+InstrumentConnectionError: Instrument closed connection before a complete reply
+InstrumentConnectionError: No live connection; connect explicitly (commands are never replayed)
+InstrumentConnectionError: Instrument transport failed: link lost
+InstrumentConnectionError: No live connection; connect explicitly (commands are never replayed)
+
+ProtocolError: Invalid DAC readback: '262144'
+ProtocolError: Invalid DAC readback: '-1'
+ProtocolError: Invalid DAC readback: 'None'
+ProtocolError: Non-ASCII instrument reply
+ProtocolError: Unterminated/oversized instrument reply
+ProtocolError: Unexpected multiline HELP response; connection closed to prevent reply misalignment
+
+InstrumentConnectionError: No live connection; connect explicitly (commands are never replayed)
+InstrumentTimeout: Instrument connection/handshake timed out
+InstrumentConnectionError: Cannot connect to 192.168.1.200: refused
+CommandError: ERR! Server busy: only one connection allowed.
+
+CommandError: Ramp did not complete: ABORTED
+CommandError: Ramp did not complete: FAILED
+CommandError: Ramp ownership changed: RampStatus(state='COMPLETE', channel=2, target_code=131727)
+ProtocolError: Malformed ramp status: 'RAMP nonsense 1 0'
+
+InstrumentTimeout: Ramp completion deadline expired; ramp may still run. Close connection deliberately to abort.
+
+CommandError: Call configure_dc_voltage() before reading voltage
+
+ProtocolError: Expected a Keysight 34461A, received 'Vendor,WrongModel,123,1'
+CommandError: Keysight SCPI errors: -113,"Undefined header"
+ProtocolError: Keysight overload or invalid measurement: '9.9E37'
+ProtocolError: Keysight overload or invalid measurement: 'NaN'
+ProtocolError: Invalid voltage reading: 'invalid'
+
+ValueError: voltage_range must be 0.1, 1, 10, 100, or 1000 V
+ValueError: 34461A NPLC must be 0.02, 0.2, 1, 10, or 100
+ValueError: voltage_range must be 0.1, 1, 10, 100, or 1000 V
+ValueError: 34461A NPLC must be 0.02, 0.2, 1, 10, or 100
+
+InstrumentTimeout: No BENCH reply; connection closed. Action outcome unknown; check bench firmware/USB monitor.
+InstrumentConnectionError: USB transport failed; action outcome may be unknown
+
+ValueError: Requested voltage is outside this channel's achievable range [-9.992845256, 10.004354178] V
+
+ProtocolError: Invalid device calibration: 'CAL 2 -9992845256 76283553 130996 1'
+ProtocolError: Invalid device calibration: 'CAL 1 -9992845256 0 130996 1'
+ProtocolError: Invalid device calibration: 'CAL 1 -9992845256 76283553 0 1'
+ProtocolError: Invalid device calibration: 'nonsense'
+
+CommandError: SAFE ZERO failed validation; outputs unchanged, recovery latched
+
+ValueError: kind must be readback, network, or clear
+ValueError: terminate must be bool
+
+ProtocolError: Malformed output telemetry: 'VALUES 0 3 0 0 0 0 0 0'
+ProtocolError: Malformed output telemetry: 'VALUES 262144 1 0 0 0 0 0 0'
+ProtocolError: Malformed output telemetry: 'VALUES 0 0'
+
+InstrumentTimeout: Instrument reply timed out; connection closed, command outcome may be unknown
+ProtocolError: Unexpected device ID: 'Unexpected ID'
+All 27 offline test groups passed.
+
+PASS driver_offline_tests.ipynb
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+RUN dashboard_acceptance.ipynb 1
+RUN dashboard_acceptance.ipynb 2
+RUN dashboard_acceptance.ipynb D01
+RUN dashboard_acceptance.ipynb D02
+RUN dashboard_acceptance.ipynb D03
+RUN dashboard_acceptance.ipynb D04
+Evidence directory: C:\Users\G41Lab\Documents\DAC Box\malab\notebooks\results\dashboard_20261016T205855Z
+
+{'target': -9, 'displayed': -9.000014813705, 'meter': -8.999954948, 'request_error_mV': 0.045052000000822545, 'display_error_mV': 0.05986570500127186}
+
+{'target': -5, 'displayed': -5.000010428597001, 'meter': -4.999948016, 'request_error_mV': 0.05198399999972736, 'display_error_mV': 0.062412597000793824}
+
+{'target': -1, 'displayed': -1.000006043489, 'meter': -0.9999846576, 'request_error_mV': 0.015342400000006862, 'display_error_mV': 0.021385888999914116}
+
+{'target': -0.05, 'displayed': -0.04997067442700143, 'meter': -0.04994824228, 'request_error_mV': 0.05175772000000356, 'display_error_mV': 0.022432147001427705}
+
+{'target': 0, 'displayed': -4.9472120000615405e-06, 'meter': 1.4562863719999999e-05, 'request_error_mV': 0.01456286372, 'display_error_mV': 0.01951007572006154}
+
+{'target': 0.05, 'displayed': 0.05003706355599924, 'meter': 0.05005628792, 'request_error_mV': 0.05628791999999494, 'display_error_mV': 0.01922436400075833}
+
+{'target': 1, 'displayed': 0.9999961490649998, 'meter': 1.000010788, 'request_error_mV': 0.01078799999998381, 'display_error_mV': 0.014638935000199638}
+
+{'target': 5, 'displayed': 5.000000534172999, 'meter': 4.999992952, 'request_error_mV': -0.007047999999620913, 'display_error_mV': -0.007582172998787939}
+
+{'target': 9, 'displayed': 9.000004919280999, 'meter': 8.999978098, 'request_error_mV': -0.02190200000029563, 'display_error_mV': -0.02682128099884551}
+
+{'target': 10, 'displayed': 10.000006015557998, 'meter': 9.99996196, 'request_error_mV': -0.03803999999973939, 'display_error_mV': -0.044055557998134987}
+
+{'target': 0, 'displayed': -4.9472120000615405e-06, 'meter': 2.29319439e-05, 'request_error_mV': 0.022931943899999998, 'display_error_mV': 0.02787915590006154}
+PASS: 11 points, four channel records, fresh network/meter, �0.5 mV
+
+{'speed': 0.001, 'start': 0, 'target': 0.005, 'expected_s': 5.339852, 'observed_s': 5.412571668624878, 'meter_endpoint': 0.005047592256666666}
+
+{'speed': 0.001, 'start': 0.005, 'target': 0, 'expected_s': 5.339852, 'observed_s': 5.408143043518066, 'meter_endpoint': 1.7251080166666665e-05}
+
+{'speed': 0.01, 'start': 0, 'target': 0.05, 'expected_s': 5.034744, 'observed_s': 5.210716009140015, 'meter_endpoint': 0.05006003333333333}
+
+{'speed': 0.01, 'start': 0.05, 'target': 0, 'expected_s': 5.034744, 'observed_s': 5.1694371700286865, 'meter_endpoint': 1.7638537566666666e-05}
+
+{'speed': 0.1, 'start': 0, 'target': 0.5, 'expected_s': 5.004624, 'observed_s': 5.222490072250366, 'meter_endpoint': 0.500043869}
+
+{'speed': 0.1, 'start': 0.5, 'target': 0, 'expected_s': 5.004624, 'observed_s': 5.209391832351685, 'meter_endpoint': 2.23802783e-05}
+
+PASS: six ramps, live telemetry, monotonic paths, timing and endpoints
+
+PASS: reset holds all four codes, disconnected values age, stop holds intermediate output
+
+{'sign': 1, 'duration_s': 5.172670602798462, 'slope_V_per_s': -0.00999870436897799, 'meter_zero': 1.75462858e-05}
+
+{'sign': -1, 'duration_s': 5.125348806381226, 'slope_V_per_s': 0.009985436747749227, 'meter_zero': 2.19743706e-05}
+PASS: SAFE ZERO independent of TCP, measured CH1 slope/zero, four zero targets, latch and rearm
+Final meter: 1.77676901e-05 V; network: good
+
+PASS dashboard_acceptance.ipynb

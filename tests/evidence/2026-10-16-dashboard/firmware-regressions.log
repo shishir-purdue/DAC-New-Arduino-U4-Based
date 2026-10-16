@@ -1,0 +1,41 @@
+.......................................................................................
+PASS A1: Active client is not reclassified as a second client
+PASS A2: INIT detects bad register readback instead of reporting success
+PASS A3: Repository contains a reproducible target/dependency build configuration
+PASS A4: No additional DAC write after disconnect during step delay
+PASS A5: Ethernet waits are bounded and cancellable; recovery clears controller/socket state
+PASS A6: USB diagnostic backpressure does not block physical controls
+PASS A7: Uno R4 startup leaves SD deselected on the shared SPI bus
+PASS A8: Malformed readback cannot become a voltage or a ramp starting value
+PASS A9: Python V/s conversion and acceptance/status protocol are validated offline
+PASS C1: Invalid channels perform no SPI; valid channels 1 through 4 work
+PASS C2: SPI begins before DAC transactions
+PASS C3: Second-client rejection leaves owner and ramp operational (overlaps Robust-1)
+PASS C4: Link/configuration loss discards stale clients and retries recovery without changing DAC outputs
+----------------------------------------------------------------------
+Ran 87 tests in 16.475s
+
+OK
+PASS C5: Cooperative ramp services connections/input and aborts on disconnect (with M4/A4)
+PASS H1: No local SPI settings variable shadows global settings in setup
+PASS H2: Reject negative ramp step before output changes
+PASS H3: Reject negative ramp delay before output changes or unsigned wait
+PASS H4: Long step waits use bounded/cooperative timing (policy check; timing needs bench)
+PASS H5: EnableOutput public declaration matches definition
+PASS H6: Bare plus/minus signs are not integers
+PASS M1: Expire idle clients after 120 seconds while preserving active ramps
+PASS M10: Reject integer overflow before DAC access
+PASS M11: Acknowledge ramp before first blocking delay
+PASS M2: Client receives explicit warning/error when target is clamped
+PASS M3: Oversized command cannot execute a truncated valid prefix
+PASS M4: Command injected during ramp is serviced before ramp returns
+PASS M5: Local include capitalization matches actual filename
+PASS M6: No unused frame-prefix assignments
+PASS M7: GPIO aliases resolve to defined symbols
+PASS M8: Balanced foreground SPI transactions and SPI-free cancellation hooks
+PASS M9: INIT preserves active outputs and verifies cold initialization at zero
+PASS Mem-1: Repeated real command dispatch performs no C++ heap allocations
+PASS Mem-2: Silent second clients release sockets; owner survives repeated commands
+PASS Mem-3: Disconnect stops socket and clears partial input before reconnect
+PASS Robust-1: Reject second clients both while idle and during a ramp
+PASS Robust-2: Busy handlers do no SPI work; connection lifecycle cannot release operation lock

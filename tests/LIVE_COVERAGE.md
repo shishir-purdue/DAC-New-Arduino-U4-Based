@@ -1,5 +1,25 @@
 # Live checklist coverage
 
+## Dashboard follow-up
+
+The visible `malab/notebooks/dashboard_acceptance.ipynb` passed in Jupyter on
+2026-10-16 (run `dashboard_20261016T205855Z`). Its actions and assertions are
+written in the notebook and exercise the same HTTP endpoints used by the GUI.
+The user confirmed the four cards, meter, network signal, and working controls.
+
+| Case | Coverage | Evidence limit |
+| --- | --- | --- |
+| D01 | 11 CH1 SET/GET/meter comparisons, ±0.5 mV; four-channel state; A19 initialization | Only CH1 analog accuracy |
+| D02 | Six ramps at three speeds, live code telemetry, path/timing/endpoints; A21 | Asynchronous sampling; explicit timing allowance |
+| D03 | Network reset holds all codes, manual disconnect/stale values, abort hold; A20 | USB action emulation, not physical switch contacts |
+| D04 | SAFE ZERO with TCP disconnected, both signs, measured CH1 slope, four zero codes/latch/rearm | CH2–4 register checks only |
+
+Evidence: [dashboard snapshot](evidence/2026-10-16-dashboard/). The 87 firmware
+regressions, 27 offline driver groups, and 9 dashboard tests also pass. The
+exclusive-listener regression covers A22 on subsequent server launches.
+
+## Original acceptance run
+
 Date: 2026-10-16. Bench: Uno R4 Minima/W5500/AD5780 box, MAC
 A8:61:0A:AE:F2:01, IP 192.168.1.200, USB COM5. Keysight 34461A
 MY60041761 at 192.168.1.71 measures CH1. Other outputs are isolated.

@@ -230,3 +230,67 @@ coverage table, physical-control instructions, notebook pointers and measured
 snapshot. A complete local commit inventory at handoff is saved in
 [local_commits.json](results/local_commits.json); it includes these final commits
 without requiring a commit to contain its own hash. Nothing is pushed.
+
+### 20261016T205855Z — local dashboard acceptance
+
+The localhost dashboard runs on port **8765** and owns one DAC connection plus
+an independent Keysight sampler. Four channels have device-code telemetry,
+controls, and history; only CH1 has analog evidence. Network good requires a
+fresh valid DAC reply and becomes stale without one. The user confirmed that
+Chrome displayed all four cards, the meter, and the green signal. HTTP/Jupyter
+tests verify the same action and state endpoints; they are not a pixel-level
+browser test. The user subsequently confirmed that the controls work after refreshing.
+
+Firmware commit **890e8bc** adds SPI-free `VALUES` and `BENCH VALUES` telemetry
+with explicit readback/write/unknown sources. A completed write is not claimed
+as measured voltage. The first DFU runtime upload failed with a USB status
+timeout; a 1200-baud bootloader touch followed by the same PlatformIO upload
+succeeded (75,380-byte bench image). Both firmware targets build; **87** host
+regressions pass, including the new telemetry test B27.
+
+The user's first Set/Ramp attempts exposed a cold output still clamped after
+upload. The commands changed registers without changing the analog output.
+Dashboard output actions now validate and initialize only their selected channel
+before setting/ramping. Connect remains read-only. Initialization failure prevents
+the output command. The unit tests cover this sequencing and rejection before
+initialization. The real device's explicit initialization restored measured output.
+
+D03 then reproduced a dashboard stall during disconnect after NETWORK. Diagnostic
+stacks located it in Windows USB CloseHandle. Driver commit **c06fb4c** separates
+network `disconnect()` from full `close()`: abort, reconnect and TCP errors keep
+USB recovery available. This fixes that live control path, without claiming to
+repair the underlying Windows USB driver. Full close still releases USB. The
+offline notebook now passes **27 groups**, including telemetry parsing and USB
+survival across disconnect/abort/timeout/protocol errors. Dashboard **9 unit tests**
+and JavaScript syntax checks pass. Missing-token output requests are rejected.
+
+The final visible dashboard notebook passes D01–D04 in a real Jupyter kernel:
+
+- D01: 11 settings from −9 to +10 V and back to zero. Maximum request-to-meter
+  error **0.056288 mV**; maximum displayed-register-to-meter error **0.062413 mV**,
+  within **±0.5 mV**. CH2–4 codes remain unchanged during CH1 tests.
+- D02: six up/down ramps at **0.001, 0.01, 0.1 V/s**. Actual programmed staircase
+  durations are **5.340, 5.035, 5.005 s**; observed completion **5.408–5.413,
+  5.169–5.211, 5.209–5.222 s**, respectively, including HTTP/device sampling.
+  All timing, monotonic path, live telemetry and endpoint assertions pass under
+  the declared 5% plus 0.6 s observation allowance. This is not hard real-time.
+- D03: NETWORK holds all four codes and CH1 analog voltage; disconnect remains
+  disconnected and values age; Stop ramp holds the intermediate CH1 output.
+- D04: SAFE ZERO operates through USB with TCP disconnected from both signs.
+  Measured slope magnitudes **0.0099987 / 0.0099854 V/s**; completion observed
+  **5.173 / 5.125 s**. All four zero codes, persistent latch and NETWORK rearm pass.
+
+Final test state: network good, recovery READY, codes
+`[130996, 131072, 131072, 131072]`, meter **+0.000017768 V**.
+The [evidence snapshot](evidence/2026-10-16-dashboard/) contains CSV traces,
+the ramp plot, manifest, logs and final state. Full executed notebooks remain
+in `malab/notebooks/results/dashboard_20261016T205855Z/`. The source notebook
+contains the actual test actions/assertions, with future trace storage compacted
+without changing those assertions. Checklist additions A19–A21 record the findings.
+No changes are pushed.
+
+A launcher check also exposed Windows allowing duplicate HTTP listeners on the
+same port. New server starts use an exclusive socket; a regression checks that
+a second server cannot bind. The launcher probes IPv4 loopback explicitly.
+This startup fix takes effect at the next server launch; the working bench
+server is left running to preserve the user's current session.
