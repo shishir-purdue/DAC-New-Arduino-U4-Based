@@ -48,6 +48,11 @@
 #include "Communication.h"		// Communication definitions.
 #include <Arduino.h>
 
+#if defined(DAC_BENCH_CONTROLS) && DAC_BENCH_CONTROLS
+// Opt-in bench fault: alter received data only, never the actual DAC registers.
+bool dacBenchBadReadback = false;
+#endif
+
 /**************************************************************************//**
  * @brief Initializes the communication with the device.
  * @param slaveDeviceId - The ID of the selected slave device.
@@ -151,6 +156,9 @@ unsigned long AD5780_GetRegisterValue(
     unsigned char response[3] = {};
     delayMicroseconds(10);
     _SPI_Read(slaveDeviceId, response, 3, settings);
+#if defined(DAC_BENCH_CONTROLS) && DAC_BENCH_CONTROLS
+    if (dacBenchBadReadback) return 0xFFFFFFUL;
+#endif
     return (static_cast<uint32_t>(response[0]) << 16) |
            (static_cast<uint32_t>(response[1]) << 8) | response[2];
 }

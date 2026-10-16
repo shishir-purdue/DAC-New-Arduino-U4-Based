@@ -15,6 +15,7 @@ inline EthernetLinkStatus fakeLinkStatus = LinkON;
 inline bool fakeNetworkMissing = false;
 inline int networkResetCalls = 0, networkCalls = 0;
 inline byte fakeMac[6] = {};
+inline IPAddress fakeLocalIP(192,168,1,200);
 inline void (*networkBeginHook)() = nullptr;
 struct SocketState {
     bool used = false, connected = false, accepted = false, stopped = false;
@@ -76,13 +77,14 @@ struct EthernetClass {
         for (auto& s : sockets) { s.used = s.connected = false; s.stopped = true; }
     }
     void init(uint8_t) { networkCalls++; }
-    void begin(byte* mac, IPAddress) { networkCalls++; digitalWrite(10, HIGH); std::memcpy(fakeMac, mac, 6); if (networkBeginHook) networkBeginHook(); }
+    void begin(byte* mac, IPAddress ip) { networkCalls++; fakeLocalIP=ip; digitalWrite(10, HIGH); std::memcpy(fakeMac, mac, 6); if (networkBeginHook) networkBeginHook(); }
     void MACAddress(byte* out) { networkCalls++; std::memcpy(out, fakeMac, 6); }
     EthernetHardwareStatus hardwareStatus() { networkCalls++; return fakeNetworkMissing ? EthernetNoHardware : EthernetW5500; }
     EthernetLinkStatus linkStatus() { networkCalls++; return fakeLinkStatus; }
     void setRetransmissionTimeout(uint16_t) { networkCalls++; }
     void setRetransmissionCount(uint8_t) { networkCalls++; }
-    IPAddress localIP() { networkCalls++; return IPAddress(192,168,1,200); }
+    IPAddress localIP() { networkCalls++; return fakeLocalIP; }
+    void setLocalIP(IPAddress ip) { networkCalls++; fakeLocalIP=ip; }
     int maintain() { networkCalls++; maintenance++; return 0; }
 };
 inline EthernetClass Ethernet;

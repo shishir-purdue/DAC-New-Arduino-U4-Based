@@ -196,6 +196,7 @@ void serviceSafeZero() {
 // Returns true when normal network/command work must not execute this loop.
 bool servicePhysicalControls() {
     pollRecoveryButtons();
+    serviceBenchFault();
     if (safeZeroRequested) {
         if (!safeZeroActive) beginSafeZero();
         else safeZeroRequested = false; // Repeated press doesn't restart/slow the ramp.

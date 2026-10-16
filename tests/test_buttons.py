@@ -32,6 +32,7 @@ CASES = {
     "B23": "ramp elapsed-time schedule includes service overhead, wraps safely, and avoids catch-up bursts",
     "B24": "device calibration drives readout, cold INIT, safe-zero endpoint and slew limit",
     "B25": "USB status distinguishes failed safe-zero validation from successful completion",
+    "B26": "bench faults exercise invalid readback and real configuration recovery without DAC writes",
     "N1": "actual Ethernet driver: stuck socket command times out",
     "N2": "actual Ethernet driver: socket command cancelled by local request",
     "N3": "actual Ethernet driver: unstable RX size times out",

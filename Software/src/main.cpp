@@ -392,6 +392,7 @@ bool isValidChannel(int ch) {
 
 bool rampAbortCheck() {
   flushBenchReply();
+  serviceBenchFault(); // Opt-in bench fault injection, outside SPI transactions.
   if (dacNetworkCancelled() || !networkEnabled) return true;
   serviceNetworkHealth();
   if (dacNetworkCancelled()) return true;

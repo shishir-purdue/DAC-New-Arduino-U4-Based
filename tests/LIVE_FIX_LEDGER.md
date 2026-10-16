@@ -48,7 +48,7 @@ source checks and fault doubles are supporting evidence, not substitute live pas
 | LIVE-2 | Analog voltage differs from nominal code conversion | firmware `92c0308`, malab `65253ab` | V01 passes through main API; maximum request error about 0.050 mV |
 | LIVE-3 | Recovery actions need public AD5780 API access | firmware `22d6d65`, malab `3aca28a` | N01/S01 main-API live tests pass; calibrated safe-zero, both signs, latch/priority/rearm |
 | LIVE-4 | Codex-introduced: nano printf does not support `%lld` in new CAL reply | firmware `f37169b` | Main API reads exact integer profile; V01 and D02 pass |
-| LIVE-5 | Fine-step ramp slows under frequent STATUS polling | pending | R01 step=1, 0.1 V/s fails; batch STATUS into one W5500 send |
+| LIVE-5 | Fine-step ramp slows under frequent STATUS polling | firmware `81ac8a4` | R01 passes after batching STATUS into one W5500 send; see timing caveat below |
 
 ## Live case coverage
 
@@ -123,3 +123,27 @@ R01 passes ten-code steps at 0.001/0.01/0.1 V/s in both directions (duration rat
 2.234 s vs 2.000586 s, with late path samples. The status handler performs seven
 separate Ethernet sends. Batch it into one framed send; retain the failed trace.
 The remaining R01 cases and complete checklist acceptance are still required.
+
+### 20261016T193517Z — full ramp matrix passes
+
+Firmware `81ac8a4` uploaded with captured DFU SUCCESS in
+`tests/results/upload_81ac8a4.log`; SHA256 of the uploaded binary:
+`d2368982942aa2c7cac64f73585850943bd0394dd8ea4325aff5846a523a346d`.
+R01 passes all ten combinations and default blocking completion through
+`voltsource.AD5780`. Ten-code steps at 0.001/0.01/0.1 V/s differ by at most 0.48%
+from calculated duration. One-code steps at 0.1 V/s finish in 2.078/2.110 s vs
+2.000586 s: within the predeclared 5% plus sample/observation allowance, with all
+measured path/endpoints passing. This does not establish exactly 5% timing under
+arbitrary traffic. Step-100 cases pass (about 1.7% including observation latency).
+
+`20261016T192834Z` F01/C01/C02 passed on firmware `22d6d65`: input validation,
+clamping warnings, 100 second-client rejections, silent churn, partial input,
+busy ownership, prompt acceptance and disconnect cancellation. The notebook
+cases/public fragment-write support are committed in malab `6203d70`.
+
+Added bench-only READBACK/NETWORK/CLEAR fault controls for tests E01/E02.
+READBACK substitutes invalid received frames without touching real DAC data;
+NETWORK clears the real W5500 IP register so the normal health/recovery path must
+recover. Production builds compile these controls out. Host B26 and 25 driver
+notebook groups pass; the outer suite now passes 86 tests. Both builds pass.
+These controlled faults do not simulate every possible electrical failure.

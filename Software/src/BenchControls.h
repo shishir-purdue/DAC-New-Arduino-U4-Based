@@ -7,6 +7,8 @@ char benchInput[40] = {};
 uint8_t benchInputPos = 0;
 bool benchDiscarding = false;
 char benchReply[64] = {};
+extern bool dacBenchBadReadback;
+bool benchNetworkFaultRequested = false;
 
 void queueBenchReply(const char* text) {
     snprintf(benchReply, sizeof(benchReply), "%s\r\n", text);
@@ -37,6 +39,23 @@ void pollBenchInput() {
                     networkResetRequested = true;
                     queueBenchReply("BENCH OK NETWORK");
                 }
+            } else if (strcmp(benchInput, "BENCH FAULT READBACK") == 0) {
+                if (dacBusy || safeZeroRequested || safeZeroActive)
+                    queueBenchReply("BENCH ERR DAC BUSY");
+                else {
+                    dacBenchBadReadback = true;
+                    queueBenchReply("BENCH OK FAULT READBACK");
+                }
+            } else if (strcmp(benchInput, "BENCH FAULT CLEAR") == 0) {
+                dacBenchBadReadback = false;
+                queueBenchReply("BENCH OK FAULT CLEAR");
+            } else if (strcmp(benchInput, "BENCH FAULT NETWORK") == 0) {
+                if (safeZeroRequested || safeZeroActive || safeZeroLatched)
+                    queueBenchReply("BENCH ERR SAFE ZERO ACTIVE OR LATCHED");
+                else {
+                    benchNetworkFaultRequested = true;
+                    queueBenchReply("BENCH OK FAULT NETWORK");
+                }
             } else if (strcmp(benchInput, "BENCH STATUS") == 0) {
                 queueBenchReply(safeZeroFailed ? "BENCH STATUS FAILED" :
                     safeZeroActive ? "BENCH STATUS ACTIVE" :
@@ -52,6 +71,16 @@ void pollBenchInput() {
     }
 }
 
+// Foreground only, outside Ethernet/DAC transactions. Corrupt the real W5500
+// configuration so the normal health check must detect/recover the failure.
+void serviceBenchFault() {
+    if (benchNetworkFaultRequested) {
+        benchNetworkFaultRequested = false;
+        if (!safeZeroRequested && !safeZeroActive && !safeZeroLatched)
+            Ethernet.setLocalIP(IPAddress(0,0,0,0));
+    }
+}
+
 void flushBenchReply() {
     size_t length = strlen(benchReply);
     if (length && Serial.availableForWrite() >= int(length)) {
@@ -62,4 +91,5 @@ void flushBenchReply() {
 #else
 inline void pollBenchInput() {}
 inline void flushBenchReply() {}
+inline void serviceBenchFault() {}
 #endif

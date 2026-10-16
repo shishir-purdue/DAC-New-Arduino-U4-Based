@@ -19,7 +19,26 @@ void seedCodes(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
     }
 }
 void runButtons(const std::string& id) {
-    if (id == "B25") {
+    if (id == "B26") {
+        seedCodes(ZERO_CODE+100,ZERO_CODE,ZERO_CODE,ZERO_CODE); attachOwner();
+        Serial.feed("BENCH FAULT READBACK\n"); pump(3);
+        require(dacBenchBadReadback && SPI.writes==0, "Bench readback override changed outputs");
+        command("READ 1"); command("INIT 1"); command("RAMP 1 131072 10 1000");
+        require(SPI.writes==0 && sockets[owner].tx.contains("ERR!"), "Corrupt readback allowed an output operation");
+        Serial.feed("BENCH SAFEZERO\n"); pump(3);
+        require(safeZeroFailed && safeZeroLatched && SPI.writes==0, "Faulted safe-zero changed outputs or claimed success");
+        Serial.feed("BENCH FAULT CLEAR\n"); pump(3);
+        require(!dacBenchBadReadback && safeZeroLatched, "Clearing fault silently rearmed recovery");
+        Serial.feed("BENCH NETWORK\n"); pump(3); attachOwner();
+        int resets=networkResetCalls;
+        Serial.feed("BENCH FAULT NETWORK\n"); pump(3);
+        require(Ethernet.localIP()!=IPAddress(192,168,1,200), "Network fault did not alter controller configuration");
+        fakeMicros+=250000; loop();
+        require(networkFault && !networkEnabled && !clientConnected && SPI.writes==0, "Configuration loss left stale ownership or changed outputs");
+        fakeMicros+=5000000; pump(3);
+        require(networkResetCalls==resets+1 && networkEnabled && !(Ethernet.localIP()!=IPAddress(192,168,1,200)), "Automatic config recovery failed");
+        require(SPI.writes==0 && !SPI.active && !SPI.badFrame, "Bench fault nested SPI or changed DAC data");
+    } else if (id == "B25") {
         seedCodes(ZERO_CODE+100,ZERO_CODE,ZERO_CODE,ZERO_CODE);
         SPI.forcedRead=0xFFFFFF;
         Serial.feed("BENCH SAFEZERO\n"); pump(3);
