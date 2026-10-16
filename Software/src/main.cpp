@@ -553,10 +553,11 @@ void func_RAMP(int p1, int p2, int p3, int p4) {
 }
 
 void func_STATUS() {
-  telnetClient.print("RAMP "); telnetClient.print(rampState);
-  telnetClient.print(" "); telnetClient.print(rampChannel);
-  telnetClient.print(" "); telnetClient.print(rampTarget);
-  telnetClient.print("\r\n");
+  // Each print is a separate blocking W5500 SEND. A single framed response
+  // avoids missing short DAC step deadlines while servicing STATUS mid-ramp.
+  char reply[64];
+  snprintf(reply, sizeof(reply), "RAMP %s %d %d\r\n", rampState, rampChannel, rampTarget);
+  telnetClient.print(reply);
 }
 
 void func_CAL(int channel) {

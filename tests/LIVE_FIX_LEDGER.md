@@ -46,8 +46,9 @@ source checks and fault doubles are supporting evidence, not substitute live pas
 | BASE-API | Preserve scoped socket/AD5780/Keysight drivers and notebook tests | malab `7cafaac` | 18 offline groups; meter identity/read succeeds |
 | LIVE-1 | Ramp delay counts sleeping time but omits service overhead | firmware `59db0a8` | Main-API D02: 2.031 s vs 2.00669 s; broader acceptance pending |
 | LIVE-2 | Analog voltage differs from nominal code conversion | firmware `92c0308`, malab `65253ab` | V01 passes through main API; maximum request error about 0.050 mV |
-| LIVE-3 | Recovery actions need public AD5780 API access | pending | Current USB helper is separate; integration and live test pending |
+| LIVE-3 | Recovery actions need public AD5780 API access | firmware `22d6d65`, malab `3aca28a` | N01/S01 main-API live tests pass; calibrated safe-zero, both signs, latch/priority/rearm |
 | LIVE-4 | Codex-introduced: nano printf does not support `%lld` in new CAL reply | firmware `f37169b` | Main API reads exact integer profile; V01 and D02 pass |
+| LIVE-5 | Fine-step ramp slows under frequent STATUS polling | pending | R01 step=1, 0.1 V/s fails; batch STATUS into one W5500 send |
 
 ## Live case coverage
 
@@ -107,3 +108,18 @@ Recovery API integration adds `network_reset`, `safe_zero` / `safe_ramp`, and
 independent of TCP. A separate FAILED state distinguishes safe-zero readback
 failure from successful completion. Offline suite: 85 outer tests, 24 API groups.
 Live recovery and full checklist coverage remain pending.
+
+### 20261016T192536Z — full rate matrix and recovery actions
+
+Firmware `22d6d65` uploaded successfully. N01 passes: all DAC codes unchanged
+after NETWORK, a fresh connection works, interrupted ramp remains at its held
+intermediate voltage. S01 passes: independent USB action with TCP closed, both
+signs, measured zero about +15 to +17 µV, 5.032/5.000 s vs 5.004/4.997 s expected,
+NETWORK rejection while active, persistent latch and deliberate rearm. All four
+final register codes match their calibration targets; analog evidence is CH1 only.
+
+R01 passes ten-code steps at 0.001/0.01/0.1 V/s in both directions (duration ratios
+1.00065–1.00477), but fails the one-code/0.1 V/s path under frequent STATUS traffic:
+2.234 s vs 2.000586 s, with late path samples. The status handler performs seven
+separate Ethernet sends. Batch it into one framed send; retain the failed trace.
+The remaining R01 cases and complete checklist acceptance are still required.
