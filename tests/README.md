@@ -2,7 +2,7 @@
 
 Run the setup cell in `bug_checklist.ipynb`, then any of the 36 independent
 checklist cells. Each failing requirement raises an assertion with details.
-`physical_controls.ipynb` adds individual B1–B20 and N1–N12 cases. Both notebooks
+`physical_controls.ipynb` adds individual B1–B21 and N1–N12 cases. Both notebooks
 are committed with clean outputs and live tests disabled.
 
 The same checks run without Jupyter or pytest:
@@ -14,7 +14,7 @@ python tests/checklist_tests.py --report tests/results/current.json
 python tests/checklist_tests.py --preliminary
 ```
 
-The full suite has **80 tests**: 36 checklist cases, 32 button/driver cases,
+The full suite has **81 tests**: 36 checklist cases, 33 button/driver cases,
 seven live-helper tests using fake sockets, and five Python ramp-client tests.
 All are expected to pass. Failures are never hidden as expected successes.
 Overlap between checklist and dedicated cases is intentional. pytest can also
@@ -42,7 +42,9 @@ discover these unittest classes if installed.
 
 ## Implemented policies and protocol
 
-C4 checks static-IP link/configuration recovery and five-second retry spacing;
+C4 checks static-IP link/configuration recovery and five-second minimum retry spacing.
+B21 checks the ten-second first-link grace after controller initialization,
+delayed startup/ID, permanent link absence, timer rollover, and configuration faults;
 `Ethernet.maintain()` alone is not a link-recovery mechanism. M1 uses a 120-second
 idle lease, suspended by active DAC work. C5/M4 service input during ramps and
 reject busy DAC commands immediately; M3 discards malformed lines entirely.

@@ -184,6 +184,7 @@ def run_case(case_id: str) -> None:
         assert (ROOT / "Software/lib/Ethernet/src/utility/DacNetworkGuard.h").is_file()
     elif case_id == "C4":
         run_host(case_id)
+        run_host("B21")
     elif case_id == "C5":
         for related in ("C5", "M4", "A4", "Robust-1"):
             run_host(related)

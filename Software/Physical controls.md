@@ -51,6 +51,10 @@ Holding the button performs one reset; release and press again for another try.
 Outside SAFE ZERO, link or MAC/IP configuration loss also triggers automatic
 recovery: health checks run every 250 ms and reset attempts are spaced at least
 five seconds apart. The interrupted ramp is aborted, never resumed automatically.
+After each reset, the first link has up to ten seconds to negotiate before another
+reset is attempted. Once a link has been observed, loss is detected at the normal
+250 ms health check. This avoids a startup reset loop. Register/configuration
+faults and the physical controls remain active during the startup grace period.
 No automatic attempt clears the SAFE ZERO latch. The button remains an immediate
 manual retry/rearm path.
 If Ethernet remains unavailable, normal network work stays disabled and SAFE ZERO
@@ -182,7 +186,7 @@ hardware.
 
 ## Verification and bench procedure
 
-Run `python -m unittest discover -s tests -p test_buttons.py -v` for the 32 offline
+Run `python -m unittest discover -s tests -p test_buttons.py -v` for the 33 offline
 button and actual-Ethernet-driver tests. `tests/physical_controls.ipynb` gives each
 test its own cell. N1-N10 run against both W5100 and W5500 register transports;
 N11-N12 cover W5500 PHY reset and failed readback. These are simulations, not

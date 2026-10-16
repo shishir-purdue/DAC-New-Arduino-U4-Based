@@ -49,7 +49,7 @@ code("all_results = run_all()\n")
 
 details = {
     "Mem-1": "Counts C++ allocations across 6,000 dispatches plus source checks for allocation APIs. It does not measure real MCU heap fragmentation.",
-    "C4": "Injects link/configuration loss, absent hardware, and recovery. Verifies retry spacing, fresh connections, preserved DAC codes, and SAFE ZERO priority. Use the optional cable test for physical evidence.",
+    "C4": "Injects link/configuration loss, absent hardware, and delayed PHY startup. Verifies ten-second startup grace, retry spacing, fresh connections, preserved DAC codes, timer rollover, and SAFE ZERO priority. Use the optional cable test for physical evidence.",
     "C5": "Runs disconnect, command-service, pre-write abort, and second-client regressions. Long waits service input/network/buttons in bounded slices.",
     "H4": "Checks bounded waits and cooperative service. B19/B20 separately verify virtual step/delay scaling; physical timing measurements below test actual accuracy.",
     "M1": "The implemented policy releases an idle owner after 120 seconds without received bytes, while keeping long active ramps alive. Covers renewal, reconnect, and timer rollover.",

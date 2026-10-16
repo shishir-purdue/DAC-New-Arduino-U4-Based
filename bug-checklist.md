@@ -1,10 +1,10 @@
 # DAC firmware bug checklist
 
 Target: Arduino Uno R4 Minima, W5500 Ethernet shield, four AD5780 DACs.
-Updated 2026-10-14 after the full repair phase, in the priority order below.
+Updated 2026-10-16 after the network startup regression fix, in the priority order below.
 
 All **36 software checklist cases pass offline**. The complete regression suite
-has **80 passing tests**; the pinned Uno R4 target also builds from clean.
+has **81 passing tests**; the pinned Uno R4 target also builds successfully.
 Checked items mean the stated software behavior is verified, not that physical
 voltages, electrical faults, or timing have been measured. M8 was reviewed as
 not a current defect. See [validation history](tests/VALIDATION.md) for earlier
@@ -13,7 +13,7 @@ results and repair commits.
 Run the setup cell followed by any individual case in
 [bug_checklist.ipynb](tests/bug_checklist.ipynb). Each ID below has its own case;
 failures raise an assertion with details. The separate
-[physical_controls.ipynb](tests/physical_controls.ipynb) covers B1–B20 and N1–N12.
+[physical_controls.ipynb](tests/physical_controls.ipynb) covers B1–B21 and N1–N12.
 [Test instructions](tests/README.md) include the full offline command and optional
 bench checks. All A items are explicitly identified as Codex additions.
 
@@ -44,6 +44,15 @@ bench checks. All A items are explicitly identified as Codex additions.
   claim that `Ethernet.maintain()` alone recovers static-IP links was incorrect:
   it handles DHCP leases. C4 tests recovery policy and fresh connections offline;
   physical controller/cable recovery remains a bench check.
+  - **Codex-introduced regression, fixed 2026-10-16:** the new health check
+    treated LinkOFF immediately after PHY reset as a fault, disabling command
+    servicing and repeatedly resetting a link that needed time to negotiate.
+    Allow up to ten seconds for the first link, measured after initialization;
+    once LinkON is observed, later loss still faults promptly. B21 failed before
+    the fix and covers delayed startup/ID, permanent cable loss, retry bounds,
+    initialization latency, timer rollover, configuration faults, and unchanged
+    DAC codes. This is a confirmed software defect; its role in the reported
+    live failure still needs USB/bench confirmation.
 - [x] **C5: Ramp blocks servicing.** Ramp callbacks process bounded input batches,
   connection/network health, and buttons between steps and during waits of at most
   1 ms. Busy DAC commands are rejected immediately; informational commands work.
@@ -112,7 +121,8 @@ bench checks. All A items are explicitly identified as Codex additions.
 - [x] **A3 — Missing reproducible build configuration.** Pin Renesas RA 1.9.0,
   Arduino core 1.6.0, compiler package 1.70201.0, and DFU tool 1.11.0 in
   `platformio.ini`; vendor the Ethernet 2.0.2 recovery fork. Configuration audit and
-  clean Uno R4 build pass. Build uses 73,096 bytes flash and 3,716 bytes static RAM.
+  clean Uno R4 build passed on 2026-10-14. The 2026-10-16 build with the startup
+  correction uses 73,304 bytes flash and 3,724 bytes static RAM.
 - [x] **A4 — Extra write after disconnect during delay.** Recheck cancellation
   after sliced waits and before the next DAC write.
 - [x] **A5 — Ethernet driver waits block local controls.** Bound command/register/

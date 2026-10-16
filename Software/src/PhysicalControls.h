@@ -36,7 +36,12 @@ uint32_t safeCodes[4] = {};
 uint32_t safeLastStep = 0;
 constexpr uint32_t NETWORK_HEALTH_MS = 250;
 constexpr uint32_t NETWORK_RETRY_MS = 5000;
+// Resetting the PHY restarts link negotiation. Give it time to establish its
+// first link instead of treating startup LinkOFF as an established-link loss.
+constexpr uint32_t NETWORK_LINK_STARTUP_MS = 10000;
 uint32_t networkLastHealth = 0, networkLastRestart = 0;
+uint32_t networkReadyAt = 0;
+bool networkLinkSeenUp = false;
 
 void pollRecoveryButtons() {
     uint32_t now = millis();
@@ -70,6 +75,7 @@ bool restartNetwork() {
     forgetNetworkClient();
     networkResetRequested = false;
     networkFault = false;
+    networkLinkSeenUp = false;
     safeZeroLatched = false; // Only called after completion for rearming.
     Ethernet.reset(); // Clear ALL socket caches and force chip reset/detection.
     Ethernet.init(ETHERNET_CS);
@@ -91,6 +97,12 @@ bool restartNetwork() {
     Ethernet.setRetransmissionCount(2);
     telnetServer.begin();
     networkEnabled = !dacNetworkCancelled() && bool(telnetServer);
+    if (networkEnabled) {
+        // Start the grace period AFTER blocking controller initialization.
+        networkReadyAt = networkLastHealth = millis();
+        networkLinkSeenUp = Ethernet.linkStatus() == LinkON;
+        networkEnabled = !dacNetworkCancelled();
+    }
     if (!networkEnabled) networkFault = true;
     DacLog.println(networkEnabled ? "Network ready: 192.168.1.200:23." : "Network listener failed/cancelled.");
     return networkEnabled;
@@ -102,8 +114,13 @@ void serviceNetworkHealth() {
     uint32_t now = millis();
     if (uint32_t(now - networkLastHealth) < NETWORK_HEALTH_MS) return;
     networkLastHealth = now;
-    if (Ethernet.linkStatus() == LinkOFF) {
+    EthernetLinkStatus link = Ethernet.linkStatus();
+    if (link == LinkON) networkLinkSeenUp = true;
+    if (link == LinkOFF && (networkLinkSeenUp ||
+        uint32_t(now - networkReadyAt) >= NETWORK_LINK_STARTUP_MS)) {
         networkFault = true;
+        DacLog.println(networkLinkSeenUp ? "Network link lost; recovery pending."
+                                        : "Network link startup timed out; retrying.");
         return;
     }
     byte actualMac[6];

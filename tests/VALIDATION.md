@@ -1,5 +1,35 @@
 # Validation record
 
+## Network startup regression — 2026-10-16
+
+The user reported no connection/reply, including after pressing NETWORK.
+Read-only checks from this PC (192.168.1.80/24) confirmed the DAC's configured
+MAC A8:61:0A:AE:F2:01 at 192.168.1.200. TCP port 23 accepted connections, but
+neither a welcome message nor a response to `ID\r\n` arrived within the receive
+deadlines. No DAC command that changes outputs was sent. The Arduino was not
+present among the PC's USB serial devices, so no board diagnostics or firmware
+revision could be obtained. The live cause remains unconfirmed.
+
+Source inspection found a C4 regression: after PHY reset, LinkOFF during initial
+negotiation immediately latched a network fault. The recovery cycle could keep
+resetting the PHY before software resumed accepting clients. New B21 reproduced
+this failure against the previous code. The fix gives first-link negotiation a
+ten-second grace measured after initialization; subsequent loss of an observed
+link still faults on the normal health check. Configuration corruption is never
+hidden by the grace, and permanently absent links still cause bounded retries.
+
+B21 now passes, including delayed startup/ID, established-link loss, permanent
+cable absence, initialization latency, millis rollover, configuration corruption,
+and unchanged DAC codes. The full offline suite passes **81/81 tests** (36
+checklist, 33 button/driver, seven fake-socket helper, five ramp-client tests).
+Both regenerated notebooks pass nbformat validation and code-cell syntax checks;
+their saved outputs are empty and live tests remain disabled.
+
+Uno R4 Minima build passed: **73,304 bytes flash / 3,724 bytes static RAM**, using
+the existing pinned packages. The fix has not been uploaded or tested on the
+physical instrument. USB diagnostics and a subsequent isolated bench check are
+needed to determine whether it resolves this particular live failure.
+
 ## Full repair phase — 2026-10-14
 
 Current result: **80/80 offline tests pass**, including **36/36 checklist cases**

@@ -19,7 +19,48 @@ void seedCodes(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
     }
 }
 void runButtons(const std::string& id) {
-    if (id == "B1") {
+    if (id == "B21") {
+        seedCodes(157286,100,262143,0);
+        fakeLinkStatus = LinkOFF; // PHY is still negotiating after reset.
+        restartNetwork();
+        int resets = networkResetCalls;
+        for (int i = 0; i < 8; ++i) {
+            fakeMicros += 250000; loop();
+            require(networkEnabled && !networkFault && networkResetCalls == resets,
+                    "Startup link negotiation was mistaken for a fault/reset loop");
+        }
+        fakeLinkStatus = LinkON;
+        fakeMicros += 250000; loop();
+        owner = connectFake("ID\n"); pump();
+        require(sockets[owner].tx.contains("AD5780") && networkResetCalls == resets,
+                "Delayed link startup did not service ID on a fresh connection");
+        fakeLinkStatus = LinkOFF; fakeMicros += 250000; loop();
+        require(networkFault && !clientConnected, "Established link loss was hidden by startup grace");
+        // A permanently disconnected cable must still cause bounded retries.
+        restartNetwork(); resets = networkResetCalls;
+        for (int i = 0; i < 39; ++i) {
+            fakeMicros += 250000; loop();
+            require(networkResetCalls == resets && !networkFault, "Startup grace ended before ten seconds");
+        }
+        fakeMicros += 250000; loop();
+        require(networkResetCalls == resets+1, "Missing link never retried after startup deadline");
+        // Initialization time must not consume the grace; timestamps must wrap.
+        fakeMicros = ((uint64_t(1)<<32)-1000)*1000;
+        networkBeginHook = []() { fakeMicros += 700000; };
+        restartNetwork(); networkBeginHook = nullptr; resets = networkResetCalls;
+        for (int i = 0; i < 39; ++i) {
+            fakeMicros += 250000; loop();
+            require(!networkFault && networkResetCalls == resets,
+                    "Initialization latency or millis rollover shortened link startup grace");
+        }
+        fakeLinkStatus = LinkON; fakeMicros += 250000; loop();
+        require(networkEnabled && !networkFault, "Link failed to start across millis rollover");
+        // The grace applies only to link negotiation, never corrupted registers.
+        fakeLinkStatus = LinkOFF; restartNetwork();
+        fakeMac[0] ^= 1; fakeMicros += 250000; loop();
+        require(networkFault, "Startup grace hid lost network configuration");
+        require(SPI.writes == 0 && dacCode(0) == 157286, "Link recovery changed DAC outputs");
+    } else if (id == "B1") {
         seedCodes(157286,100,262143,0); attachOwner();
         feedFake(owner, "SET 1 "); pump(6);
         int resets = networkResetCalls;

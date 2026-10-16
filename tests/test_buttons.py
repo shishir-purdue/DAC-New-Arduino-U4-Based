@@ -27,6 +27,7 @@ CASES = {
     "B18": "valid DAC full-scale responses remain accepted",
     "B19": "remote step sizes 1/10/100 produce exact increments and write counts in both directions",
     "B20": "remote delay scales in microseconds per step; repeated same target does no writes",
+    "B21": "delayed PHY link startup can connect without repeated network resets",
     "N1": "actual Ethernet driver: stuck socket command times out",
     "N2": "actual Ethernet driver: socket command cancelled by local request",
     "N3": "actual Ethernet driver: unstable RX size times out",
