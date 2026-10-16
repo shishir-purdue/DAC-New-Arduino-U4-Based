@@ -1,0 +1,61 @@
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+C:\Users\G41Lab\anaconda3\Lib\site-packages\zmq\_future.py:693: RuntimeWarning: Proactor event loop does not implement add_reader family of methods required for zmq. Registering an additional selector thread for add_reader support via tornado. Use `asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())` to avoid this warning.
+  self._get_loop()
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+[IPKernelApp] WARNING | Could not set permissions on C:\Users\G41Lab\.ipython\profile_default\security
+[IPKernelApp] WARNING | Could not set permissions on C:\Users\G41Lab\.ipython\profile_default\pid
+[IPKernelApp] WARNING | Could not set permissions on C:\Users\G41Lab\.ipython\profile_default\security
+[IPKernelApp] WARNING | Could not set permissions on C:\Users\G41Lab\.ipython\profile_default\pid
+RUN 1
+RUN M01
+RUN M02
+RUN M03
+RUN M04
+RUN M05
+RUN M06
+RUN M07
+No module named 'visa'
+Warning VISA library import failed
+
+{'case': 1, 'result': 'PASS', 'errors': []}
+{'case': 'M01', 'result': 'PASS', 'errors': []}
+ValueError: addresses must be a nonempty ordered list of IPv4 addresses
+ValueError: addresses must be a nonempty ordered list of IPv4 addresses
+ValueError: Duplicate DAC addresses would alias the same four outputs
+ValueError: Invalid DAC IPv4 address/port: 'not-an-ip'
+ValueError: Invalid DAC IPv4 address/port: '192.0.2.1:0'
+ValueError: A USB port cannot belong to two DAC units
+ValueError: channel must be 1..12
+ValueError: channel must be 1..12
+ValueError: channel must be 1..12
+ValueError: channel must be an integer, not bool
+ValueError: channel must be an integer
+ValueError: channel must be an integer
+
+{'case': 'M02', 'result': 'PASS', 'errors': []}
+UnitOperationError: Unit 2 (192.0.2.20), set_voltage: offline; outcome unknown
+
+{'case': 'M03', 'result': 'PASS', 'errors': []}
+{'case': 'M04', 'result': 'PASS', 'errors': []}
+ValueError: Request ID already belongs to a different action or unit
+ValueError: Unit and global channel do not match
+ValueError: unit must be an integer
+
+{'case': 'M05', 'result': 'PASS', 'errors': []}
+ValueError: This unit has no fresh network response; output action was not queued
+ValueError: This unit has no fresh network response; output action was not queued
+ValueError: A ramp is running. Stop it before changing an output.
+ValueError: This unit is in safe-zero recovery; use NETWORK to rearm
+ValueError: Unit 2 has no USB recovery port; use its physical button
+
+{'case': 'M06', 'result': 'PASS', 'errors': []}
+All 7 multi-unit routing/safety groups passed; no physical second unit tested.
+
+{'case': 'M07', 'result': 'PASS', 'errors': []}
+Executed notebook: C:\Users\G41Lab\Documents\DAC Box\malab\notebooks\results\modular_run_20261016T212316Z

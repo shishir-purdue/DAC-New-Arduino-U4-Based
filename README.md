@@ -39,3 +39,13 @@ voltage/ramp controls, and USB recovery actions. See
 [visible acceptance notebook](malab/notebooks/dashboard_acceptance.ipynb).
 The firmware's `VALUES` command supplies ramp telemetry without SPI reads;
 `BENCH VALUES` supplies safe-zero telemetry while Ethernet is disabled.
+
+The dashboard now accepts an ordered IP list in `malab/dashboard/units.json`.
+Each unit adds four global channels, with its own connection and recovery
+controls. The Python [DACArray API](malab/instruments/DAC_ARRAY.md) uses the same
+mapping. The meter is currently on **DAC 4**. Its functional checks pass, but
+its unchanged nominal calibration fails ±0.5 mV accuracy (zero is about +2.87 mV).
+See [DAC 4 evidence](tests/evidence/2026-10-16-dac4/) and the
+[current visible notebook](malab/notebooks/modular_dac_acceptance.ipynb).
+No firmware changes were needed for modular support; a second physical unit
+has not yet been tested.

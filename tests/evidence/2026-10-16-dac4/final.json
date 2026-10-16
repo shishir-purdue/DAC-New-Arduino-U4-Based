@@ -1,0 +1,122 @@
+{
+  "now": 1792185935.2027292,
+  "units": [
+    {
+      "unit": 1,
+      "address": "192.168.1.200",
+      "first_channel": 1,
+      "last_channel": 4,
+      "usb_port": "COM5",
+      "network": {
+        "state": "good",
+        "address": "192.168.1.200",
+        "last_ok": 1792185935.02233,
+        "latency_ms": 16.0,
+        "error": null
+      },
+      "recovery": {
+        "state": "READY",
+        "at": 1792185935.0121424,
+        "error": null
+      },
+      "ramp": {
+        "state": "ABORTED",
+        "channel": 4,
+        "target_code": 131072,
+        "local_channel": 4
+      },
+      "pending": null,
+      "device_error": null
+    }
+  ],
+  "channels": [
+    {
+      "channel": 1,
+      "voltage": -4.9472120000615405e-06,
+      "code": 130996,
+      "source": "readback",
+      "at": 1792185935.02233,
+      "calibrated": true,
+      "limits": [
+        -9.992845256,
+        10
+      ],
+      "calibration": {
+        "offset_nanovolts": -9992845256,
+        "step_picovolts": 76283553,
+        "zero_code": 130996,
+        "volts_per_code": 7.6283553e-05
+      },
+      "local_channel": 1,
+      "unit": 1
+    },
+    {
+      "channel": 2,
+      "voltage": 0.0,
+      "code": 131072,
+      "source": "readback",
+      "at": 1792185935.02233,
+      "calibrated": false,
+      "limits": [
+        -10,
+        9.999923706054688
+      ],
+      "calibration": {
+        "offset_nanovolts": -10000000000,
+        "step_picovolts": 76293945,
+        "zero_code": 131072,
+        "volts_per_code": 7.62939453125e-05
+      },
+      "local_channel": 2,
+      "unit": 1
+    },
+    {
+      "channel": 3,
+      "voltage": 0.0,
+      "code": 131072,
+      "source": "readback",
+      "at": 1792185935.02233,
+      "calibrated": false,
+      "limits": [
+        -10,
+        9.999923706054688
+      ],
+      "calibration": {
+        "offset_nanovolts": -10000000000,
+        "step_picovolts": 76293945,
+        "zero_code": 131072,
+        "volts_per_code": 7.62939453125e-05
+      },
+      "local_channel": 3,
+      "unit": 1
+    },
+    {
+      "channel": 4,
+      "voltage": 0.0,
+      "code": 131072,
+      "source": "readback",
+      "at": 1792185935.02233,
+      "calibrated": false,
+      "limits": [
+        -10,
+        9.999923706054688
+      ],
+      "calibration": {
+        "offset_nanovolts": -10000000000,
+        "step_picovolts": 76293945,
+        "zero_code": 131072,
+        "volts_per_code": 7.62939453125e-05
+      },
+      "local_channel": 4,
+      "unit": 1
+    }
+  ],
+  "meter": {
+    "state": "good",
+    "address": "192.168.1.71",
+    "channel": 4,
+    "voltage": 0.00287839347,
+    "at": 1792185935.2006006,
+    "error": null
+  }
+}

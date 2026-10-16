@@ -1,0 +1,78 @@
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+C:\Users\G41Lab\anaconda3\Lib\site-packages\zmq\_future.py:693: RuntimeWarning: Proactor event loop does not implement add_reader family of methods required for zmq. Registering an additional selector thread for add_reader support via tornado. Use `asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())` to avoid this warning.
+  self._get_loop()
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+RUN 1
+RUN 2
+RUN V4
+RUN R4
+RUN R4-accuracy
+RUN N4
+RUN S4
+RUN S4-accuracy
+RUN FINAL
+{'case': 1, 'result': 'PASS', 'errors': []}
+Results: C:\Users\G41Lab\Documents\DAC Box\malab\notebooks\results\modules_20261016T212412Z channel: 4 unit: 1 profile: {'offset_nanovolts': -10000000000, 'step_picovolts': 76293945, 'zero_code': 131072, 'volts_per_code': 7.62939453125e-05}
+
+{'case': 2, 'result': 'PASS', 'errors': []}
+{'target': -9, 'displayed': -9.000015258789062, 'meter': -8.996617942, 'request_error_mV': 3.382057999999688, 'display_error_mV': 3.397316789062188}
+
+{'target': -5, 'displayed': -5.0, 'meter': -4.996817946, 'request_error_mV': 3.182053999999823, 'display_error_mV': 3.182053999999823}
+
+{'target': -1, 'displayed': -0.9999847412109375, 'meter': -0.9970581592, 'request_error_mV': 2.9418408000000396, 'display_error_mV': 2.9265820109375396}
+
+{'target': -0.05, 'displayed': -0.0499725341796875, 'meter': -0.04710960752, 'request_error_mV': 2.8903924800000036, 'display_error_mV': 2.862926659687501}
+
+{'target': 0, 'displayed': 0.0, 'meter': 0.00287066646, 'request_error_mV': 2.87066646, 'display_error_mV': 2.87066646}
+
+{'target': 0.05, 'displayed': 0.0499725341796875, 'meter': 0.05283910122, 'request_error_mV': 2.839101219999994, 'display_error_mV': 2.8665670403124968}
+
+{'target': 1, 'displayed': 0.9999847412109375, 'meter': 1.002787242, 'request_error_mV': 2.787241999999912, 'display_error_mV': 2.802500789062412}
+
+{'target': 5, 'displayed': 5.0, 'meter': 5.002568334, 'request_error_mV': 2.5683340000002275, 'display_error_mV': 2.5683340000002275}
+
+{'target': 9, 'displayed': 9.000015258789062, 'meter': 9.00232772, 'request_error_mV': 2.327720000000255, 'display_error_mV': 2.312461210937755}
+
+{'target': 10, 'displayed': 9.999923706054688, 'meter': 10.00216238, 'request_error_mV': 2.162379999999686, 'display_error_mV': 2.238673945312186}
+
+{'target': 0, 'displayed': 0.0, 'meter': 0.002870611106, 'request_error_mV': 2.870611106, 'display_error_mV': 2.870611106}
+
+{'case': 'V4', 'result': 'FAIL', 'errors': ['Requested voltage exceeds �0.5 mV accuracy']}
+{'speed': 0.001, 'start': 0, 'target': 0.005, 'expected_s': 5.34058, 'observed_s': 5.625768661499023, 'meter_endpoint': 0.007896612763333333, 'endpoint_error_mV': 2.896612763333333}
+
+{'speed': 0.001, 'start': 0.005, 'target': 0, 'expected_s': 5.34058, 'observed_s': 5.389479398727417, 'meter_endpoint': 0.002876244, 'endpoint_error_mV': 2.876244}
+
+{'speed': 0.01, 'start': 0, 'target': 0.05, 'expected_s': 5.035404, 'observed_s': 5.17144513130188, 'meter_endpoint': 0.05284004953333333, 'endpoint_error_mV': 2.840049533333326}
+
+{'speed': 0.01, 'start': 0.05, 'target': 0, 'expected_s': 5.035404, 'observed_s': 5.183541774749756, 'meter_endpoint': 0.0028716590866666664, 'endpoint_error_mV': 2.8716590866666665}
+
+{'speed': 0.1, 'start': 0, 'target': 0.5, 'expected_s': 5.00528, 'observed_s': 5.194021224975586, 'meter_endpoint': 0.5028675386666667, 'endpoint_error_mV': 2.867538666666669}
+
+{'speed': 0.1, 'start': 0.5, 'target': 0, 'expected_s': 5.00528, 'observed_s': 5.175771713256836, 'meter_endpoint': 0.0028732827166666666, 'endpoint_error_mV': 2.8732827166666666}
+
+PASS: ramp timing, monotonic relative paths and changing telemetry
+
+{'case': 'R4', 'result': 'PASS', 'errors': []}
+{'case': 'R4-accuracy', 'result': 'FAIL', 'errors': ['Ramp endpoints exceed �0.5 mV']}
+PASS: reset holds all four codes and measured output; disconnect ages; abort holds
+
+{'case': 'N4', 'result': 'PASS', 'errors': []}
+{'sign': 1, 'duration_s': 5.5857908725738525, 'slope_V_per_s': -0.009986992537979033, 'meter_zero': 0.00287435284}
+
+{'sign': -1, 'duration_s': 5.1266233921051025, 'slope_V_per_s': 0.010000748554324972, 'meter_zero': 0.00287064432}
+
+PASS: all four stored zero codes, TCP-independent ramp, measured slew, latch and rearm
+
+{'case': 'S4', 'result': 'PASS', 'errors': []}
+{'case': 'S4-accuracy', 'result': 'FAIL', 'errors': ['Safe-zero analog endpoint exceeds �0.5 mV']}
+Diagnostic fit only: {'gain': 0.9999388050308916, 'offset_V': 0.00286460354850826, 'max_residual_mV': 0.018042415181440674, 'applied': False}
+Final codes: [130996, 131072, 131072, 131072] meter: 0.00287839347 V
+
+{'case': 'FINAL', 'result': 'PASS', 'errors': []}
+Executed notebook: C:\Users\G41Lab\Documents\DAC Box\malab\notebooks\results\modular_run_20261016T212408Z

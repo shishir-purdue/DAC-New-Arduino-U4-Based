@@ -294,3 +294,62 @@ same port. New server starts use an exclusive socket; a regression checks that
 a second server cannot bind. The launcher probes IPv4 loopback explicitly.
 This startup fix takes effect at the next server launch; the working bench
 server is left running to preserve the user's current session.
+
+### Modular units and DAC 4 as-is — 20261016T212408Z
+
+Added Python `DACArray`, exported through the existing voltsource module. Each
+ordered IP owns four fixed global channels. Global channel 5 routes to local 1
+on unit 2; an offline unit never collapses the mapping or reroutes an output.
+Duplicate endpoints/USB ports are rejected. Connections and explicit broadcast
+recovery return per-unit success/failure; commands are never automatically
+replayed. Unit recovery requires an explicit unit number and preserves its
+four-channel physical scope. USB recovery can interrupt a caller waiting for a
+normal ramp. No firmware changes were made for modular support.
+
+The GUI now groups four channels under each unit's IP, with independent workers,
+fresh-response signals, pending commands and reset/stop/safe-zero controls.
+Missing USB ports disable GUI recovery on only that unit. Stale/offline/busy or
+latched units reject new output requests without queueing them for later, while
+another unit remains usable. Request IDs cannot be reused across units/actions.
+The selected global meter channel is explicit in `dashboard/units.json` and the
+page; it is now **DAC 4**. The restart launcher refuses busy units, reloads the
+configuration, and was verified to preserve all four codes and the meter mapping.
+
+Seven visible offline notebook groups pass, including a blocked first worker
+while the second continues handling outputs. Nine existing dashboard regressions
+and JavaScript syntax/schema checks pass. These simulated multi-unit checks do
+not substitute for the second physical box the user will supply later.
+
+The user confirmed the Keysight was on DAC 4 and all outputs were isolated.
+The current notebook tests that channel through the same GUI HTTP interface,
+with unchanged firmware and nominal calibration. Results:
+
+- **V4 FAIL:** 11 points from −9 through +10 V, then zero. Maximum request error
+  **3.382058 mV**, maximum register-to-meter error **3.397317 mV**, exceeding the
+  unchanged **±0.5 mV** criterion.
+- **R4 PASS:** Six ramps at 0.001, 0.01, 0.1 V/s have monotonic relative paths,
+  changing telemetry and completion within the declared 5% plus 0.6 s observation
+  allowance. **R4-accuracy FAIL:** measured absolute endpoints remain offset.
+- **N4 PASS:** Network reset preserves all four codes and measured output;
+  manual disconnect remains disconnected, stale data ages, and abort holds an
+  intermediate voltage.
+- **S4 PASS:** With TCP disconnected, USB safe zero reaches all four stored zero
+  codes, stays latched and rearms after NETWORK. Observed durations **5.586/5.127 s**;
+  measured slopes **−0.009987/+0.010001 V/s**, within the declared sampling/noise
+  allowance. **S4-accuracy FAIL:** analog zero is **+2.874/+2.871 mV**.
+- Final stored codes **[130996, 131072, 131072, 131072]**, network good and recovery
+  READY; CH4 meter **+0.002878393 V**. This is stored nominal zero, not analog zero
+  within the required tolerance.
+
+An unapplied diagnostic fit gives gain **0.999938805**, offset **+0.002864604 V**,
+maximum residual **0.018043 mV**. This suggests calibration is needed, but it does
+not establish performance after calibration. Physical safe zero needs a device
+calibration/zero target; a Python-only offset would not repair that button's
+analog endpoint. A23 remains open. The runner retains all failures and executes
+the independent remaining cases and cleanup instead of hiding them.
+
+[Committed evidence](evidence/2026-10-16-dac4/) includes CSV traces, states, plot,
+diagnosis, logs and the unchanged firmware hash. Full executed live/offline
+notebooks are under `malab/notebooks/results/modular_run_20261016T212408Z/` and
+`modular_run_20261016T212316Z/`. The source notebooks contain all test code directly.
+No changes are pushed.

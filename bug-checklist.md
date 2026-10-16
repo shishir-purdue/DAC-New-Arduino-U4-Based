@@ -258,3 +258,17 @@ The browser's visible layout is checked separately from HTTP state/action tests.
 
 Test tooling also fixes separate source-digest stamps for the two host executables,
 preventing stale binaries, and uses stdlib unittest so pytest is optional.
+
+### Second-channel measurement — Codex addition, 2026-10-16
+
+- [ ] **A23 — DAC 4 nominal calibration fails the ±0.5 mV analog requirement.**
+  Tested as-is with the Keysight moved to DAC 4, unchanged firmware and nominal
+  channel-4 profile. Eleven set/get points produce maximum request error
+  **3.382 mV** and register-to-meter error **3.397 mV**. Stored zero code 131072
+  measures about **+2.87 mV**, including after SAFE ZERO. Absolute ramp endpoints
+  also fail. Relative ramp path/timing, network reset/hold, abort, safe-zero slew,
+  all four stored zero codes, latch and rearm pass. A diagnostic fit suggests
+  offset **+2.865 mV** and gain **0.9999388**, with maximum residual **0.0181 mV**;
+  it was not applied. Calibration must also cover the device's independent
+  safe-zero target; Python-only correction would not correct the physical button.
+  See [DAC 4 evidence](tests/evidence/2026-10-16-dac4/). This remains open.

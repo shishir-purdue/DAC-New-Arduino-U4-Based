@@ -1,5 +1,30 @@
 # Live checklist coverage
 
+## Modular Python/dashboard and DAC 4 follow-up
+
+`multidac_offline_tests.ipynb` passes seven visible groups covering immutable
+global routing (four channels per ordered IP), duplicate configuration rejection,
+partial failures, no output retry/rerouting, independent workers, USB preemption,
+explicit unit recovery, request-ID isolation and stale/busy/latch rejection.
+These are simulated multi-unit tests; no second physical unit has been supplied.
+
+`modular_dac_acceptance.ipynb` tests physical DAC 4 through the current GUI API:
+
+| Case | Result | Meaning |
+| --- | --- | --- |
+| V4 | FAIL | Absolute SET/GET accuracy exceeds ±0.5 mV |
+| R4 | PASS | Six ramp timing/relative-path checks and live telemetry |
+| R4-accuracy | FAIL | Absolute measured ramp endpoints exceed ±0.5 mV |
+| N4 | PASS | Reset preserves all codes/analog output, disconnect and abort hold |
+| S4 | PASS | TCP-independent slew, four stored zero codes, latch/rearm |
+| S4-accuracy | FAIL | Analog safe-zero endpoint about +2.87 mV |
+| FINAL | PASS | Returned all four codes to their existing stored zero targets |
+
+[Evidence and unchanged firmware hash](evidence/2026-10-16-dac4/manifest.json).
+Checklist A23 remains open. Calibration was diagnosed, not applied; the acceptance
+limit is unchanged. The notebook records failures and still executes subsequent
+independent cases and cleanup. Each test's actions/assertions are visible in cells.
+
 ## Dashboard follow-up
 
 The visible `malab/notebooks/dashboard_acceptance.ipynb` passed in Jupyter on

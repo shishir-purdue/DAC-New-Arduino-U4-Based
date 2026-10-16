@@ -1,0 +1,67 @@
+{
+  "notebook": "modular_dac_acceptance.ipynb",
+  "results": [
+    {
+      "case": 1,
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": 2,
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "V4",
+      "result": "FAIL",
+      "errors": [
+        "Requested voltage exceeds \u00b10.5 mV accuracy"
+      ]
+    },
+    {
+      "case": "R4",
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "R4-accuracy",
+      "result": "FAIL",
+      "errors": [
+        "Ramp endpoints exceed \u00b10.5 mV"
+      ]
+    },
+    {
+      "case": "N4",
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "S4",
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "S4-accuracy",
+      "result": "FAIL",
+      "errors": [
+        "Safe-zero analog endpoint exceeds \u00b10.5 mV"
+      ]
+    },
+    {
+      "case": "FINAL",
+      "result": "PASS",
+      "errors": []
+    }
+  ],
+  "channel": 4,
+  "unit": 1,
+  "hardware_run": "C:\\Users\\G41Lab\\Documents\\DAC Box\\malab\\notebooks\\results\\modules_20261016T212412Z",
+  "executed_notebook": "C:\\Users\\G41Lab\\Documents\\DAC Box\\malab\\notebooks\\results\\modular_run_20261016T212408Z",
+  "offline_run": "C:\\Users\\G41Lab\\Documents\\DAC Box\\malab\\notebooks\\results\\modular_run_20261016T212316Z",
+  "firmware_unchanged": true,
+  "calibration_applied": false,
+  "second_physical_unit_tested": false,
+  "max_request_error_mV": 3.382057999999688,
+  "max_display_error_mV": 3.397316789062188,
+  "firmware_sha256": "92eca50b1494ba0c360cac14599132d9328f8fad5c5bb3582f4e3c6eba5e47b0"
+}
