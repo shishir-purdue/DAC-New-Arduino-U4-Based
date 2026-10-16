@@ -562,8 +562,9 @@ void func_STATUS() {
 void func_CAL(int channel) {
   const DacCalibration& cal = channelCalibration[channel-1];
   char reply[112];
-  snprintf(reply, sizeof(reply), "CAL %d %lld %lu %lu %d\r\n", channel,
-           static_cast<long long>(cal.offsetNanovolts),
+  char offset[24];
+  calibrationIntegerText(cal.offsetNanovolts, offset);
+  snprintf(reply, sizeof(reply), "CAL %d %s %lu %lu %d\r\n", channel, offset,
            static_cast<unsigned long>(cal.stepPicovolts),
            static_cast<unsigned long>(cal.zeroCode), cal.measured ? 1 : 0);
   telnetClient.print(reply);

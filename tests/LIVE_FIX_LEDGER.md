@@ -44,9 +44,10 @@ source checks and fault doubles are supporting evidence, not substitute live pas
 |---|---|---|---|
 | BASE-USB | Preserve prepared optional USB action interface and host regression | firmware `ec00fad` | Builds and B22 pass; live upload pending |
 | BASE-API | Preserve scoped socket/AD5780/Keysight drivers and notebook tests | malab `7cafaac` | 18 offline groups; meter identity/read succeeds |
-| LIVE-1 | Ramp delay counts sleeping time but omits service overhead | pending | Confirmed slow trace; fix and main-API retest pending |
-| LIVE-2 | Analog voltage differs from nominal code conversion | pending | Zero/+10 V discrepancies; range survey and calibration pending |
+| LIVE-1 | Ramp delay counts sleeping time but omits service overhead | firmware `59db0a8` | Main-API D02: 2.031 s vs 2.00669 s; broader acceptance pending |
+| LIVE-2 | Analog voltage differs from nominal code conversion | firmware `92c0308`, malab `65253ab` | Calibration stored; live test exposed formatter defect, see LIVE-4 |
 | LIVE-3 | Recovery actions need public AD5780 API access | pending | Current USB helper is separate; integration and live test pending |
+| LIVE-4 | Codex-introduced: nano printf does not support `%lld` in new CAL reply | pending | Live run rejected malformed reply before output command; explicit integer formatter added |
 
 ## Live case coverage
 
@@ -78,3 +79,16 @@ missed interval resets the schedule instead of causing a burst of overdue writes
 B23 failed before repair and passes after repair, including service cost, timer
 rollover and long stalls. All 83 offline tests pass; both target builds pass.
 Live retest and the final calibrated acceptance suite remain pending.
+
+### 20261016T191234Z — elapsed-time repair uploaded
+
+Firmware `59db0a8` uploaded successfully through DFU. The identical D02 public-API
+case passes: expected 2.00669 s, observed 2.031 s (1.21% slower including polling).
+
+### 20261016T191940Z — calibration protocol integration failure
+
+Firmware `92c0308` built (74,180 bytes flash / 3,924 RAM) and uploaded successfully.
+The real Uno R4 nano printf emitted `ld` for the new 64-bit offset, shifting later
+fields; host printf had accepted it. D02 and V01 fail before any SET/RAMP because
+the main API rejects invalid calibration. Replace `%lld` with an allocation-free
+decimal formatter and retain this failed run. This is a Codex-introduced defect.

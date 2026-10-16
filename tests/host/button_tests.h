@@ -20,6 +20,11 @@ void seedCodes(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
 }
 void runButtons(const std::string& id) {
     if (id == "B24") {
+        char formatted[24];
+        calibrationIntegerText(INT64_MIN,formatted);
+        require(std::strcmp(formatted,"-9223372036854775808")==0, "Signed calibration formatter overflowed");
+        calibrationIntegerText(0,formatted);
+        require(std::strcmp(formatted,"0")==0, "Zero calibration formatter failed");
         channelCalibration[0]={-9992845256LL,76283553,130996,true};
         seedCodes(130998,ZERO_CODE,ZERO_CODE,ZERO_CODE); attachOwner();
         command("CAL 1");
