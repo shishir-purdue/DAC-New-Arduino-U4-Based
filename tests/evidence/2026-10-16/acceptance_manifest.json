@@ -1,0 +1,115 @@
+{
+  "run_id": "20261016T194431Z",
+  "notebook_sha256": "3a3848976f658bda3ab5df4a25d579c71c3ab61428ddaee991ba8b1b386293be",
+  "cases": [
+    "V01",
+    "R01",
+    "N01",
+    "S01",
+    "F01",
+    "C01",
+    "C02",
+    "I01",
+    "L01",
+    "Q01",
+    "E01",
+    "E02",
+    "P01"
+  ],
+  "live": true,
+  "isolated": true,
+  "results": [
+    {
+      "case": "imports",
+      "result": "PASS",
+      "error": null
+    },
+    {
+      "case": "settings",
+      "result": "PASS",
+      "error": null
+    },
+    {
+      "case": "utilities",
+      "result": "PASS",
+      "error": null
+    },
+    {
+      "case": "V01",
+      "result": "PASS",
+      "error": null
+    },
+    {
+      "case": "R01",
+      "result": "PASS",
+      "error": null
+    },
+    {
+      "case": "N01",
+      "result": "PASS",
+      "error": null
+    },
+    {
+      "case": "S01",
+      "result": "PASS",
+      "error": null
+    },
+    {
+      "case": "F01",
+      "result": "PASS",
+      "error": null
+    },
+    {
+      "case": "C01",
+      "result": "PASS",
+      "error": null
+    },
+    {
+      "case": "C02",
+      "result": "PASS",
+      "error": null
+    },
+    {
+      "case": "I01",
+      "result": "PASS",
+      "error": null
+    },
+    {
+      "case": "L01",
+      "result": "PASS",
+      "error": null
+    },
+    {
+      "case": "Q01",
+      "result": "PASS",
+      "error": null
+    },
+    {
+      "case": "E01",
+      "result": "PASS",
+      "error": null
+    },
+    {
+      "case": "E02",
+      "result": "PASS",
+      "error": null
+    },
+    {
+      "case": "P01",
+      "result": "PASS",
+      "error": null
+    }
+  ],
+  "revisions": {
+    "malab": {
+      "head": "a905e9873dc2056c126262f082ddb46e79042802",
+      "dirty": true
+    },
+    "DAC Box": {
+      "head": "263b32d683806cb5befe5e6b25ecbc5ee1ec47d6",
+      "dirty": false
+    }
+  },
+  "engine": "Jupyter/nbclient",
+  "kernel_python": "C:\\Users\\G41Lab\\Documents\\DAC Box\\.venv-bench\\Scripts\\python.exe"
+}

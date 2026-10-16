@@ -1,0 +1,153 @@
+
+CASE imports
+No module named 'visa'
+Warning VISA library import failed
+Acceptance API: <class 'malab.instruments.ad5780.AD5780'> via malab.instruments.voltsource
+
+CASE settings
+
+CASE utilities
+
+CASE V01
+Device calibration: ChannelCalibration(offset_nanovolts=-9992845256, step_picovolts=76283553, zero_code=130996, measured=True)
+Achievable requested range: (-9.992845256, 10.0)
+{'requested_V': 0, 'code': 130996, 'reported_V': -4.9472120000615405e-06, 'measured_V': 1.1815606133333334e-05, 'error_to_request_V': 1.1815606133333334e-05, 'error_to_get_V': 1.6762818133394873e-05}
+{'requested_V': -9, 'code': 13015, 'reported_V': -9.000014813705, 'measured_V': -8.999978203333333, 'error_to_request_V': 2.179666666712876e-05, 'error_to_get_V': 3.661037166757808e-05}
+{'requested_V': -3.3, 'code': 87736, 'reported_V': -3.3000314499920007, 'measured_V': -3.299998576666667, 'error_to_request_V': 1.4233333329727316e-06, 'error_to_get_V': 3.287332533385978e-05}
+{'requested_V': -0.05, 'code': 130341, 'reported_V': -0.04997067442700143, 'measured_V': -0.04995470543333333, 'error_to_request_V': 4.52945666666732e-05, 'error_to_get_V': 1.5968993668097342e-05}
+{'requested_V': 0, 'code': 130996, 'reported_V': -4.9472120000615405e-06, 'measured_V': 1.1954906300000001e-05, 'error_to_request_V': 1.1954906300000001e-05, 'error_to_get_V': 1.690211830006154e-05}
+{'requested_V': 0.05, 'code': 131652, 'reported_V': 0.05003706355599924, 'measured_V': 0.05005043546666666, 'error_to_request_V': 5.043546666665816e-05, 'error_to_get_V': 1.337191066742155e-05}
+{'requested_V': 0.123, 'code': 132608, 'reported_V': 0.12296414022399915, 'measured_V': 0.12298307599999998, 'error_to_request_V': -1.692400000001537e-05, 'error_to_get_V': 1.893577600083074e-05}
+{'requested_V': 3.3, 'code': 174256, 'reported_V': 3.3000215555679997, 'measured_V': 3.30002518, 'error_to_request_V': 2.518000000018006e-05, 'error_to_get_V': 3.6244320003042674e-06}
+{'requested_V': 9, 'code': 248977, 'reported_V': 9.000004919280999, 'measured_V': 8.999994356666667, 'error_to_request_V': -5.643333333082978e-06, 'error_to_get_V': -1.0562614331632858e-05}
+{'requested_V': 10, 'code': 262086, 'reported_V': 10.000006015557998, 'measured_V': 9.999982293333334, 'error_to_request_V': -1.7706666666228443e-05, 'error_to_get_V': -2.3722224664624036e-05}
+{'requested_V': 0, 'code': 130996, 'reported_V': -4.9472120000615405e-06, 'measured_V': 1.2092361433333333e-05, 'error_to_request_V': 1.2092361433333333e-05, 'error_to_get_V': 1.7039573433394875e-05}
+Correctly rejected unattainable endpoint: Requested voltage is outside this channel's achievable range [-9.992845256, 10.004354178] V
+Saved 11 measurements: C:\Users\G41Lab\Documents\DAC Box\malab\notebooks\results\20261016T194431Z\calibrated_voltage_acceptance.csv
+PASS V01: calibrated SET and GET agree with independent meter within 0.5 mV
+
+CASE R01
+{'run': 'speed=0.001,step=10,target=-0.02', 'expected_s': 20.596572, 'elapsed_s': 20.640000000130385, 'ratio': 1.0021085062179467, 'ack_s': 0.0, 'final_V': -0.019991238098000963, 'measured_V': -0.01994634}
+{'run': 'speed=0.001,step=10,target=0.02', 'expected_s': 20.596572, 'elapsed_s': 20.608999999938533, 'ratio': 1.000603401378566, 'ack_s': 0.0, 'final_V': 0.019981343673999064, 'measured_V': 0.0199743145}
+{'run': 'speed=0.01,step=10,target=-0.05', 'expected_s': 5.034744, 'elapsed_s': 5.0310000001918525, 'ratio': 0.9992563673926326, 'ack_s': 0.0, 'final_V': -0.04997067442700143, 'measured_V': -0.0499388602}
+{'run': 'speed=0.01,step=10,target=0.05', 'expected_s': 5.034744, 'elapsed_s': 5.047000000020489, 'ratio': 1.0024342846469432, 'ack_s': 0.0, 'final_V': 0.05003706355599924, 'measured_V': 0.0501129133}
+{'run': 'speed=0.1,step=10,target=-0.2', 'expected_s': 2.006427, 'elapsed_s': 2.031999999890104, 'ratio': 1.012745542145368, 'ack_s': 0.015999999828636646, 'final_V': -0.2000204231780014, 'measured_V': -0.199966995}
+{'run': 'speed=0.1,step=10,target=0.2', 'expected_s': 2.006427, 'elapsed_s': 2.0160000000614673, 'ratio': 1.0047711678827425, 'ack_s': 0.0, 'final_V': 0.2000105287539995, 'measured_V': 0.200046602}
+{'run': 'speed=0.1,step=1,target=-0.2', 'expected_s': 2.000586, 'elapsed_s': 2.125, 'ratio': 1.0621887786878443, 'ack_s': 0.0, 'final_V': -0.2000204231780014, 'measured_V': -0.199996738}
+{'run': 'speed=0.1,step=1,target=0.2', 'expected_s': 2.000586, 'elapsed_s': 2.109999999869615, 'ratio': 1.054690975478992, 'ack_s': 0.015999999828636646, 'final_V': 0.2000105287539995, 'measured_V': 0.200019703}
+{'run': 'speed=0.1,step=100,target=-0.2', 'expected_s': 2.059668, 'elapsed_s': 2.093000000109896, 'ratio': 1.016183190742341, 'ack_s': 0.0, 'final_V': -0.2000204231780014, 'measured_V': -0.200015778}
+{'run': 'speed=0.1,step=100,target=0.2', 'expected_s': 2.059668, 'elapsed_s': 2.1089999999385327, 'ratio': 1.0239514329195447, 'ack_s': 0.01500000013038516, 'final_V': 0.2000105287539995, 'measured_V': 0.20002637}
+Saved 3133 measurements: C:\Users\G41Lab\Documents\DAC Box\malab\notebooks\results\20261016T194431Z\ramp_acceptance_paths.csv
+Saved 10 measurements: C:\Users\G41Lab\Documents\DAC Box\malab\notebooks\results\20261016T194431Z\ramp_acceptance_timing.csv
+PASS R01: all rates, step sizes, directions, paths and endpoints
+
+CASE N01
+BENCH OK NETWORK
+BENCH OK NETWORK
+Saved 20 measurements: C:\Users\G41Lab\Documents\DAC Box\malab\notebooks\results\20261016T194431Z\network_acceptance.csv
+PASS N01: output preservation, fresh connection, and ramp interruption via main API
+
+CASE S01
+BENCH OK SAFEZERO
+{'start_V': 0.05003706355599924, 'expected_s': 5.003706355599924, 'elapsed_s': 5.031999999890104, 'final_V': -5.97531753e-06}
+BENCH OK NETWORK
+BENCH OK SAFEZERO
+{'start_V': -0.04997067442700143, 'expected_s': 4.997067442700143, 'elapsed_s': 5.016000000061467, 'final_V': 1.92516661e-05}
+BENCH OK NETWORK
+Saved 577 measurements: C:\Users\G41Lab\Documents\DAC Box\malab\notebooks\results\20261016T194431Z\safe_zero_acceptance_path.csv
+Saved 2 measurements: C:\Users\G41Lab\Documents\DAC Box\malab\notebooks\results\20261016T194431Z\safe_zero_acceptance_timing.csv
+PASS S01: network-independent safe-zero, both signs, latch, priority and rearm
+
+CASE F01
+READ 0 -> ERR! Invalid DAC channel. Must be 1-4.
+READ 5 -> ERR! Invalid DAC channel. Must be 1-4.
+SET 0 0 -> ERR! Invalid DAC channel. Must be 1-4.
+SET 5 0 -> ERR! Invalid DAC channel. Must be 1-4.
+RAMP 0 0 1 1 -> ERR! Invalid DAC channel. Must be 1-4.
+RAMP 1 0 -1 1 -> ERR! RAMP step_size must be 1..262143; step_time must be 0..2147483647 us.
+RAMP 1 0 0 1 -> ERR! RAMP step_size must be 1..262143; step_time must be 0..2147483647 us.
+RAMP 1 0 262144 1 -> ERR! RAMP step_size must be 1..262143; step_time must be 0..2147483647 us.
+RAMP 1 0 1 -1 -> ERR! RAMP step_size must be 1..262143; step_time must be 0..2147483647 us.
+READ + -> ERR! Expected an integer in the signed 32-bit range.
+READ - -> ERR! Expected an integer in the signed 32-bit range.
+SET 1 12x -> ERR! Expected an integer in the signed 32-bit range.
+SET 1 2147483648 -> ERR! Expected an integer in the signed 32-bit range.
+SET 1 -2147483649 -> ERR! Expected an integer in the signed 32-bit range.
+RAMP 1 0 1 2147483648 -> ERR! Expected an integer in the signed 32-bit range.
+READ 4294967297 -> ERR! Expected an integer in the signed 32-bit range.
+WARN! Target clamped to DAC range. SET command received with parameters: 1 262143
+WARN! Target clamped to DAC range. SET command received with parameters: 1 0
+PASS F01: client/device validation, unchanged outputs on rejection, input recovery and warnings
+
+CASE C01
+Rejected extra clients: 1
+Rejected extra clients: 21
+Rejected extra clients: 41
+Rejected extra clients: 61
+Rejected extra clients: 81
+PASS C01: ownership survives churn; disconnected fragments are discarded
+
+CASE C02
+PASS C02: busy lock, servicing, one owner, prompt ACK and disconnect cancellation
+
+CASE I01
+Saved 7 measurements: C:\Users\G41Lab\Documents\DAC Box\malab\notebooks\results\20261016T194431Z\init_preservation.csv
+PASS I01: active INIT is read-only, repeatable, all-channel safe; channel isolation
+
+CASE L01
+Idle lease test: 0.0 s
+Idle lease test: 30.1 s
+Idle lease test: 60.2 s
+Idle lease test: 90.2 s
+Idle lease test: 120.3 s
+Expired connection rejected: InstrumentConnectionError Instrument closed connection before a complete reply
+Long-ramp lease test: 0.1 s
+Long-ramp lease test: 30.2 s
+Long-ramp lease test: 60.2 s
+Long-ramp lease test: 90.3 s
+Long-ramp lease test: 120.3 s
+Saved 10 measurements: C:\Users\G41Lab\Documents\DAC Box\malab\notebooks\results\20261016T194431Z\idle_and_active_lease.csv
+PASS L01: idle ownership expires, long operation keeps ownership without heartbeats
+
+CASE Q01
+Soak: 300 commands 0.39 s
+Soak: 600 commands 0.73 s
+Soak: 900 commands 1.09 s
+Soak: 1200 commands 1.44 s
+Soak: 1500 commands 1.78 s
+Soak: 1800 commands 2.16 s
+Soak: 2100 commands 2.5 s
+Soak: 2400 commands 2.86 s
+Soak: 2700 commands 3.2 s
+Soak: 3000 commands 3.56 s
+Soak: 3300 commands 3.91 s
+Soak: 3600 commands 4.25 s
+Soak: 3900 commands 4.62 s
+Soak: 4200 commands 5.03 s
+Soak: 4500 commands 5.42 s
+Soak: 4800 commands 5.8 s
+Soak: 5100 commands 6.17 s
+Soak: 5400 commands 6.58 s
+Soak: 5700 commands 6.92 s
+Soak: 6000 commands 7.28 s
+Saved 20 measurements: C:\Users\G41Lab\Documents\DAC Box\malab\notebooks\results\20261016T194431Z\command_soak.csv
+PASS Q01: 6,000 commands, subsequent fresh connection, outputs held; heap audit is separate
+
+CASE E01
+Pre-fault meter: 0.0200018802 expected: 0.019981343673999064
+READ rejected: ERR! DAC readback invalid; voltage unknown.
+READ held meter: 0.0200022124
+INIT rejected: ERR! INIT verification/configuration failed for channel 1; stopped without resetting DACs.
+INIT held meter: 0.0200043157
+RAMP rejected: ERR! DAC readback invalid; RAMP not started.
+RAMP held meter: 0.0199997492
+PASS E01: simulated corrupt SPI replies fail explicitly; actual DAC outputs remain unchanged
+
+CASE E02
+Old connection invalidated: InstrumentTimeout
+Old connection invalidated: InstrumentTimeout
+Saved 10 measurements: C:\Users\G41Lab\Documents\DAC Box\malab\notebooks\results\20261016T194431Z\automatic_network_recovery.csv
+PASS E02: actual W5500 configuration loss recovers automatically, aborts remote work, holds outputs
+
+CASE P01
+PASS P01: deadlines raise explicit errors, no automatic reconnect/replay, framing remains aligned

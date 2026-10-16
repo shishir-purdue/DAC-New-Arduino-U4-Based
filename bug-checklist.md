@@ -1,10 +1,10 @@
 # DAC firmware bug checklist
 
 Target: Arduino Uno R4 Minima, W5500 Ethernet shield, four AD5780 DACs.
-Updated 2026-10-16 after the network startup regression fix, in the priority order below.
+Updated 2026-10-16 after calibration, ramp timing, recovery API and live acceptance work.
 
 All **36 software checklist cases pass offline**. The complete regression suite
-has **82 passing tests**; the pinned Uno R4 target also builds successfully.
+has **86 passing tests**; both pinned Uno R4 variants build successfully.
 Checked items mean the stated software behavior is verified, not that physical
 voltages, electrical faults, or timing have been measured. M8 was reviewed as
 not a current defect. See [validation history](tests/VALIDATION.md) for earlier
@@ -13,7 +13,7 @@ results and repair commits.
 Run the setup cell followed by any individual case in
 [bug_checklist.ipynb](tests/bug_checklist.ipynb). Each ID below has its own case;
 failures raise an assertion with details. The separate
-[physical_controls.ipynb](tests/physical_controls.ipynb) covers B1–B21 and N1–N12.
+[physical_controls.ipynb](tests/physical_controls.ipynb) covers B1–B26 and N1–N12.
 [Test instructions](tests/README.md) include the full offline command and optional
 bench checks. All A items are explicitly identified as Codex additions.
 
@@ -43,7 +43,8 @@ bench checks. All A items are explicitly identified as Codex additions.
   Defer resets during DAC operations and preserve the SAFE ZERO latch. The former
   claim that `Ethernet.maintain()` alone recovers static-IP links was incorrect:
   it handles DHCP leases. C4 tests recovery policy and fresh connections offline;
-  physical controller/cable recovery remains a bench check.
+  E02 now verifies real controller configuration loss and automatic recovery through
+  the main API; cable removal and an electrically failed controller are separate checks.
   - **Codex-introduced regression, fixed 2026-10-16:** the new health check
     treated LinkOFF immediately after PHY reset as a fault, disabling command
     servicing and repeatedly resetting a link that needed time to negotiate.
@@ -51,8 +52,8 @@ bench checks. All A items are explicitly identified as Codex additions.
     once LinkON is observed, later loss still faults promptly. B21 failed before
     the fix and covers delayed startup/ID, permanent cable loss, retry bounds,
     initialization latency, timer rollover, configuration faults, and unchanged
-    DAC codes. This is a confirmed software defect; its role in the reported
-    live failure still needs USB/bench confirmation.
+    DAC codes. The user confirmed connection recovery after upload. N01/E02 now record
+    successful reset/configuration recovery; cable negotiation was not electrically traced.
 - [x] **C5: Ramp blocks servicing.** Ramp callbacks process bounded input batches,
   connection/network health, and buttons between steps and during waits of at most
   1 ms. Busy DAC commands are rejected immediately; informational commands work.
@@ -70,7 +71,7 @@ bench checks. All A items are explicitly identified as Codex additions.
   DAC access. Maximum accepted delay is signed-32-bit microseconds.
 - [x] **H4: Long unsliced microsecond waits.** Wait in slices no longer than 1000 us,
   servicing cancellation and I/O between slices. H4 and B2/B9/B19/B20 verify
-  bounds, cancellation, increments, and virtual timing. Actual timing needs measurement.
+  bounds, cancellation, increments, and virtual timing. R01 now records actual meter timing/path evidence; C02/L01 exercise long waits live.
 - [x] **H5: EnableOutput declaration mismatch.** Match the `SPISettings*` parameter
   and mask the readback header before rewriting the control register. H5 checks
   the public call and resulting control bits without changing the DAC code.
@@ -100,7 +101,7 @@ bench checks. All A items are explicitly identified as Codex additions.
   cancellation hooks use only GPIO/RAM. Future SPI-using interrupts need a new review.
 - [x] **M9: INIT overwrites an active output.** Verify normal active channels read-only.
   Only an already ground-clamped channel may be configured and verified at exact
-  zero before releasing its clamp. Incompatible active modes fail unchanged.
+  calibrated zero before releasing its clamp. Incompatible active modes fail unchanged.
   Tests cover active, all-channel, cold, repeated, and incompatible configurations.
 - [x] **M10: `atoi` overflow.** Use checked `strtol` parsing with explicit signed-32-bit
   limits; reject overflow/junk before any DAC access, including on wider host platforms.
@@ -108,7 +109,8 @@ bench checks. All A items are explicitly identified as Codex additions.
   `RAMP ACCEPTED channel target step delay` after validation and before the first
   step. `STATUS` reports IDLE/RUNNING/COMPLETE/ABORTED/FAILED. There is no unsolicited
   completion line to corrupt a later query. **Clients must use the new protocol**;
-  [the Python helper](Software/python/dac_client.py) polls completion by default.
+  [the main malab API](malab/instruments/ad5780.py) polls completion by default.
+  The older Python helper retains nominal conversion for legacy use.
 
 ## Additional findings — Codex additions
 
@@ -121,8 +123,8 @@ bench checks. All A items are explicitly identified as Codex additions.
 - [x] **A3 — Missing reproducible build configuration.** Pin Renesas RA 1.9.0,
   Arduino core 1.6.0, compiler package 1.70201.0, and DFU tool 1.11.0 in
   `platformio.ini`; vendor the Ethernet 2.0.2 recovery fork. Configuration audit and
-  clean Uno R4 build passed on 2026-10-14. The 2026-10-16 build with the startup
-  correction uses 73,304 bytes flash and 3,724 bytes static RAM.
+  clean Uno R4 build passed on 2026-10-14. The current production build uses 73,676 bytes flash and 3,820 bytes static RAM;
+  the bench fault-test build uses 74,900 bytes flash and 3,924 bytes static RAM.
 - [x] **A4 — Extra write after disconnect during delay.** Recheck cancellation
   after sliced waits and before the next DAC write.
 - [x] **A5 — Ethernet driver waits block local controls.** Bound command/register/
@@ -146,25 +148,44 @@ bench checks. All A items are explicitly identified as Codex additions.
 
 ## Physical controls and remaining bench evidence
 
-### Open live findings — Codex additions, 2026-10-16
+### Live findings — Codex additions, 2026-10-16
 
-- [ ] **A13 — Remote ramp is slow on real hardware.** The 0.1 V/s main-client
-  run moved about 0.0785 V/s. Firmware waits count requested sleep slices but
-  exclude repeated network servicing overhead. Correct actual elapsed timing,
-  then verify rates/paths through `voltsource.AD5780.ramp` with the meter.
-- [ ] **A14 — Nominal voltage conversion misses the ±0.5 mV acceptance limit.**
-  Latest zero/+10 V readings differ by about +5.8/+4.4 mV. User authorized
-  investigation/calibration, retaining ±0.5 mV. Determine offset/gain/stability
-  and attainable endpoints; do not label raw nominal readback as analog accuracy.
+- [x] **A13 — Remote ramp is slow on real hardware.** The original 0.1 V/s run
+  moved about 0.0785 V/s because per-step waits excluded service overhead.
+  Elapsed-time scheduling fixes that delay accounting (`59db0a8`). R01 passes
+  0.001/0.01/0.1 V/s in both directions with ten-code steps, and 1/100-code steps
+  at 0.1 V/s, with measured paths/endpoints. Timing tolerance is 5% plus sampling
+  and observation allowance; this is not a real-time guarantee under arbitrary load.
+- [x] **A14 — Nominal voltage conversion misses ±0.5 mV.** Raw zero/+10 V were
+  about +5.8/+4.4 mV high. The device now stores a measured CH1 offset/gain profile;
+  the main API and physical SAFE ZERO share it. Independent V01 points pass the
+  unchanged ±0.5 mV limit (maximum observed error about 0.050 mV in the first
+  corrected run). CH1 zero code is 130996. Its physical minimum is about
+  −9.99285 V: the API rejects an unattainable −10 V request. CH2–4 remain nominal.
+- [x] **A15 — Codex-introduced: malformed calibration reply on the MCU.** The
+  Uno R4 nano printf lacks `%lld`; the first CAL implementation produced invalid
+  fields despite host tests passing. Allocation-free decimal formatting fixes it
+  (`f37169b`). Live V01 reads the exact profile and checks resulting outputs.
+- [x] **A16 — Fine-step ramp slows during STATUS traffic.** Seven separate
+  W5500 sends per status response delayed one-code steps. A single framed send
+  (`81ac8a4`) restores R01 timing/path acceptance. At 0.1 V/s the finest steps
+  remain more sensitive to traffic than the default ten-code steps.
+- [x] **A17 — Failed SAFE ZERO could look like successful completion.** Add a
+  distinct FAILED state for invalid starting readback, exposed through the main
+  API (`22d6d65`, malab `3aca28a`). E01 demonstrates failure/unchanged outputs on
+  the real Arduino with substituted bad readback; S01 demonstrates successful zero.
+- [x] **A18 — Codex-introduced test setup dependency.** New independent fault/
+  lease/soak cells omitted INIT and could test a cold, clamped DAC after upload.
+  Explicit per-cell initialization and baseline checks fix that (`malab a905e98`).
+  Preserve the failed run; do not attribute its zero output to network/readback faults.
 
-Track actual live evidence and local commits in
-[the live fix ledger](tests/LIVE_FIX_LEDGER.md). Offline checkmarks below do not
-override these newly measured failures.
+See [live coverage](tests/LIVE_COVERAGE.md) for the requirement-by-requirement
+mapping and [fix/commit ledger](tests/LIVE_FIX_LEDGER.md) for measured evidence.
 
 ### Remote-driver findings — Codex additions, 2026-10-16
 
 - [x] **A10 — The supplied AD5780 `get_voltage()` returns a raw-code string.**
-  The new driver in the separate `malab` clone returns nominal volts; `get_code()`
+  The new driver in the separate `malab` clone returns calibrated volts by default; `get_code()`
   provides the integer explicitly. Existing code must remove any extra conversion.
   The new offline notebook checks endpoints, zero and SET/READ agreement.
 - [x] **A11 — Socket reads assume a whole reply and return `None` on failure.**
@@ -178,19 +199,17 @@ override these newly measured failures.
   It retains channel-first arguments. This overlaps A9; offline tests additionally
   cover transport failures, abort/failure status and overall completion deadlines.
 
-The nested clone contains `notebooks/driver_offline_tests.ipynb` (18 groups,
-executed successfully in Jupyter) and `notebooks/ad5780_core_bench.ipynb` (visible
-commands/assertions and meter traces for the user's three core test groups).
-These files belong to the separate malab Git repository. The Keysight 34461A
-at 192.168.1.71 was identified and read successfully before live work was paused;
-this is communication evidence only. No DAC accuracy/ramp/button-emulation bench
-pass is claimed yet. The optional firmware USB interface has host test B22;
-the outer suite now has 82 passing tests. Both firmware builds compile.
+The nested clone contains 25 offline driver groups and the current
+[visible acceptance notebook](malab/notebooks/live_acceptance.ipynb). Final
+behavioral cases import `AD5780` through `malab.instruments.voltsource`. Their
+commands/assertions are directly in cells, with executed notebooks and CSV data
+saved per run. The earlier core-notebook draft now points to this calibrated suite.
 
 ### Physical verification
 
 NETWORK uses A1→GND; SAFE ZERO uses A2→GND, with pull-ups and 25 ms debounce.
-SAFE ZERO moves all channels concurrently toward code 131072 at at most 0.01 V/s,
+SAFE ZERO moves all channels concurrently toward their stored calibrated zero
+codes (CH1 130996, nominal CH2–4 131072) at at most 0.01 V/s,
 then stays latched until a fresh NETWORK press. NETWORK does not write DACs.
 See [wiring and bench procedure](Software/Physical%20controls.md).
 
@@ -199,8 +218,9 @@ behavior, or recovery of an SPI-unresponsive Ethernet chip. An isolated hardware
 reset would require the shield schematic; its shared Arduino RESET must not be
 used for an output-preserving network reset. The supplied W5500 marking alone
 does not establish that wiring. These physical limits are separate from the
-software checklist. No firmware upload or live output change was performed in
-the full repair phase.
+software checklist. Live uploads and output tests were performed on the authorized isolated bench.
+CH1 has meter evidence; CH2–4 have register evidence. Button action emulation
+does not establish electrical contacts/debounce or recovery of a damaged chip.
 
 Test tooling also fixes separate source-digest stamps for the two host executables,
 preventing stale binaries, and uses stdlib unittest so pytest is optional.

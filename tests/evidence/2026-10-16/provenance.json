@@ -1,0 +1,11 @@
+{
+  "uploaded_firmware_commit": "263b32d",
+  "uploaded_firmware_sha256": "5821fe6e23a2e7b5d3643ede42b12b0ebd80845b03a7298977a81e4e7dcb663f",
+  "flash_bytes": 74900,
+  "static_ram_bytes": 3924,
+  "upload_log": "upload_263b32d.log",
+  "acceptance_run": "20261016T194431Z",
+  "calibration_zero_code": 130996,
+  "main_api_import": "from malab.instruments.voltsource import AD5780",
+  "note": "Manifest dirty flags at run start include documentation edits. Uploaded firmware is pinned by captured upload log/hash; no subsequent firmware-source edits."
+}

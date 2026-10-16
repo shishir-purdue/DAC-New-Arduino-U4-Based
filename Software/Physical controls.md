@@ -1,10 +1,10 @@
 # Physical recovery controls
 
-Implementation: 2026-10-14. Target: Arduino Uno R4 Minima with W5500 Ethernet shield and
-the repository's AD5780 extension board. Firmware is prepared and host-tested;
-physical button/analog tests are still required. The user has tested the initial
-button firmware and subsequently confirmed correct zero/readback after the correction.
-Codex has not performed a firmware upload for these changes.
+Updated 2026-10-16. Target: Arduino Uno R4 Minima, W5500 Ethernet shield and
+AD5780 extension board. The isolated bench has live CH1 meter evidence for NETWORK
+and SAFE ZERO through the shared USB action path; CH2–4 are register checks.
+The user has also tried physical buttons. Emulation does not prove electrical
+contacts/debounce; see [live evidence](../tests/LIVE_FIX_LEDGER.md).
 
 ## Wiring
 
@@ -74,14 +74,14 @@ shield's top/bottom or its exact schematic is needed for isolated-reset wiring.
 
 A stable press interrupts remote operation and takes exclusive local control.
 It reads all four DAC registers once and validates the returned register address,
-then moves every nonzero channel toward
-**code 131072** (nominal 0 V for offset-binary +/-10 V operation). Positive outputs
+then moves each channel toward its stored zero code: **CH1 130996; nominal
+CH2–4 131072**. Positive outputs
 decrease; negative outputs increase toward zero. Channels move concurrently, with
 their SPI writes performed sequentially a few microseconds apart.
 
-The requested rate is **0.01 V/s**. Each channel moves by one 76.294 uV code no
-more often than every 7630 us (about 0.0099992 V/s at best; scheduling overhead can
-make it slightly slower). There are no catch-up jumps after delays. Typical times:
+The requested rate is **0.01 V/s**. Each channel moves by one code (CH1 about 76.284 µV; nominal channels
+76.294 µV) no more often than every 7630 µs. The interval increases if a channel
+profile requires it to respect the rate ceiling. Scheduling overhead can slow it. There are no catch-up jumps after delays. Typical times:
 
 | Initial magnitude | Approximate time to zero |
 |---|---|
@@ -163,7 +163,7 @@ line. The helper polls STATUS until complete by default; `wait=False` returns
 on acceptance. Its overall timeout is adjustable for slow ramps; the connection
 must also use a finite per-query timeout. A helper timeout does not automatically
 change outputs or disconnect; the ramp may still be running. Deliberately close
-the connection to abort. Physical slew-rate verification remains a bench task.
+the connection to abort. S01 now records measured CH1 slew/zero evidence; CH2–4 need separate meter checks.
 
 ## Why the Ethernet library is local
 
@@ -186,7 +186,7 @@ hardware.
 
 ## Verification and bench procedure
 
-Run `python -m unittest discover -s tests -p test_buttons.py -v` for the 34 offline
+Run `python -m unittest discover -s tests -p test_buttons.py -v` for the 38 offline
 button and actual-Ethernet-driver tests. `tests/physical_controls.ipynb` gives each
 test its own cell. N1-N10 run against both W5100 and W5500 register transports;
 N11-N12 cover W5500 PHY reset and failed readback. These are simulations, not
@@ -212,8 +212,8 @@ missed, and DAC replies include the address bits specified in datasheet Table 9.
 After uploading the correction, check `READ 1` against the meter before trying a
 ramp. If it reports `ERR! DAC readback invalid; voltage unknown.`, inspect the USB
 diagnostic's raw readback value and the SPI wiring/selection; do not substitute a
-guessed starting voltage. The `get_voltage` client is not present in this repository;
-it must treat an `ERR!` response as an error, never as a numeric voltage.
+guessed starting voltage. The separate malab clone's `voltsource.AD5780.get_voltage` raises on `ERR!`
+and uses the device calibration; it never turns an error into a numeric voltage.
 
 Sources: installed Arduino Renesas core 1.6.0 `cores/arduino/digital.cpp` and
 `r_ioport_api.h`; [AD5780 datasheet, Table 9](https://www.analog.com/media/en/technical-documentation/data-sheets/ad5780.pdf).
@@ -248,14 +248,15 @@ Send one newline-terminated command and wait for its `BENCH` response:
 
 | USB command | Response / meaning |
 | --- | --- |
-| `BENCH STATUS` | `BENCH STATUS READY`, `OFFLINE`, `ACTIVE`, or `LATCHED`. |
+| `BENCH STATUS` | `BENCH STATUS READY`, `OFFLINE`, `ACTIVE`, `LATCHED`, or `FAILED`. |
 | `BENCH NETWORK` | `BENCH OK NETWORK`: network reset requested; wait for a fresh TCP connection. |
 | `BENCH SAFEZERO` | `BENCH OK SAFEZERO`: all-channel zero ramp requested. |
 
 `BENCH ERR ...` indicates rejection. NETWORK is rejected while SAFE ZERO is
 requested, active, or physically held. A new NETWORK action after completion
-rearms. `LATCHED` alone does not prove successful zeroing: invalid DAC readback
-also latches, so verify all four final codes and analog voltage.
+rearms. Invalid starting readback reports `FAILED`, distinct from completed
+`LATCHED`. Completion still needs independent analog evidence; status only
+confirms the scheduled register endpoint.
 
 The USB parser only queues the same action flags used by physical buttons. It
 performs no SPI and no logging within Ethernet cancellation hooks. Replies wait
@@ -264,12 +265,28 @@ buttons. Malformed/oversized lines are discarded in full. B22 exercises the
 shared reset/zero/preemption/priority paths and parser recovery in the host build.
 
 The separate clone in `../malab` contains the Keysight 34461A driver and
-`notebooks/ad5780_core_bench.ipynb`. Commands, measurements and assertions are
+`notebooks/live_acceptance.ipynb`. Commands, measurements and assertions are
 written directly in notebook cells. USB access needs `pyserial`; close serial
 monitors before opening that port from the notebook. Emulation does not test the
 electrical switch contacts, debounce, or a physically failed Ethernet controller.
 
-Validation: both builds compile; the bench image uses 73,960 bytes flash and
-3,828 bytes static RAM. All 82 outer-repository regression tests pass. Live
-upload/output tests are paused at the user's request. No bench firmware has been
-uploaded and no new DAC output-changing command has been sent in this task.
+The main API exposes these actions as `AD5780(..., bench_port="COM5")` methods
+`network_reset`, `safe_zero` / `safe_ramp`, and `get_recovery_status`. The firmware
+stores this box's measured CH1 calibration in `DeviceCalibration.h`, so the
+physical button reaches calibrated zero without requiring a PC/network. Other
+channels retain nominal profiles. The measured CH1 safe ramp takes about 5 s from
+±0.05 V to zero, at no more than 0.01 V/s.
+
+For controlled fault tests only, the bench firmware also accepts
+`BENCH FAULT READBACK`, `BENCH FAULT CLEAR`, and `BENCH FAULT NETWORK`.
+READBACK substitutes all-high frames after actual SPI reads, without changing DAC
+registers. CLEAR removes that override. NETWORK clears the actual W5500 IP
+configuration in foreground code to exercise normal automatic recovery. The main
+API method is `bench_inject_fault('readback'/'clear'/'network')`. The normal build
+compiles these controls out. E01/E02 verify errors, held outputs and recovery on
+the real board; this is not proof against physical chip damage.
+
+Validation: 86 outer regressions and 25 driver groups pass. Both builds compile;
+production uses 73,676 bytes flash / 3,820 RAM, bench uses 74,900 / 3,924. Authorized
+uploads and live tests are recorded in the fix ledger with binary hashes. The
+current live notebook uses the historical `voltsource.AD5780` entry point.

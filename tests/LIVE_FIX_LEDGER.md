@@ -42,26 +42,28 @@ source checks and fault doubles are supporting evidence, not substitute live pas
 
 | ID | Finding / action | Commit | Verification |
 |---|---|---|---|
-| BASE-USB | Preserve prepared optional USB action interface and host regression | firmware `ec00fad` | Builds and B22 pass; live upload pending |
+| BASE-USB | Preserve prepared optional USB action interface and host regression | firmware `ec00fad` | N01/S01 live passes plus B22; firmware uploaded |
 | BASE-API | Preserve scoped socket/AD5780/Keysight drivers and notebook tests | malab `7cafaac` | 18 offline groups; meter identity/read succeeds |
-| LIVE-1 | Ramp delay counts sleeping time but omits service overhead | firmware `59db0a8` | Main-API D02: 2.031 s vs 2.00669 s; broader acceptance pending |
+| LIVE-1 | Ramp delay counts sleeping time but omits service overhead | firmware `59db0a8` | D02 and R01 main-API rate/path tests pass; see dated measurements |
 | LIVE-2 | Analog voltage differs from nominal code conversion | firmware `92c0308`, malab `65253ab` | V01 passes through main API; maximum request error about 0.050 mV |
 | LIVE-3 | Recovery actions need public AD5780 API access | firmware `22d6d65`, malab `3aca28a` | N01/S01 main-API live tests pass; calibrated safe-zero, both signs, latch/priority/rearm |
 | LIVE-4 | Codex-introduced: nano printf does not support `%lld` in new CAL reply | firmware `f37169b` | Main API reads exact integer profile; V01 and D02 pass |
 | LIVE-5 | Fine-step ramp slows under frequent STATUS polling | firmware `81ac8a4` | R01 passes after batching STATUS into one W5500 send; see timing caveat below |
+| TEST-1 | Visible invalid-input, connection and cancellation cases | malab `6203d70` | F01/C01/C02 pass |
+| TEST-2 | Controlled faults, leases, initialization and sustained commands | firmware `263b32d`, malab `70d2f5d` | B26 and E01/E02/L01/I01/Q01/P01 passes |
+| TEST-3 | Codex-introduced independent-cell initialization omission | malab `a905e98` | Explicit INIT/baseline; corrected E01/E02 pass; Jupyter runner added |
 
 ## Live case coverage
 
-The acceptance notebook will assign cases to each checklist ID before any claim
-of completion. At goal start **no comprehensive live case is marked passed**.
-Source-only H1/H5/M5/M6/M7/M8/A3 and fault-specific paths require supporting
-build/audit/fault evidence in addition to their observable live behavior.
+The [coverage table](LIVE_COVERAGE.md) maps all 36 original IDs plus A10–A18.
+Source-only H1/H5/M5/M6/M7/M8/A3 and fault-specific paths retain supporting
+build/audit/fault evidence alongside observable live behavior. Historical pending
+notes below record the state at each run; current results are appended at the end.
 
 ## Runs
 
-Append dated run identifiers, imported API path, code/firmware revisions, measured
-results and remaining failures here as they become available. Keep the goal open
-until the requirement-by-requirement audit is complete.
+Dated run identifiers below retain measured results and failures, including those
+introduced during this work. All final behavioral calls use voltsource.AD5780.
 
 ### 20261016T190817Z — baseline through the required API
 
@@ -124,7 +126,7 @@ R01 passes ten-code steps at 0.001/0.01/0.1 V/s in both directions (duration rat
 separate Ethernet sends. Batch it into one framed send; retain the failed trace.
 The remaining R01 cases and complete checklist acceptance are still required.
 
-### 20261016T193517Z � full ramp matrix passes
+### 20261016T193517Z — full ramp matrix passes
 
 Firmware `81ac8a4` uploaded with captured DFU SUCCESS in
 `tests/results/upload_81ac8a4.log`; SHA256 of the uploaded binary:
@@ -147,3 +149,84 @@ NETWORK clears the real W5500 IP register so the normal health/recovery path mus
 recover. Production builds compile these controls out. Host B26 and 25 driver
 notebook groups pass; the outer suite now passes 86 tests. Both builds pass.
 These controlled faults do not simulate every possible electrical failure.
+
+### 20261016T193640Z — initialization, leases and soak
+
+I01/L01/Q01 pass on firmware `81ac8a4`. Seven repeated/single/all-channel INIT
+operations preserved all codes and CH1 analog output. Idle connection expired
+at the 123-second observation; a 125-second one-code ramp completed with no TCP
+heartbeats and retained ownership at 127 seconds. 6,000 ID/READ/STATUS commands
+finished in 7.31 seconds with no USB monitor, unchanged outputs and a successful
+fresh connection. This soak is not a substitute for the allocation/source audit.
+
+### 20261016T194233Z / 20261016T194324Z — controlled fault acceptance
+
+Firmware `263b32d` uploaded successfully, binary SHA256
+`5821fe6e23a2e7b5d3643ede42b12b0ebd80845b03a7298977a81e4e7dcb663f`;
+log `tests/results/upload_263b32d.log`. Public fault API/tests are malab `70d2f5d`.
+The first E01/E02 run failed because the new independent notebook cells omitted
+INIT after uploading (the cold DAC remained clamped). This is a Codex-introduced
+test setup error, not evidence that the fault altered outputs. Explicit INIT and
+measured baseline checks were added in malab `a905e98`, including the other cells
+that depended on earlier initialization. The failed run remains saved.
+
+After correcting setup, E01 passes: READ, INIT and RAMP reject substituted
+invalid SPI frames; SAFE ZERO reports FAILED and holds outputs; clearing the
+fault and explicit NETWORK rearm restore access. Meter remained approximately
++0.019985 V throughout. E02 passes: clearing the actual W5500 IP configuration
+invalidates the old connection, recovers automatically, discards a partial line,
+interrupts a remote ramp, and holds other codes plus the CH1 measured output.
+No NETWORK action is used to force recovery. Physical cable/chip electrical
+faults are not inferred from this controlled software/configuration test.
+P01 verifies completion/transport deadlines, explicit errors, closed uncertain
+sessions, no automatic command replay and rejection of malformed framing.
+
+### 20261016T194431Z — final Jupyter acceptance, all 13 cases pass
+
+The actual Jupyter kernel used `.venv-bench/Scripts/python.exe`; every behavioral
+case imported `AD5780` through `malab.instruments.voltsource`. V01, R01, N01, S01,
+F01, C01, C02, I01, L01, Q01, E01, E02 and P01 all passed in one run on firmware
+`263b32d`, with malab test/API revision `a905e98`. Documentation was being edited
+while the suite ran; the manifest records dirty working trees. No firmware source
+changed after the logged upload. The bench binary hash is retained in provenance.
+
+- V01 maximum request error **0.050435 mV**; maximum GET-to-meter error
+  **0.036611 mV**, both within the unchanged **±0.5 mV** limit.
+- +10 V measured **9.999982293 V**; repeated zero measured **+0.000012092 V**.
+- R01 ten-code durations differ from programmed durations by at most **1.28%**
+  including observation latency. Fine one-code steps at 0.1 V/s take
+  **2.125/2.110 s vs 2.000586 s**: about 6.2/5.5% longer including observation,
+  within the declared 5% plus measured sampling/observation allowance. All path,
+  monotonicity and endpoint assertions pass. Do not claim arbitrary-load precision.
+- S01 reaches measured zero from both signs at **5.032/5.016 s** versus
+  **5.004/4.997 s** expected; final meter about **−6/+19 µV**. All four zero codes,
+  independence from TCP, priority, persistent latch and explicit rearm pass.
+- L01 idle expiry and long-ramp ownership pass again. Q01 6,000 commands, I01
+  output-preserving INIT, C01/C02 ownership/cleanup/cancellation and F01/P01
+  validation/deadlines pass. E01/E02 controlled real-board faults pass.
+- The final 25-group offline driver notebook also passes in Jupyter. 86 outer
+  regressions pass; both target firmware builds succeed. Notebook schemas validate.
+
+The [committed evidence snapshot](evidence/2026-10-16/) includes all CSVs,
+manifest, text outputs, upload logs/hashes, calibration baseline and plot.
+The full executed notebook remains at
+`malab/notebooks/results/20261016T194431Z/executed.ipynb`.
+The [coverage table](LIVE_COVERAGE.md) maps all original 36 IDs plus A10–A18 and
+explicitly separates supporting source/fault evidence from physical measurement.
+CH1 alone has analog evidence. Electrical switch contacts, cable failure and
+SPI-unresponsive hardware have not been certified by this action-emulation suite.
+
+The earlier nominal core notebook now points to the current acceptance notebook,
+avoiding stale code-131072 zero assumptions. Documentation covers device
+calibration, impossible −10 V, error semantics and the main recovery API.
+
+Final read-only check: ID AD5780, recovery READY, codes
+`[130996, 131072, 131072, 131072]` equal the four stored zero targets.
+CH1 meter mean is **+0.000020131 V** (five readings); SCPI error queue clear.
+See [final state](evidence/2026-10-16/final_state.json).
+
+The final documentation/evidence commits update both READMEs, the checklist,
+coverage table, physical-control instructions, notebook pointers and measured
+snapshot. A complete local commit inventory at handoff is saved in
+[local_commits.json](results/local_commits.json); it includes these final commits
+without requiring a commit to contain its own hash. Nothing is pushed.

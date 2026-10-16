@@ -1,8 +1,16 @@
 # DAC regression tests
 
+For current hardware acceptance use
+[malab/notebooks/live_acceptance.ipynb](../malab/notebooks/live_acceptance.ipynb).
+It calls `malab.instruments.voltsource.AD5780` and shows each command/assertion
+in the cell. The notebooks below are supporting host regressions and older
+nominal diagnostic helpers, not the final calibrated acceptance suite.
+See [LIVE_COVERAGE.md](LIVE_COVERAGE.md) and [LIVE_FIX_LEDGER.md](LIVE_FIX_LEDGER.md).
+
+
 Run the setup cell in `bug_checklist.ipynb`, then any of the 36 independent
 checklist cells. Each failing requirement raises an assertion with details.
-`physical_controls.ipynb` adds individual B1–B21 and N1–N12 cases. Both notebooks
+`physical_controls.ipynb` adds individual B1–B26 and N1–N12 cases. Both notebooks
 are committed with clean outputs and live tests disabled.
 
 The same checks run without Jupyter or pytest:
@@ -14,7 +22,7 @@ python tests/checklist_tests.py --report tests/results/current.json
 python tests/checklist_tests.py --preliminary
 ```
 
-The full suite has **81 tests**: 36 checklist cases, 33 button/driver cases,
+The full suite has **86 tests**: 36 checklist cases, 38 button/driver cases,
 seven live-helper tests using fake sockets, and five Python ramp-client tests.
 All are expected to pass. Failures are never hidden as expected successes.
 Overlap between checklist and dedicated cases is intentional. pytest can also

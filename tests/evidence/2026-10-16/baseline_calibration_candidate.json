@@ -1,0 +1,9 @@
+{
+  "volts_per_code": 7.628355320380396e-05,
+  "volts_at_code_zero": -9.992845256292616,
+  "zero_code": 130996,
+  "min_voltage": -9.992845256292616,
+  "max_voltage": 10.004354231212167,
+  "max_residual": 1.1931212167581862e-05,
+  "nominal_zero_offset": 0.0057926292363763565
+}
