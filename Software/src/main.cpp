@@ -47,6 +47,7 @@ const char HELP_MESSAGE[] =
 "  HELP\r\n"
 "  ID\r\n"
 "  STATUS (last ramp state)\r\n"
+"  VALUES (four tracked code/source pairs; no SPI reads)\r\n"
 "All parameters must be integers.\r\n";
 
 // ================== Forward Declarations ================== //
@@ -69,6 +70,13 @@ void func_HELP();
 void func_ID();
 void func_STATUS();
 void func_CAL(int channel);
+void formatOutputCodes(char* reply, size_t size) {
+  uint32_t codes[4] = {}; unsigned source[4] = {};
+  for (int i=0; i<4; ++i) source[i]=AD5780_TrackedCode(DAC_sync[i], &codes[i]);
+  snprintf(reply,size,"VALUES %lu %u %lu %u %lu %u %lu %u",
+      (unsigned long)codes[0],source[0],(unsigned long)codes[1],source[1],
+      (unsigned long)codes[2],source[2],(unsigned long)codes[3],source[3]);
+}
 void func_RAMP(int p1, int p2, int p3, int p4);
 
 #include "PhysicalControls.h"
@@ -334,6 +342,10 @@ void processCommand(char* cmdLine) {
     func_ID();
   } else if (strcmp(command, "STATUS") == 0 && tokenCount == 1) {
     func_STATUS();
+  } else if (strcmp(command, "VALUES") == 0 && tokenCount == 1) {
+    char reply[96]; formatOutputCodes(reply,sizeof(reply));
+    size_t length=strlen(reply); reply[length++]='\r'; reply[length++]='\n'; reply[length]=0;
+    telnetClient.print(reply);
   } else if (strcmp(command, "CAL") == 0 && tokenCount == 2) {
     if (isValidChannel(arguments[0])) func_CAL(arguments[0]);
     else telnetClient.print("ERR! Invalid DAC channel. Must be 1-4.\r\n");

@@ -61,6 +61,9 @@ void pollBenchInput() {
                     safeZeroActive ? "BENCH STATUS ACTIVE" :
                     safeZeroLatched ? "BENCH STATUS LATCHED" :
                     networkEnabled && !networkFault ? "BENCH STATUS READY" : "BENCH STATUS OFFLINE");
+            } else if (strcmp(benchInput, "BENCH VALUES") == 0) {
+                char values[56]; formatOutputCodes(values,sizeof(values));
+                snprintf(benchReply,sizeof(benchReply),"BENCH %s\r\n",values);
             } else queueBenchReply("BENCH ERR UNKNOWN COMMAND");
             return;
         } else if (!benchDiscarding) {

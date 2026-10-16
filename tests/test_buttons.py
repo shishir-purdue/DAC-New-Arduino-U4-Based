@@ -33,6 +33,7 @@ CASES = {
     "B24": "device calibration drives readout, cold INIT, safe-zero endpoint and slew limit",
     "B25": "USB status distinguishes failed safe-zero validation from successful completion",
     "B26": "bench faults exercise invalid readback and real configuration recovery without DAC writes",
+    "B27": "output telemetry observes checked reads and ramp writes without SPI or changing outputs",
     "N1": "actual Ethernet driver: stuck socket command times out",
     "N2": "actual Ethernet driver: socket command cancelled by local request",
     "N3": "actual Ethernet driver: unstable RX size times out",

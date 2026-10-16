@@ -19,7 +19,25 @@ void seedCodes(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
     }
 }
 void runButtons(const std::string& id) {
-    if (id == "B26") {
+    if (id == "B27") {
+        seedCodes(ZERO_CODE+10,ZERO_CODE,ZERO_CODE,ZERO_CODE); attachOwner();
+        uint32_t code=42;
+        require(AD5780_TrackedCode(DAC_sync[0],&code)==0, "Telemetry guessed an unobserved value");
+        command("READ 1");
+        require(AD5780_TrackedCode(DAC_sync[0],&code)==1 && code==ZERO_CODE+10, "Checked read was not tracked");
+        int transactions=SPI.transactions,writes=SPI.writes;
+        command("VALUES");
+        require(SPI.transactions==transactions && SPI.writes==writes, "Telemetry accessed DAC SPI");
+        require(sockets[owner].tx.contains("VALUES 131082 1"), "Wrong TCP telemetry");
+        uint32_t initial=ZERO_CODE+10;
+        auto observe=[]() { command("VALUES"); return false; };
+        require(AD5780_ramp(DAC_sync[0],ZERO_CODE+30,10,1000,&AD5780_spi_settings,observe,&initial), "Telemetry broke ramp");
+        require(AD5780_TrackedCode(DAC_sync[0],&code)==2 && code==ZERO_CODE+30, "Ramp writes not tracked");
+        Serial.feed("BENCH VALUES\n");pump(3);
+        require(Serial.contains("BENCH VALUES 131102 2"), "USB telemetry not available");
+        SPI.forcedRead=0xFFFFFF;command("READ 1");
+        require(AD5780_TrackedCode(DAC_sync[0],&code)==0, "Invalid readback retained valid telemetry");
+    } else if (id == "B26") {
         seedCodes(ZERO_CODE+100,ZERO_CODE,ZERO_CODE,ZERO_CODE); attachOwner();
         Serial.feed("BENCH FAULT READBACK\n"); pump(3);
         require(dacBenchBadReadback && SPI.writes==0, "Bench readback override changed outputs");

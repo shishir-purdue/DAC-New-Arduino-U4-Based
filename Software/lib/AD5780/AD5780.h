@@ -107,6 +107,10 @@ unsigned long AD5780_GetRegisterValue(
  * Leaves *value unchanged on failure; performs no output writes. */
 bool AD5780_ReadDacValueChecked(unsigned char slaveDeviceId, uint32_t* value, SPISettings* settings);
 
+// Read-only telemetry: 0 unknown, 1 checked register read, 2 last completed write.
+// No SPI transaction. A write is not independent analog/readback verification.
+uint8_t AD5780_TrackedCode(unsigned char slaveDeviceId, uint32_t* value);
+
 /* Writes to the DAC register. */
 void AD5780_SetDacValue(unsigned char slaveDeviceId, unsigned long value, SPISettings* settings);
 

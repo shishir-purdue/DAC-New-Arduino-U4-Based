@@ -48,6 +48,22 @@
 #include "Communication.h"		// Communication definitions.
 #include <Arduino.h>
 
+struct TrackedDacCode { uint8_t pin = 255; uint8_t source = 0; uint32_t code = 0; };
+static TrackedDacCode trackedDacCodes[4];
+static void trackDacCode(uint8_t pin, uint32_t code, uint8_t source) {
+    for (auto& entry : trackedDacCodes) {
+        if (entry.pin == pin || entry.pin == 255) {
+            entry.pin = pin; entry.code = code; entry.source = source; return;
+        }
+    }
+}
+uint8_t AD5780_TrackedCode(unsigned char pin, uint32_t* value) {
+    for (const auto& entry : trackedDacCodes) if (entry.pin == pin) {
+        *value = entry.code; return entry.source;
+    }
+    return 0;
+}
+
 #if defined(DAC_BENCH_CONTROLS) && DAC_BENCH_CONTROLS
 // Opt-in bench fault: alter received data only, never the actual DAC registers.
 bool dacBenchBadReadback = false;
@@ -179,11 +195,13 @@ bool AD5780_ReadDacValueChecked(unsigned char slaveDeviceId, uint32_t* value, SP
     // R/W and DB1:0 are not voltage data. Do not reject a legitimate full scale.
     // A floating/stuck-high MISO word (0xFFFFFF) must not become +10 V.
     if ((raw & 0x700000UL) != AD5780_ADDR_REG(AD5780_REG_DAC)) {
+        trackDacCode(slaveDeviceId, 0, 0);
         DacLog.print("ERR! DAC readback invalid, raw=");
         DacLog.println(raw);
         return false;
     }
     *value = (raw >> 2) & 0x3FFFF;
+    trackDacCode(slaveDeviceId, *value, 1);
     return true;
 }
 
@@ -194,6 +212,7 @@ void AD5780_SetDacValue(unsigned char slaveDeviceId, unsigned long value, SPISet
                             AD5780_DAC_DATA(value), 
                             3, 
                             settings);
+    trackDacCode(slaveDeviceId, value & 0x3FFFF, 2);
 
     //Dummy Byte, although does not spesifically know why it is needed.
     // AD5780_SetRegisterValue(slaveDeviceId,
