@@ -30,3 +30,8 @@ The seven groups cover mapping, configuration rejection, partial failures,
 independent operations and USB preemption, GUI dispatch/request deduplication,
 per-unit stale/busy/latch isolation and independent worker threads. All fake
 behavior and assertions are directly in `multidac_offline_tests.ipynb`.
+
+The saved plot uses each channel/meter sample timestamp. It was redrawn from
+the same recorded data after correcting a plot-only use of HTTP snapshot time;
+the original executed notebook retains its original rendering. Test assertions
+and measured results were not changed.
