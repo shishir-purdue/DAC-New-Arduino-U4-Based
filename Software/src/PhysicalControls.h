@@ -7,8 +7,8 @@ constexpr uint8_t SAFE_ZERO_BUTTON = A2;
 constexpr uint8_t ETHERNET_CS = 10;
 constexpr uint8_t SD_CS = 4;
 constexpr uint32_t ZERO_CODE = 131072; // Offset binary, nominal +/-10 V references.
-// One 20/2^18 V LSB every 7630 us: <= 0.01 V/s, without catch-up jumps.
-constexpr uint32_t SAFE_STEP_US = 7630;
+// One 20/2^18 V LSB every 3815 us: <= 0.02 V/s, without catch-up jumps.
+constexpr uint32_t SAFE_STEP_US = 3815;
 constexpr uint32_t BUTTON_DEBOUNCE_MS = 25;
 
 struct RecoveryButton {
@@ -85,7 +85,7 @@ bool restartNetwork() {
     safeZeroFailed = false;
     Ethernet.reset(); // Clear ALL socket caches and force chip reset/detection.
     Ethernet.init(ETHERNET_CS);
-    Ethernet.begin(mac, IPAddress(192,168,1,200));
+    Ethernet.begin(mac, deviceIP);
     if (dacNetworkCancelled() || Ethernet.hardwareStatus() == EthernetNoHardware) {
         networkFault = true;
         DacLog.println("Network offline; local buttons remain available.");
@@ -94,7 +94,7 @@ bool restartNetwork() {
     byte actualMac[6];
     Ethernet.MACAddress(actualMac);
     if (memcmp(mac, actualMac, sizeof(actualMac)) != 0 ||
-        Ethernet.localIP() != IPAddress(192,168,1,200)) {
+        Ethernet.localIP() != deviceIP) {
         networkFault = true;
         DacLog.println("Network configuration readback failed.");
         return false;
@@ -110,7 +110,7 @@ bool restartNetwork() {
         networkEnabled = !dacNetworkCancelled();
     }
     if (!networkEnabled) networkFault = true;
-    DacLog.println(networkEnabled ? "Network ready: 192.168.1.200:23." : "Network listener failed/cancelled.");
+    DacLog.println(networkEnabled ? networkReadyMessage : "Network listener failed/cancelled.");
     return networkEnabled;
 }
 
@@ -132,7 +132,7 @@ void serviceNetworkHealth() {
     byte actualMac[6];
     Ethernet.MACAddress(actualMac);
     if (memcmp(actualMac, mac, sizeof(actualMac)) != 0 ||
-        Ethernet.localIP() != IPAddress(192,168,1,200)) networkFault = true;
+        Ethernet.localIP() != deviceIP) networkFault = true;
 }
 
 void serviceNetworkRecovery() {
@@ -153,7 +153,7 @@ void beginSafeZero() {
     dacBusy = true;
     safeStepPeriod = SAFE_STEP_US;
     for (uint8_t i = 0; i < 4; ++i) {
-        uint32_t period = (channelCalibration[i].stepPicovolts + 9999) / 10000;
+        uint32_t period = (channelCalibration[i].stepPicovolts + 19999) / 20000;
         if (period > safeStepPeriod) safeStepPeriod = period;
         if (!AD5780_ReadDacValueChecked(static_cast<unsigned char>(DAC_sync[i]),
                                        &safeCodes[i], &AD5780_spi_settings)) {
@@ -168,7 +168,7 @@ void beginSafeZero() {
     }
     safeLastStep = micros();
     safeZeroActive = true;
-    DacLog.println("SAFE ZERO: all channels ramping at 0.01 V/s.");
+    DacLog.println("SAFE ZERO: all channels ramping at 0.02 V/s.");
 }
 
 void serviceSafeZero() {

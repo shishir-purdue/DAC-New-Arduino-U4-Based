@@ -50,11 +50,11 @@ void runButtons(const std::string& id) {
         Serial.feed("BENCH NETWORK\n"); pump(3); attachOwner();
         int resets=networkResetCalls;
         Serial.feed("BENCH FAULT NETWORK\n"); pump(3);
-        require(Ethernet.localIP()!=IPAddress(192,168,1,200), "Network fault did not alter controller configuration");
+        require(Ethernet.localIP()!=deviceIP, "Network fault did not alter controller configuration");
         fakeMicros+=250000; loop();
         require(networkFault && !networkEnabled && !clientConnected && SPI.writes==0, "Configuration loss left stale ownership or changed outputs");
         fakeMicros+=5000000; pump(3);
-        require(networkResetCalls==resets+1 && networkEnabled && !(Ethernet.localIP()!=IPAddress(192,168,1,200)), "Automatic config recovery failed");
+        require(networkResetCalls==resets+1 && networkEnabled && !(Ethernet.localIP()!=deviceIP), "Automatic config recovery failed");
         require(SPI.writes==0 && !SPI.active && !SPI.badFrame, "Bench fault nested SPI or changed DAC data");
     } else if (id == "B25") {
         seedCodes(ZERO_CODE+100,ZERO_CODE,ZERO_CODE,ZERO_CODE);
@@ -91,9 +91,9 @@ void runButtons(const std::string& id) {
         require(dacCode(0)==140000 && SPI.writes==0, "Calibration changed active INIT preservation");
         channelCalibration[0].stepPicovolts=80000000;
         seedCodes(130997,ZERO_CODE,ZERO_CODE,ZERO_CODE); SPI.writes=0;
-        press(A2); advanceButtons(7630);
-        require(SPI.writes==0 && safeStepPeriod==8000, "Calibrated step violated 0.01 V/s ceiling");
-        advanceButtons(370);
+        press(A2); advanceButtons(3815);
+        require(SPI.writes==0 && safeStepPeriod==4000, "Calibrated step violated 0.02 V/s ceiling");
+        advanceButtons(185);
         require(dacCode(0)==130996 && !safeZeroActive, "Calibrated safe step failed");
     } else if (id == "B23") {
         // Service cost is wall-clock time, not additional requested ramp delay.
@@ -251,7 +251,9 @@ void runButtons(const std::string& id) {
                 require(dacCode(i) == expected, "Safe ramp skipped/overshot a code"); before[i] = expected;
             }
         }
-        require(!safeZeroActive && !dacBusy && fakeMicros-start >= 1000000000ULL, "Full-range ramp too fast or failed to complete");
+        // The caller advances one interval between services; SPI delays also
+        // advance this test clock. Allow 5% for that overhead, but reject 0.01 V/s.
+        require(!safeZeroActive && !dacBusy && fakeMicros-start >= 500000000ULL && fakeMicros-start < 525000000ULL, "Full-range ramp did not match 0.02 V/s");
     } else if (id == "B5") {
         fakeNetworkMissing = true; restartNetwork();
         require(networkFault && !networkEnabled, "Missing Ethernet incorrectly reported ready");

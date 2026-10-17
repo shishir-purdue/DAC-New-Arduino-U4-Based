@@ -81,7 +81,7 @@ ProtocolError: Unexpected multiline HELP response; connection closed to prevent 
 
 InstrumentConnectionError: No live connection; connect explicitly (commands are never replayed)
 InstrumentTimeout: Instrument connection/handshake timed out
-InstrumentConnectionError: Cannot connect to 192.168.1.200: refused
+InstrumentConnectionError: Cannot connect to 192.0.2.10: refused
 CommandError: ERR! Server busy: only one connection allowed.
 
 CommandError: Ramp did not complete: ABORTED

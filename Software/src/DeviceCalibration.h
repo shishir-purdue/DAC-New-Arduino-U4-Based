@@ -22,17 +22,6 @@ inline void calibrationIntegerText(int64_t value, char* output) {
     *output='\0';
 }
 
-// This project's MAC/IP identify box A8:61:0A:AE:F2:01. Only CH1 was measured.
-// Source: 20261016T190817Z, Keysight 34461A MY60041761; fit residual <=11.94 uV.
-// Build-time storage makes the local safe-zero endpoint independent of a PC,
-// connection, reset, or flash-emulated EEPROM write. Do not reuse on another box.
-#if defined(DAC_CALIBRATED_BOX) && DAC_CALIBRATED_BOX
-DacCalibration channelCalibration[4] = {
-    {-9992845256LL, 76283553, 130996, true},
-    nominalCalibration, nominalCalibration, nominalCalibration
-};
-#else
-DacCalibration channelCalibration[4] = {
-    nominalCalibration, nominalCalibration, nominalCalibration, nominalCalibration
-};
-#endif
+// Selected together with the physical unit identity from ignored local config.
+// Stored in firmware so physical safe-zero remains independent of the PC.
+DacCalibration channelCalibration[4] = DAC_CHANNEL_CALIBRATIONS;

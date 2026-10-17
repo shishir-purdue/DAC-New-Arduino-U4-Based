@@ -1,0 +1,2591 @@
+{
+  "now": 1792200653.3652363,
+  "server_started": 1792186203.1420217,
+  "server_pid": 83208,
+  "units": [
+    {
+      "unit": 1,
+      "address": "192.0.2.10",
+      "first_channel": 1,
+      "last_channel": 4,
+      "usb_port": "COM5",
+      "network": {
+        "state": "good",
+        "address": "192.0.2.10",
+        "last_ok": 1792200653.3330112,
+        "latency_ms": 15.0,
+        "error": null
+      },
+      "recovery": {
+        "state": "READY",
+        "at": 1792200653.106574,
+        "error": null
+      },
+      "ramp": {
+        "state": "COMPLETE",
+        "channel": 4,
+        "target_code": 131072,
+        "local_channel": 4
+      },
+      "pending": null,
+      "device_error": "DAC 1: ERR! DAC readback invalid; voltage unknown.; DAC 2: ERR! DAC readback invalid; voltage unknown.; DAC 3: ERR! DAC readback invalid; voltage unknown.; DAC 4: ERR! DAC readback invalid; voltage unknown."
+    }
+  ],
+  "channels": [
+    {
+      "channel": 1,
+      "voltage": null,
+      "code": null,
+      "source": "unknown",
+      "at": 1792200653.3330112,
+      "calibrated": true,
+      "limits": [
+        -9.992845256,
+        10
+      ],
+      "calibration": {
+        "offset_nanovolts": -9992845256,
+        "step_picovolts": 76283553,
+        "zero_code": 130996,
+        "volts_per_code": 7.6283553E-05
+      },
+      "local_channel": 1,
+      "unit": 1
+    },
+    {
+      "channel": 2,
+      "voltage": null,
+      "code": null,
+      "source": "unknown",
+      "at": 1792200653.3330112,
+      "calibrated": false,
+      "limits": [
+        -10,
+        9.999923706054688
+      ],
+      "calibration": {
+        "offset_nanovolts": -10000000000,
+        "step_picovolts": 76293945,
+        "zero_code": 131072,
+        "volts_per_code": 7.62939453125E-05
+      },
+      "local_channel": 2,
+      "unit": 1
+    },
+    {
+      "channel": 3,
+      "voltage": null,
+      "code": null,
+      "source": "unknown",
+      "at": 1792200653.3330112,
+      "calibrated": false,
+      "limits": [
+        -10,
+        9.999923706054688
+      ],
+      "calibration": {
+        "offset_nanovolts": -10000000000,
+        "step_picovolts": 76293945,
+        "zero_code": 131072,
+        "volts_per_code": 7.62939453125E-05
+      },
+      "local_channel": 3,
+      "unit": 1
+    },
+    {
+      "channel": 4,
+      "voltage": null,
+      "code": null,
+      "source": "unknown",
+      "at": 1792200653.3330112,
+      "calibrated": false,
+      "limits": [
+        -10,
+        9.999923706054688
+      ],
+      "calibration": {
+        "offset_nanovolts": -10000000000,
+        "step_picovolts": 76293945,
+        "zero_code": 131072,
+        "volts_per_code": 7.62939453125E-05
+      },
+      "local_channel": 4,
+      "unit": 1
+    }
+  ],
+  "meter": {
+    "state": "good",
+    "address": "192.0.2.71",
+    "channel": 4,
+    "voltage": 0.000219273222,
+    "at": 1792200653.262023,
+    "error": null
+  },
+  "history": [
+    {
+      "at": 1792200590.8658752,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000202972335
+    },
+    {
+      "at": 1792200591.1287737,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000212741797
+    },
+    {
+      "at": 1792200591.3904436,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00020770485
+    },
+    {
+      "at": 1792200591.6526647,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000210583105
+    },
+    {
+      "at": 1792200591.9150789,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000208507441
+    },
+    {
+      "at": 1792200592.177989,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000221708668
+    },
+    {
+      "at": 1792200592.4409564,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000215730754
+    },
+    {
+      "at": 1792200592.7029974,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000206791558
+    },
+    {
+      "at": 1792200592.9530804,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00021080451
+    },
+    {
+      "at": 1792200593.216847,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000217557339
+    },
+    {
+      "at": 1792200593.4808834,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000212824823
+    },
+    {
+      "at": 1792200593.7423239,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000207898579
+    },
+    {
+      "at": 1792200594.0055208,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000207594148
+    },
+    {
+      "at": 1792200594.2661154,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00021080451
+    },
+    {
+      "at": 1792200594.529337,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000217169881
+    },
+    {
+      "at": 1792200594.7894547,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000209088627
+    },
+    {
+      "at": 1792200595.0543797,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000217059179
+    },
+    {
+      "at": 1792200595.315444,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000216671722
+    },
+    {
+      "at": 1792200595.5769708,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000200730617
+    },
+    {
+      "at": 1792200595.8372562,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000209310031
+    },
+    {
+      "at": 1792200596.0993412,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000208701169
+    },
+    {
+      "at": 1792200596.360318,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000210721483
+    },
+    {
+      "at": 1792200596.6222682,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000215979834
+    },
+    {
+      "at": 1792200596.8870823,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000203138388
+    },
+    {
+      "at": 1792200597.1488805,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000215952158
+    },
+    {
+      "at": 1792200597.4105759,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000212437366
+    },
+    {
+      "at": 1792200597.6731813,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000221099807
+    },
+    {
+      "at": 1792200597.9322026,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000212022233
+    },
+    {
+      "at": 1792200598.192363,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000209310031
+    },
+    {
+      "at": 1792200598.4540133,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000207068313
+    },
+    {
+      "at": 1792200598.7134614,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00020770485
+    },
+    {
+      "at": 1792200598.9776316,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000213821142
+    },
+    {
+      "at": 1792200599.238506,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000216644046
+    },
+    {
+      "at": 1792200599.4990816,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00020770485
+    },
+    {
+      "at": 1792200599.7597342,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000207898579
+    },
+    {
+      "at": 1792200600.0226924,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000216339616
+    },
+    {
+      "at": 1792200600.2827516,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000209199329
+    },
+    {
+      "at": 1792200600.5440326,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000212243637
+    },
+    {
+      "at": 1792200600.805702,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000211524073
+    },
+    {
+      "at": 1792200601.0663388,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000205075675
+    },
+    {
+      "at": 1792200601.3260372,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000209199329
+    },
+    {
+      "at": 1792200601.588784,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000215426323
+    },
+    {
+      "at": 1792200601.8482857,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000205684537
+    },
+    {
+      "at": 1792200602.1106617,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000211413371
+    },
+    {
+      "at": 1792200602.3717186,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000208064632
+    },
+    {
+      "at": 1792200602.6334925,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000207179015
+    },
+    {
+      "at": 1792200602.8948328,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000216256589
+    },
+    {
+      "at": 1792200603.159154,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000205463132
+    },
+    {
+      "at": 1792200603.420164,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000214845137
+    },
+    {
+      "at": 1792200603.6785567,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000205186377
+    },
+    {
+      "at": 1792200603.9406185,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000208811871
+    },
+    {
+      "at": 1792200604.2040718,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000210084946
+    },
+    {
+      "at": 1792200604.4633832,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00021395952
+    },
+    {
+      "at": 1792200604.7291849,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000210084946
+    },
+    {
+      "at": 1792200604.9883528,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000209116302
+    },
+    {
+      "at": 1792200605.248979,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00021290785
+    },
+    {
+      "at": 1792200605.5112116,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000213433685
+    },
+    {
+      "at": 1792200605.772608,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00020690226
+    },
+    {
+      "at": 1792200606.0333095,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000207898579
+    },
+    {
+      "at": 1792200606.2948434,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000216837775
+    },
+    {
+      "at": 1792200606.5541208,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00021290785
+    },
+    {
+      "at": 1792200606.8141093,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000211911531
+    },
+    {
+      "at": 1792200607.0769362,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00021030635
+    },
+    {
+      "at": 1792200607.3379307,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000212935525
+    },
+    {
+      "at": 1792200607.602108,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000213433685
+    },
+    {
+      "at": 1792200607.8633165,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000213738116
+    },
+    {
+      "at": 1792200608.1234314,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000213433685
+    },
+    {
+      "at": 1792200608.3846438,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000220352567
+    },
+    {
+      "at": 1792200608.6455495,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000213046228
+    },
+    {
+      "at": 1792200608.9094093,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000212022233
+    },
+    {
+      "at": 1792200609.1694562,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000212548068
+    },
+    {
+      "at": 1792200609.432046,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000208479765
+    },
+    {
+      "at": 1792200609.6935194,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000211496398
+    },
+    {
+      "at": 1792200609.9556193,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000217142206
+    },
+    {
+      "at": 1792200610.2142062,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000216644046
+    },
+    {
+      "at": 1792200610.476384,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00021240969
+    },
+    {
+      "at": 1792200610.737224,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000208009281
+    },
+    {
+      "at": 1792200610.998698,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000207372744
+    },
+    {
+      "at": 1792200611.2578187,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000210887536
+    },
+    {
+      "at": 1792200611.51865,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000212631095
+    },
+    {
+      "at": 1792200611.7782562,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000207760201
+    },
+    {
+      "at": 1792200612.04127,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000210500079
+    },
+    {
+      "at": 1792200612.301187,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000213931844
+    },
+    {
+      "at": 1792200612.5630689,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000213821142
+    },
+    {
+      "at": 1792200612.8231547,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000210001919
+    },
+    {
+      "at": 1792200613.0838323,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000219273222
+    },
+    {
+      "at": 1792200613.345964,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000211524073
+    },
+    {
+      "at": 1792200613.6048653,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000214928164
+    },
+    {
+      "at": 1792200613.8691084,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000215149568
+    },
+    {
+      "at": 1792200614.1323204,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000212935525
+    },
+    {
+      "at": 1792200614.3930945,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000218055498
+    },
+    {
+      "at": 1792200614.653968,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00020585059
+    },
+    {
+      "at": 1792200614.9127078,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000201422505
+    },
+    {
+      "at": 1792200615.1725342,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000210001919
+    },
+    {
+      "at": 1792200615.4337575,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000205186377
+    },
+    {
+      "at": 1792200615.693956,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000218359929
+    },
+    {
+      "at": 1792200615.9562714,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000213738116
+    },
+    {
+      "at": 1792200616.2180169,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000216367291
+    },
+    {
+      "at": 1792200616.478974,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000215730754
+    },
+    {
+      "at": 1792200616.7394335,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000214845137
+    },
+    {
+      "at": 1792200617.000503,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000210693807
+    },
+    {
+      "at": 1792200617.2615283,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00021736361
+    },
+    {
+      "at": 1792200617.5228264,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000212326664
+    },
+    {
+      "at": 1792200617.7842987,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000208894898
+    },
+    {
+      "at": 1792200618.0461593,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000213212281
+    },
+    {
+      "at": 1792200618.3088439,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000208479765
+    },
+    {
+      "at": 1792200618.5690944,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00021946695
+    },
+    {
+      "at": 1792200618.8297622,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000214236275
+    },
+    {
+      "at": 1792200619.0919647,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000213433685
+    },
+    {
+      "at": 1792200619.3526175,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000213516712
+    },
+    {
+      "at": 1792200619.615099,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000211717802
+    },
+    {
+      "at": 1792200619.8761005,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00021786177
+    },
+    {
+      "at": 1792200620.1378424,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000213018552
+    },
+    {
+      "at": 1792200620.3974035,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000210583105
+    },
+    {
+      "at": 1792200620.6589868,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000215620052
+    },
+    {
+      "at": 1792200620.9215055,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000224116439
+    },
+    {
+      "at": 1792200621.1817937,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000213516712
+    },
+    {
+      "at": 1792200621.4418354,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000220186514
+    },
+    {
+      "at": 1792200621.702529,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000216450318
+    },
+    {
+      "at": 1792200621.9637105,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000212326664
+    },
+    {
+      "at": 1792200622.2248833,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000218581333
+    },
+    {
+      "at": 1792200622.4844706,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000214651408
+    },
+    {
+      "at": 1792200622.746045,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000207677175
+    },
+    {
+      "at": 1792200623.004715,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000211717802
+    },
+    {
+      "at": 1792200623.2664473,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00021110894
+    },
+    {
+      "at": 1792200623.526407,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000209586786
+    },
+    {
+      "at": 1792200623.7883766,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000223092445
+    },
+    {
+      "at": 1792200624.0499737,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000210693807
+    },
+    {
+      "at": 1792200624.3134425,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000207483446
+    },
+    {
+      "at": 1792200624.5753539,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000215149568
+    },
+    {
+      "at": 1792200624.8363507,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000216339616
+    },
+    {
+      "at": 1792200625.0984,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000213738116
+    },
+    {
+      "at": 1792200625.3489797,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000207566473
+    },
+    {
+      "at": 1792200625.6105375,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000215647727
+    },
+    {
+      "at": 1792200625.871097,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000208092308
+    },
+    {
+      "at": 1792200626.1363227,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000214042547
+    },
+    {
+      "at": 1792200626.3986454,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000214623733
+    },
+    {
+      "at": 1792200626.6626549,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000212631095
+    },
+    {
+      "at": 1792200626.9267385,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000210776834
+    },
+    {
+      "at": 1792200627.189436,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000217751068
+    },
+    {
+      "at": 1792200627.4501038,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000207483446
+    },
+    {
+      "at": 1792200627.7102108,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000214125573
+    },
+    {
+      "at": 1792200627.9706094,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000216256589
+    },
+    {
+      "at": 1792200628.2350054,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000218941115
+    },
+    {
+      "at": 1792200628.4964495,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000207870903
+    },
+    {
+      "at": 1792200628.75717,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000205684537
+    },
+    {
+      "at": 1792200629.0206387,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000217972472
+    },
+    {
+      "at": 1792200629.2827358,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000213821142
+    },
+    {
+      "at": 1792200629.543562,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000204134707
+    },
+    {
+      "at": 1792200629.806749,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000212022233
+    },
+    {
+      "at": 1792200630.068172,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000213738116
+    },
+    {
+      "at": 1792200630.328171,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000215924483
+    },
+    {
+      "at": 1792200630.5895681,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000207981606
+    },
+    {
+      "at": 1792200630.8515275,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000214734435
+    },
+    {
+      "at": 1792200631.1105893,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000218442956
+    },
+    {
+      "at": 1792200631.3746488,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000221680993
+    },
+    {
+      "at": 1792200631.638335,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000214042547
+    },
+    {
+      "at": 1792200631.8981662,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000217252908
+    },
+    {
+      "at": 1792200632.1587803,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000216035185
+    },
+    {
+      "at": 1792200632.4226053,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000220684674
+    },
+    {
+      "at": 1792200632.6827857,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00021290785
+    },
+    {
+      "at": 1792200632.9434245,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000208147659
+    },
+    {
+      "at": 1792200633.2006643,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000209171653
+    },
+    {
+      "at": 1792200633.4618626,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000220075812
+    },
+    {
+      "at": 1792200633.7226486,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000207981606
+    },
+    {
+      "at": 1792200633.9843318,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00021290785
+    },
+    {
+      "at": 1792200634.2428246,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000210610781
+    },
+    {
+      "at": 1792200634.5040436,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000210887536
+    },
+    {
+      "at": 1792200634.7670586,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000214623733
+    },
+    {
+      "at": 1792200635.0259852,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00021030635
+    },
+    {
+      "at": 1792200635.283595,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000220380243
+    },
+    {
+      "at": 1792200635.5431685,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000216644046
+    },
+    {
+      "at": 1792200635.802678,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000213406009
+    },
+    {
+      "at": 1792200636.0621445,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000215537025
+    },
+    {
+      "at": 1792200636.3221745,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000214125573
+    },
+    {
+      "at": 1792200636.5827928,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000212935525
+    },
+    {
+      "at": 1792200636.8456845,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000210693807
+    },
+    {
+      "at": 1792200637.1022232,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000208369063
+    },
+    {
+      "at": 1792200637.361318,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000208701169
+    },
+    {
+      "at": 1792200637.6251945,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000213821142
+    },
+    {
+      "at": 1792200637.8855286,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000209808191
+    },
+    {
+      "at": 1792200638.1454208,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000215453999
+    },
+    {
+      "at": 1792200638.4019573,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000222096126
+    },
+    {
+      "at": 1792200638.658623,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000205767563
+    },
+    {
+      "at": 1792200638.9179828,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000215232594
+    },
+    {
+      "at": 1792200639.1767447,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000216948477
+    },
+    {
+      "at": 1792200639.436968,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000220463269
+    },
+    {
+      "at": 1792200639.6994286,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00021736361
+    },
+    {
+      "at": 1792200639.9625797,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000208175334
+    },
+    {
+      "at": 1792200640.2240887,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000215453999
+    },
+    {
+      "at": 1792200640.4836516,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000219245546
+    },
+    {
+      "at": 1792200640.7419012,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00021761269
+    },
+    {
+      "at": 1792200641.0014892,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000210610781
+    },
+    {
+      "at": 1792200641.2618518,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000207870903
+    },
+    {
+      "at": 1792200641.5216045,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00021581378
+    },
+    {
+      "at": 1792200641.7819862,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000213599738
+    },
+    {
+      "at": 1792200642.0447574,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.0002207677
+    },
+    {
+      "at": 1792200642.3039827,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000214097898
+    },
+    {
+      "at": 1792200642.5633194,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00021240969
+    },
+    {
+      "at": 1792200642.8219728,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000217252908
+    },
+    {
+      "at": 1792200643.0816681,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000209282355
+    },
+    {
+      "at": 1792200643.3401842,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000209199329
+    },
+    {
+      "at": 1792200643.6011689,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000212935525
+    },
+    {
+      "at": 1792200643.8625333,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000208147659
+    },
+    {
+      "at": 1792200644.1224,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000218775062
+    },
+    {
+      "at": 1792200644.3799906,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000215841456
+    },
+    {
+      "at": 1792200644.640074,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000210278675
+    },
+    {
+      "at": 1792200644.8983479,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000217640365
+    },
+    {
+      "at": 1792200645.1594744,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000210389377
+    },
+    {
+      "at": 1792200645.4192948,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000220546296
+    },
+    {
+      "at": 1792200645.6776173,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000212326664
+    },
+    {
+      "at": 1792200645.9375045,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000204134707
+    },
+    {
+      "at": 1792200646.1973453,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000211717802
+    },
+    {
+      "at": 1792200646.4588244,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000218830413
+    },
+    {
+      "at": 1792200646.722609,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000211219643
+    },
+    {
+      "at": 1792200646.9810352,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000216727073
+    },
+    {
+      "at": 1792200647.2415257,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000210998238
+    },
+    {
+      "at": 1792200647.5024326,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000207760201
+    },
+    {
+      "at": 1792200647.7619772,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000216145887
+    },
+    {
+      "at": 1792200648.0203154,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000219273222
+    },
+    {
+      "at": 1792200648.2801764,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000209393058
+    },
+    {
+      "at": 1792200648.540939,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000209282355
+    },
+    {
+      "at": 1792200648.8013287,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000215038866
+    },
+    {
+      "at": 1792200649.062929,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000211219643
+    },
+    {
+      "at": 1792200649.3215468,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000216118211
+    },
+    {
+      "at": 1792200649.5811942,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000214430004
+    },
+    {
+      "at": 1792200649.8402638,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000212824823
+    },
+    {
+      "at": 1792200650.0990837,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000212935525
+    },
+    {
+      "at": 1792200650.359095,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000211496398
+    },
+    {
+      "at": 1792200650.617347,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000216145887
+    },
+    {
+      "at": 1792200650.8773348,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000212714121
+    },
+    {
+      "at": 1792200651.1385815,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000208286036
+    },
+    {
+      "at": 1792200651.3984544,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00021371044
+    },
+    {
+      "at": 1792200651.6576464,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000210915212
+    },
+    {
+      "at": 1792200651.9182725,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.00021210526
+    },
+    {
+      "at": 1792200652.17741,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000217557339
+    },
+    {
+      "at": 1792200652.4365494,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000211524073
+    },
+    {
+      "at": 1792200652.695839,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000210776834
+    },
+    {
+      "at": 1792200652.9544451,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000220380243
+    },
+    {
+      "at": 1792200653.2146244,
+      "channels": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": 0.000218332254
+    }
+  ],
+  "events": [
+    {
+      "at": 1792199316.9699955,
+      "message": "RAMP accepted",
+      "level": "info",
+      "unit": 1
+    },
+    {
+      "at": 1792199300.1408985,
+      "message": "SET accepted",
+      "level": "info",
+      "unit": 1
+    },
+    {
+      "at": 1792196195.240883,
+      "message": "DAC connection established; outputs unchanged",
+      "level": "info",
+      "unit": 1
+    },
+    {
+      "at": 1792196193.1847656,
+      "message": "DAC communication: Instrument connection/handshake timed out",
+      "level": "error",
+      "unit": 1
+    },
+    {
+      "at": 1792196190.134338,
+      "message": "DAC communication: Instrument closed connection before a complete reply",
+      "level": "error",
+      "unit": 1
+    },
+    {
+      "at": 1792186203.3836002,
+      "message": "DAC connection established; outputs unchanged",
+      "level": "info",
+      "unit": 1
+    },
+    {
+      "at": 1792186203.366078,
+      "message": "Recovery: READY",
+      "level": "info",
+      "unit": 1
+    }
+  ],
+  "jobs": {
+    "607537be-4f45-4db7-bf44-18297ad55c96": {
+      "id": "607537be-4f45-4db7-bf44-18297ad55c96",
+      "action": "set",
+      "state": "complete",
+      "at": 1792199300.1353915,
+      "error": null,
+      "finished": 1792199300.1408985,
+      "unit": 1
+    },
+    "60df2543-c059-4578-b739-b9183e365bd4": {
+      "id": "60df2543-c059-4578-b739-b9183e365bd4",
+      "action": "ramp",
+      "state": "complete",
+      "at": 1792199316.9623868,
+      "error": null,
+      "finished": 1792199316.9699955,
+      "unit": 1
+    }
+  },
+  "channel_count": 4
+}

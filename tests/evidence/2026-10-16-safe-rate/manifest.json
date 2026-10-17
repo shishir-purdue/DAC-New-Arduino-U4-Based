@@ -1,0 +1,55 @@
+{
+  "notebook": "safe_zero_rate_acceptance.ipynb",
+  "results": [
+    {
+      "case": 1,
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": 2,
+      "result": "FAIL",
+      "errors": [
+        "[{'target': 0, 'meter': 0.0004624857766}, {'target': 0.05, 'meter': 0.0004621481352}, {'target': 0, 'meter': 0.0004581351836}]"
+      ]
+    },
+    {
+      "case": "S5",
+      "result": "FAIL",
+      "errors": [
+        "DAC 5 physical preflight has not passed"
+      ]
+    },
+    {
+      "case": "S5-accuracy",
+      "result": "FAIL",
+      "errors": [
+        "name 'safe_rows' is not defined"
+      ]
+    },
+    {
+      "case": "FINAL",
+      "result": "FAIL",
+      "errors": [
+        ""
+      ]
+    }
+  ],
+  "rate_V_per_s": 0.02,
+  "firmware_uploads": {
+    "unit1": "SUCCESS",
+    "unit2": "SUCCESS"
+  },
+  "firmware_hashes": {
+    "uno_r4_minima_bench": "d576b11b2974160ac64be49c18415873100aee95703d9d0cd97279141893b005",
+    "uno_r4_minima_unit2_bench": "928bede45e2458ca8da33c67fad090985a90fd6611216ceee5d99392f7986272"
+  },
+  "offline": {
+    "firmware": "87 PASS",
+    "driver_notebook": "27 groups PASS",
+    "multiunit_notebook": "7 groups PASS after test-fixture correction",
+    "local_config_notebook": "PASS",
+    "dashboard": "9 PASS"
+  },
+  "physical_rate_verified": false
+}

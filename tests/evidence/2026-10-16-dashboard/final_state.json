@@ -2,7 +2,7 @@
   "now": 1792184429.5101285,
   "network": {
     "state": "good",
-    "address": "192.168.1.200",
+    "address": "192.0.2.10",
     "last_ok": 1792184429.4794586,
     "latency_ms": 16.0,
     "error": null
@@ -59,7 +59,7 @@
   ],
   "meter": {
     "state": "good",
-    "address": "192.168.1.71",
+    "address": "192.0.2.71",
     "voltage": 1.77676901e-05,
     "at": 1792184429.4090207,
     "error": null

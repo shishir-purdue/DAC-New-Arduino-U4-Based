@@ -272,3 +272,36 @@ preventing stale binaries, and uses stdlib unittest so pytest is optional.
   it was not applied. Calibration must also cover the device's independent
   safe-zero target; Python-only correction would not correct the physical button.
   See [DAC 4 evidence](tests/evidence/2026-10-16-dac4/). This remains open.
+
+
+### Unit 2 commissioning — Codex additions, 2026-10-16
+
+- [x] **A24 — DFU COM-port selection does not distinguish two attached boards.**
+  The pinned Renesas platform's DFU upload command ignores `--upload-port` and
+  selects Arduino devices by VID/PID. Uploads now prepend the selected physical
+  board's USB serial using `custom_upload_serial`; the resolved Unit 2 uploader
+  arguments were checked before its successful upload with both boards attached.
+  Unit-specific builds also select one MAC/IP for startup, health checks and
+  reset, and reject applying Unit 1's measured calibration to Unit 2.
+- [ ] **A25 — DAC 5 (Unit 2, CH1) nominal calibration fails ±0.5 mV.**
+  The −9 to +10 V sweep has maximum request error **2.459040 mV** and
+  register-to-meter error **2.535334 mV**. Zero measures about **+0.65–0.68 mV**;
+  absolute ramp and SAFE ZERO endpoints also fail. Relative ramp paths/timing,
+  network reset/hold/abort, independent safe-zero slew, all four stored codes,
+  latch and rearm pass. Unit 1 remained network-accessible with USB power only;
+  no output/recovery commands targeted it. Diagnostic gain **1.000188783** and
+  offset **+0.664289 mV** were recorded but not applied. Device calibration must
+  also correct the physical safe-zero target. See
+  [Unit 2 / DAC 5 evidence](tests/evidence/2026-10-16-unit2-dac5/).
+
+
+### Local configuration and rate update — 2026-10-16
+
+Real MAC/IP/USB identities now live in ignored `config/bench.local.json`, shared
+by firmware generation, Python and the dashboard. Tracked examples/evidence are
+sanitized; published Git history is retained at the user's request. Extra units
+are appended locally and selected by name for upload. Safe zero is now 0.02 V/s
+on both flashed units, with 87 passing host regressions. The new-rate live run
+failed its meter-association preflight and did not establish an analog rate pass;
+see [evidence](tests/evidence/2026-10-16-safe-rate/). A23/A25 calibration findings
+remain open; no calibration was changed as part of the rate/configuration update.

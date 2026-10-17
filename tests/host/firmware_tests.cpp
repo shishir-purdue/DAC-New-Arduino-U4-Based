@@ -13,6 +13,7 @@ void operator delete[](void* p, size_t) noexcept { std::free(p); }
 
 // Compile the actual checked-out firmware, not a Python rewrite of it.
 #define DAC_BENCH_CONTROLS 1
+#define DAC_HOST_TEST 1
 #include "../../Software/src/main.cpp"
 #include "../../Software/lib/AD5780/AD5780.cpp"
 #include "../../Software/lib/AD5780/Communication.cpp"

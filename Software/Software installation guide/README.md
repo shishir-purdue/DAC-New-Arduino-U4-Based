@@ -24,15 +24,33 @@ pio run -e uno_r4_minima -t upload
 pio device monitor -b 115200
 ```
 
-Connect the Minima using a USB data cable before uploading. No COM port is pinned,
-so PlatformIO can detect it even if Windows assigns a different port later.
+Connect the selected Minima using a USB data cable before uploading. The DFU
+upload target is pinned by USB serial; COM-port numbering is used for monitoring.
 Close any serial monitor that is holding the port before upload. If automatic
 bootloader entry fails, double-press the board's reset button and retry Upload.
 
-The current firmware's Ethernet settings are **192.168.1.200**, TCP port **23**,
-and MAC **A8:61:0A:AE:F2:01** (`Software/src/main.cpp` and `PhysicalControls.h`). Check these against your
-bench network before using the Ethernet connection. The USB connection is for
-upload/debug logging; DAC commands are received over Ethernet.
+Before building, create the ignored local configuration following
+[Local bench configuration](../../config/README.md). The same file is used by
+firmware, Python and the dashboard. Do not put real IP/MAC/USB identities into
+source, `platformio.ini`, or tracked notebooks.
+
+Select the named physical unit with `DAC_UNIT`, or use the Unit 1/Unit 2
+convenience environments. A `_bench` build includes USB button emulation;
+physical controls remain active in every build. Each box still uses local
+channels 1–4 and TCP port 23. Global numbering comes only from the ordered list.
+
+```powershell
+$env:DAC_UNIT = 'unit2'
+pio run -e uno_r4_minima_bench
+pio run -e uno_r4_minima_bench -t upload
+Remove-Item Env:DAC_UNIT
+```
+
+Verify the target USB serial in your local configuration before upload.
+Renesas DFU ignores `--upload-port`; the post-build upload script selects the
+configured USB serial. Missing configuration prevents upload. No source edit is
+needed for the third or later unit. Keep measured calibration with its physical
+box; a new box should use nominal entries until measured.
 
 The initial configuration built successfully on 2026-10-13. The 2026-10-14
 physical-control firmware also builds successfully; build success does not validate
@@ -87,7 +105,7 @@ To properly setup, you should change the mac address and the corresponding stati
 ```cpp
 byte mac[] = { 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF }; // Change to your MAC address
 
-Ethernet.begin(mac, IPAddress(192,168,1,123)); //Change to a valid static IP address.
+Ethernet.begin(mac, IPAddress(192,0,2,123)); //Change to a valid static IP address.
 ```
 
 If you have done everything mentioned above, you can click the compile button located at the bottom left to verify if everything works as expected.\

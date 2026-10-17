@@ -16,10 +16,11 @@
 #define SPI_1MHZ 1000000
 #define TELNET_PORT 23
 
+#include "DeviceIdentity.h"
 #include "DeviceCalibration.h"
 
 // ================== Global Variables ================== //
-byte mac[] = { 0xA8, 0x61, 0x0A, 0xAE, 0xF2, 0x01 }; // MAC address on the DAC box label
+byte mac[] = DAC_MAC_BYTES;
 EthernetServer telnetServer(TELNET_PORT);
 EthernetClient telnetClient;
 

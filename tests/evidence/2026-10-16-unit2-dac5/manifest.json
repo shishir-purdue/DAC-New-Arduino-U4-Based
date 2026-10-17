@@ -1,0 +1,83 @@
+{
+  "notebook": "unit2_dac5_acceptance.ipynb",
+  "results": [
+    {
+      "case": 1,
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": 2,
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "V5",
+      "result": "FAIL",
+      "errors": [
+        "Requested voltage exceeds \u00b10.5 mV accuracy"
+      ]
+    },
+    {
+      "case": "R5",
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "R5-accuracy",
+      "result": "FAIL",
+      "errors": [
+        "Ramp endpoints exceed \u00b10.5 mV"
+      ]
+    },
+    {
+      "case": "N5",
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "S5",
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "S5-accuracy",
+      "result": "FAIL",
+      "errors": [
+        "Safe-zero analog endpoint exceeds \u00b10.5 mV"
+      ]
+    },
+    {
+      "case": "FINAL",
+      "result": "PASS",
+      "errors": []
+    }
+  ],
+  "local_date": "2026-10-16",
+  "timezone": "America/Indianapolis",
+  "data_directory": "malab\\notebooks\\results\\modules_20261017T013324Z",
+  "executed_notebook": "malab\\notebooks\\results\\modular_run_20261017T013319Z\\executed.ipynb",
+  "global_channel": 5,
+  "unit": 2,
+  "local_channel": 1,
+  "address": "192.0.2.20",
+  "mac": "02:00:00:00:00:02",
+  "usb_port": "COM6",
+  "usb_serial": "UNIT_2_USB_SERIAL",
+  "firmware_environment": "uno_r4_minima_unit2_bench",
+  "firmware_sha256": "86e24bdf987b30e6473e4533e8b5708fdd30e8b50aaaeefabc8dd3a5baaf0179",
+  "source_hashes": {
+    "Software/src/DeviceIdentity.h": "faf9c514c513e7031963cafa28e395878c30ecd97eebfa67848c3b83f982cfd0",
+    "Software/src/DeviceCalibration.h": "b7c2420939b58d9850d7b5d1f01a24ac2e60350114554ccd098884ada1acf742",
+    "Software/src/main.cpp": "decb727775b01d4e71561c0a81ac0bbe2eebea54d0e43b438b26955fffb3944f",
+    "Software/src/PhysicalControls.h": "3277aa1aa4a9601b00ea9fb0665e8c4a0fcc225f0f2dec6ff807ee0b0cb7d050",
+    "Software/tools/select_upload_target.py": "785c302fed0e719b5e608383de75fb6eee14d444f2a68f33803cc1c0a8dfd5de",
+    "platformio.ini": "617a80ed737df7e7461079e6de668007988e43452ff2a8dc5300ed66212a04a0"
+  },
+  "calibration_applied": false,
+  "unit1": "USB power only; no output or recovery commands sent; DAC readbacks unavailable",
+  "max_request_error_mV": 2.459039999999746,
+  "max_display_error_mV": 2.535333945312246,
+  "dashboard_regressions": "9 PASS",
+  "existing_firmware_regressions": "87 PASS before serial-selection tooling change"
+}

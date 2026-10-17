@@ -1,0 +1,35 @@
+{
+  "units": [
+    {
+      "name": "unit1",
+      "address": "192.0.2.10",
+      "mac": "02:00:00:00:00:01",
+      "usb_port": null,
+      "usb_serial": null,
+      "calibration": [
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "name": "unit2",
+      "address": "192.0.2.20",
+      "mac": "02:00:00:00:00:02",
+      "usb_port": null,
+      "usb_serial": null,
+      "calibration": [
+        null,
+        null,
+        null,
+        null
+      ]
+    }
+  ],
+  "meter": {
+    "address": "192.0.2.71",
+    "channel": 1
+  },
+  "instruments": {}
+}

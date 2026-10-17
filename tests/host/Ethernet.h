@@ -15,7 +15,7 @@ inline EthernetLinkStatus fakeLinkStatus = LinkON;
 inline bool fakeNetworkMissing = false;
 inline int networkResetCalls = 0, networkCalls = 0;
 inline byte fakeMac[6] = {};
-inline IPAddress fakeLocalIP(192,168,1,200);
+inline IPAddress fakeLocalIP(192,0,2,10);
 inline void (*networkBeginHook)() = nullptr;
 struct SocketState {
     bool used = false, connected = false, accepted = false, stopped = false;

@@ -3,13 +3,13 @@
   "units": [
     {
       "unit": 1,
-      "address": "192.168.1.200",
+      "address": "192.0.2.10",
       "first_channel": 1,
       "last_channel": 4,
       "usb_port": "COM5",
       "network": {
         "state": "good",
-        "address": "192.168.1.200",
+        "address": "192.0.2.10",
         "last_ok": 1792185935.02233,
         "latency_ms": 16.0,
         "error": null
@@ -113,7 +113,7 @@
   ],
   "meter": {
     "state": "good",
-    "address": "192.168.1.71",
+    "address": "192.0.2.71",
     "channel": 4,
     "voltage": 0.00287839347,
     "at": 1792185935.2006006,

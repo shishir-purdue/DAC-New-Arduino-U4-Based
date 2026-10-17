@@ -35,8 +35,7 @@ Confirm the physical shield variant before any separate Ethernet-reset wiring.
 
 A stable press (25 ms debounce) cancels a running remote ramp at its current
 code, discards the active client and partial command, clears every socket cache,
-forces WIZnet chip reset/redetection, reapplies MAC `A8:61:0A:AE:F2:01` and static
-IP `192.168.1.200`, and opens a fresh TCP port 23 listener. Old buffered commands
+forces WIZnet chip reset/redetection, reapplies the selected unit's MAC and static IP from local configuration, and opens a fresh TCP port 23 listener. Old buffered commands
 are not resumed. The TCP peer may notice closure only on its next operation or
 timeout; reconnect rather than reusing that old socket.
 
@@ -79,8 +78,8 @@ CH2–4 131072**. Positive outputs
 decrease; negative outputs increase toward zero. Channels move concurrently, with
 their SPI writes performed sequentially a few microseconds apart.
 
-The requested rate is **0.01 V/s**. Each channel moves by one code (CH1 about 76.284 µV; nominal channels
-76.294 µV) no more often than every 7630 µs. The interval increases if a channel
+The requested rate is **0.02 V/s**. Each channel moves by one code (CH1 about 76.284 µV; nominal channels
+76.294 µV) no more often than every 3815 µs. The interval increases if a channel
 profile requires it to respect the rate ceiling. Scheduling overhead can slow it. There are no catch-up jumps after delays. Typical times:
 
 | Initial magnitude | Approximate time to zero |
@@ -128,7 +127,7 @@ elapsed time also includes SPI, register reads, button/network checks, and clien
 transport. The existing code provides a per-step delay, not a precise wall-clock
 slew-rate guarantee. At very short delays, that overhead may dominate.
 
-SAFE ZERO is separate: its rate is fixed at <=0.01 V/s regardless of the last
+SAFE ZERO is separate: its rate is fixed at <=0.02 V/s regardless of the last
 remote RAMP parameters. B19/B20 verify remote step/delay scaling using the real
 firmware with host doubles. Their simulated delays exclude hardware SPI/network
 execution costs and Python/meter timing; they are not a physical timing measurement.
@@ -230,7 +229,7 @@ preserve-output guarantee.
 3. Start a remote ramp with a long step delay, then press NETWORK. Confirm no
    further ramp steps after the button is recognized and no return to the target.
 4. Put channels above and below zero, unplug Ethernet, and press SAFE ZERO. Measure
-   all four channels moving toward zero at approximately 0.01 V/s without a jump.
+   all four channels moving toward zero at approximately 0.02 V/s without a jump.
 5. Press NETWORK during that ramp; it must not interrupt or rearm it. After zero,
    release both buttons, press NETWORK, reconnect, and read all four zero codes.
 6. Test simultaneous presses, held buttons, and recovery after a missing Ethernet
@@ -275,7 +274,7 @@ The main API exposes these actions as `AD5780(..., bench_port="COM5")` methods
 stores this box's measured CH1 calibration in `DeviceCalibration.h`, so the
 physical button reaches calibrated zero without requiring a PC/network. Other
 channels retain nominal profiles. The measured CH1 safe ramp takes about 5 s from
-±0.05 V to zero, at no more than 0.01 V/s.
+±0.05 V to zero, at no more than 0.02 V/s.
 
 For controlled fault tests only, the bench firmware also accepts
 `BENCH FAULT READBACK`, `BENCH FAULT CLEAR`, and `BENCH FAULT NETWORK`.

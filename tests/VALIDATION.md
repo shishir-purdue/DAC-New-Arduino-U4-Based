@@ -3,8 +3,8 @@
 ## Network startup regression — 2026-10-16
 
 The user reported no connection/reply, including after pressing NETWORK.
-Read-only checks from this PC (192.168.1.80/24) confirmed the DAC's configured
-MAC A8:61:0A:AE:F2:01 at 192.168.1.200. TCP port 23 accepted connections, but
+Read-only checks from this PC (192.0.2.80/24) confirmed the DAC's configured
+MAC 02:00:00:00:00:01 at 192.0.2.10. TCP port 23 accepted connections, but
 neither a welcome message nor a response to `ID\r\n` arrived within the receive
 deadlines. No DAC command that changes outputs was sent. The Arduino was not
 present among the PC's USB serial devices, so no board diagnostics or firmware
@@ -41,7 +41,7 @@ Post-upload USB messages now explicitly report `Network link startup timed out;
 retrying.` followed by `Network ready`, approximately ten seconds apart. This
 confirms the new grace logic is running but **does not establish restored
 connectivity**: a TCP verification timed out before receiving a greeting, and
-Windows reported the neighbor at 192.168.1.200 unreachable. Configuration checks
+Windows reported the neighbor at 192.0.2.10 unreachable. Configuration checks
 pass before each listener-ready message; first-link negotiation remains unresolved.
 The user was asked to check the Ethernet cable and socket LEDs. No SET, INIT,
 or RAMP commands were sent during this investigation. Physical output voltages

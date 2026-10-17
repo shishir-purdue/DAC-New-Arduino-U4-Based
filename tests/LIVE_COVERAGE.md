@@ -46,8 +46,8 @@ exclusive-listener regression covers A22 on subsequent server launches.
 ## Original acceptance run
 
 Date: 2026-10-16. Bench: Uno R4 Minima/W5500/AD5780 box, MAC
-A8:61:0A:AE:F2:01, IP 192.168.1.200, USB COM5. Keysight 34461A
-MY60041761 at 192.168.1.71 measures CH1. Other outputs are isolated.
+02:00:00:00:00:01, IP 192.0.2.10, USB COM5. Keysight 34461A
+MY60041761 at 192.0.2.71 measures CH1. Other outputs are isolated.
 
 All behavioral cases call the class exported by
 `from malab.instruments.voltsource import AD5780`. The actual test commands,
@@ -145,3 +145,42 @@ measured zero within 20 µV. The complete executed notebook and failed historica
 runs remain under `malab/notebooks/results/`. The evidence snapshot keeps the raw
 baseline survey and timing failure as well as final data.
 
+
+
+## Unit 2 / global DAC 5 — 2026-10-16
+
+Unit 2 was uploaded with its own MAC/IP and nominal calibration, selected by
+USB serial so the attached Unit 1 was not flashed. IP 192.0.2.20 / COM6 maps
+to DAC 5–8. The Keysight is on DAC 5, and the external supply is on Unit 2.
+Unit 1 has USB power only; its unavailable analog readbacks do not block Unit 2.
+Every output/recovery action in this run targeted Unit 2, checked from the jobs.
+
+`unit2_dac5_acceptance.ipynb` contains all tests directly. Preflight, R5 timing/
+relative paths, N5 network/reset/disconnect/stop and cross-unit network isolation,
+S5 safe-zero behavior, and final stored zeros pass. **V5, R5-accuracy and
+S5-accuracy FAIL the unchanged ±0.5 mV limit.** Maximum request/display errors
+are 2.459040/2.535334 mV. SAFE ZERO slopes −0.00999528/+0.00998956 V/s and times
+5.076/5.155 s pass; physical endpoints +0.655827/+0.653945 mV fail accuracy.
+Final Unit 2 codes are [131072, 131072, 131072, 131072], meter +0.654471 mV.
+The diagnostic gain/offset fit is **unapplied**. A25 tracks the calibration issue.
+Only DAC 5 has independent meter evidence on Unit 2; DAC 6–8 have code evidence.
+USB emulation tests action logic, not the Unit 2 buttons' physical contacts.
+
+[Evidence](evidence/2026-10-16-unit2-dac5/) includes upload log, source/binary
+hashes, pass/fail manifest, CSV traces, plot and initial/final/network states.
+UTC run IDs are `modular_run_20261017T013319Z` and `modules_20261017T013324Z`;
+the bench-local date is October 16. Nine dashboard regression tests also pass.
+
+
+## Safe-zero rate and private configuration — 2026-10-16
+
+The requested rate is now **0.02 V/s**. Both units were built and uploaded from
+ignored local configuration with their original per-unit calibration preserved.
+All 87 firmware regressions, 27 driver groups, seven multi-unit groups, local
+configuration notebook checks and nine dashboard regressions pass. A fixture
+third unit needs no source edit. [Current evidence](evidence/2026-10-16-safe-rate/)
+records upload hashes and the physical preflight failure: the meter did not
+follow DAC 5's small step, so **new-rate analog validation remains unverified**.
+The test guard prevented the remaining output tests. Earlier rate measurements
+remain 0.01 V/s history. Real network identities are redacted from public records;
+the original local records remain in ignored results storage.

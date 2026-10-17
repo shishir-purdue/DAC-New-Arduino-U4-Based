@@ -32,20 +32,30 @@ CH2–4 remain nominal. See the ledger for the actual hardware coverage limits.
 ## Local dashboard
 
 Run `./malab/tools/start_dashboard.ps1` from this folder, then use Chrome at
-**http://localhost:8765**. The four-channel dashboard shows a passive network
-health signal, live device values, CH1's independent Keysight measurement,
+**http://localhost:8765**. The modular dashboard shows per-unit network
+health signals, live device values, the configured channel's Keysight measurement,
 voltage/ramp controls, and USB recovery actions. See
 [dashboard instructions](malab/dashboard/README.md) and its
 [visible acceptance notebook](malab/notebooks/dashboard_acceptance.ipynb).
 The firmware's `VALUES` command supplies ramp telemetry without SPI reads;
 `BENCH VALUES` supplies safe-zero telemetry while Ethernet is disabled.
 
-The dashboard now accepts an ordered IP list in `malab/dashboard/units.json`.
+The dashboard now accepts an ordered IP list in the ignored `config/bench.local.json`.
 Each unit adds four global channels, with its own connection and recovery
 controls. The Python [DACArray API](malab/instruments/DAC_ARRAY.md) uses the same
-mapping. The meter is currently on **DAC 4**. Its functional checks pass, but
+mapping. The prior **DAC 4 (Unit 1)** functional checks pass, but
 its unchanged nominal calibration fails ±0.5 mV accuracy (zero is about +2.87 mV).
 See [DAC 4 evidence](tests/evidence/2026-10-16-dac4/) and the
 [current visible notebook](malab/notebooks/modular_dac_acceptance.ipynb).
-No firmware changes were needed for modular support; a second physical unit
-has not yet been tested.
+Global numbering is implemented in Python; each unit retains local channels 1–4.
+Unit-specific firmware builds select the labeled MAC/IP and calibration profile.
+
+
+Unit identities now live only in ignored local configuration.
+The dashboard now maps it to **DAC 5–8**, with the meter physically on **DAC 5**.
+Unit 1 remains the first configured unit; it has USB power only during Unit 2 tests.
+See the [Unit 2 / DAC 5 notebook](malab/notebooks/unit2_dac5_acceptance.ipynb).
+The `uno_r4_minima_unit2_bench` environment uses nominal calibration and selects
+Unit 2 by USB serial for DFU uploads, independently of COM-port numbering.
+
+See [local bench configuration](config/README.md) to add units, build/upload safely, and keep identities out of Git. Safe zero is now **0.02 V/s** after uploading each unit.

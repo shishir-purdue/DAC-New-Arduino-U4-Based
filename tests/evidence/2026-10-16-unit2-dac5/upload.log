@@ -1,0 +1,178 @@
+Processing uno_r4_minima_unit2_bench (platform: renesas-ra@1.9.0; board: uno_r4_minima; framework: arduino)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/renesas-ra/uno_r4_minima.html
+PLATFORM: Renesas RA (1.9.0) > Arduino Uno R4 Minima
+HARDWARE: RA4M1 48MHz, 32KB RAM, 256KB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, jlink)
+PACKAGES:
+ - framework-arduinorenesas-uno @ 1.6.0
+ - tool-dfuutil-arduino @ 1.11.0
+ - tool-jlink @ 1.92000.0 (9.20.0)
+ - tool-openocd @ 3.1200.7 (12.0)
+ - toolchain-gccarmnoneeabi @ 1.70201.0 (7.2.1)
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 24 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- AD5780
+|-- Ethernet @ 2.0.2
+|-- SPI
+Building in release mode
+Compiling .pio\build\uno_r4_minima_unit2_bench\src\main.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\liba7e\SPI\SPI.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\liba9d\AD5780\AD5780.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\liba9d\AD5780\Communication.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\libdd3\Ethernet\Dhcp.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\libdd3\Ethernet\Dns.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\libdd3\Ethernet\Ethernet.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\libdd3\Ethernet\EthernetClient.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\libdd3\Ethernet\EthernetServer.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\libdd3\Ethernet\EthernetUdp.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\libdd3\Ethernet\socket.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\libdd3\Ethernet\utility\w5100.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduinoVariant\tmp_gen_c_files\common_data.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduinoVariant\tmp_gen_c_files\main.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduinoVariant\tmp_gen_c_files\pin_data.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduinoVariant\variant.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\FspTimer.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\IRQManager.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\Interrupts.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\Serial.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\SerialObj1.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\SerialObj2.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\SerialObj3.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\Tone.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\WMath.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\analog.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\api\CanMsg.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\api\CanMsgRingbuffer.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\api\Common.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\api\IPAddress.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\api\PluggableUSB.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\api\Print.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\api\Stream.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\api\String.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\boot.cpp.o
+Archiving .pio\build\uno_r4_minima_unit2_bench\liba9d\libAD5780.a
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\cm_backtrace\cm_backtrace.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\cm_backtrace\fault_handler\gcc\cmb_fault.S.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\cortex_handlers.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\dac.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\digital.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\itoa.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\main.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\pinDefinitions.cpp.o
+Archiving .pio\build\uno_r4_minima_unit2_bench\libFrameworkArduinoVariant.a
+Archiving .pio\build\uno_r4_minima_unit2_bench\libdd3\libEthernet.a
+Archiving .pio\build\uno_r4_minima_unit2_bench\liba7e\libSPI.a
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\pulse.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\pwm.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\shift.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\time.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\class\audio\audio_device.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\class\bth\bth_device.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\class\cdc\cdc_device.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\class\cdc\cdc_host.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\class\cdc\cdc_rndis_host.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\class\dfu\dfu_device.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\class\dfu\dfu_rt_device.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\class\hid\hid_device.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\class\hid\hid_host.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\class\midi\midi_device.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\class\msc\msc_device.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\class\msc\msc_host.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\class\net\ecm_rndis_device.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\class\net\ncm_device.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\class\usbtmc\usbtmc_device.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\class\vendor\vendor_device.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\class\vendor\vendor_host.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\class\video\video_device.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\common\tusb_fifo.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\device\usbd.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\device\usbd_control.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\host\hub.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\host\usbh.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\rusb2\dcd_rusb2.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\rusb2\hcd_rusb2.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\rusb2\rusb2_common.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\tinyusb\tusb.c.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\usb\SerialUSB.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\usb\USB.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\variant_helper.cpp.o
+Compiling .pio\build\uno_r4_minima_unit2_bench\FrameworkArduino\vector_table.c.o
+Archiving .pio\build\uno_r4_minima_unit2_bench\libFrameworkArduino.a
+Linking .pio\build\uno_r4_minima_unit2_bench\firmware.elf
+Checking size .pio\build\uno_r4_minima_unit2_bench\firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=         ]  12.1% (used 3980 bytes from 32768 bytes)
+Flash: [===       ]  28.8% (used 75396 bytes from 262144 bytes)
+Building .pio\build\uno_r4_minima_unit2_bench\firmware.bin
+Configuring upload protocol...
+AVAILABLE: cmsis-dap, dfu, jlink
+CURRENT: upload_protocol = dfu
+Uploading .pio\build\uno_r4_minima_unit2_bench\firmware.bin
+dfu-util 0.11-arduino4
+
+Copyright 2005-2009 Weston Schmidt, Harald Welte and OpenMoko Inc.
+Copyright 2010-2021 Tormod Volden and Stefan Schmidt
+This program is Free Software and has ABSOLUTELY NO WARRANTY
+Please report bugs to http://sourceforge.net/p/dfu-util/tickets/
+
+Opening DFU capable USB device...
+Device ID 2341:0069
+Run-Time device DFU version 0101
+Claiming USB DFU (Run-Time) Interface...
+Setting Alternate Interface zero...
+Determining device status...
+DFU state(0) = appIDLE, status(0) = No error condition is present
+Device really in Run-Time Mode, send DFU detach request...
+Device will detach and reattach...
+Opening DFU USB Device...
+Claiming USB DFU Interface...
+Setting Alternate Interface #0 ...
+Determining device status...
+DFU state(2) = dfuIDLE, status(0) = No error condition is present
+DFU mode device DFU version 0101
+Device returned transfer size 64
+Copying data from PC to DFU device
+
+Download	[                         ]   0%            0 bytes
+Download	[=                        ]   4%         3072 bytes
+Download	[==                       ]   8%         6080 bytes
+Download	[===                      ]  12%         9088 bytes
+Download	[====                     ]  16%        12096 bytes
+Download	[=====                    ]  20%        15104 bytes
+Download	[=====                    ]  21%        16448 bytes
+Download	[======                   ]  24%        18112 bytes
+Download	[=======                  ]  28%        21184 bytes
+Download	[========                 ]  32%        24192 bytes
+Download	[=========                ]  36%        27200 bytes
+Download	[==========               ]  40%        30208 bytes
+Download	[===========              ]  44%        33216 bytes
+Download	[============             ]  48%        36224 bytes
+Download	[=============            ]  52%        39296 bytes
+Download	[==============           ]  56%        42304 bytes
+Download	[===============          ]  60%        45312 bytes
+Download	[================         ]  64%        48320 bytes
+Download	[=================        ]  68%        51328 bytes
+Download	[==================       ]  72%        54336 bytes
+Download	[===================      ]  76%        57408 bytes
+Download	[====================     ]  80%        60416 bytes
+Download	[=====================    ]  84%        63424 bytes
+Download	[======================   ]  88%        66432 bytes
+Download	[=======================  ]  92%        69440 bytes
+Download	[======================== ]  96%        72448 bytes
+Download	[======================== ]  96%        72512 bytes
+Download	[=========================] 100%        75396 bytes
+Download done.
+DFU state(7) = dfuMANIFEST, status(0) = No error condition is present
+DFU state(2) = dfuIDLE, status(0) = No error condition is present
+Done!
+========================= [SUCCESS] Took 15.56 seconds =========================
+
+Environment                Status    Duration
+-------------------------  --------  ------------
+uno_r4_minima_unit2_bench  SUCCESS   00:00:15.563
+========================= 1 succeeded in 00:00:15.563 =========================

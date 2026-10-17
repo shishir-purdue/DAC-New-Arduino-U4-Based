@@ -4,13 +4,13 @@
     "units": [
       {
         "unit": 1,
-        "address": "192.168.1.200",
+        "address": "192.0.2.10",
         "first_channel": 1,
         "last_channel": 4,
         "usb_port": "COM5",
         "network": {
           "state": "good",
-          "address": "192.168.1.200",
+          "address": "192.0.2.10",
           "last_ok": 1792185904.073293,
           "latency_ms": 16.0,
           "error": null
@@ -114,7 +114,7 @@
     ],
     "meter": {
       "state": "good",
-      "address": "192.168.1.71",
+      "address": "192.0.2.71",
       "channel": 4,
       "voltage": 0.0528441547,
       "at": 1792185903.9851682,
@@ -126,13 +126,13 @@
     "units": [
       {
         "unit": 1,
-        "address": "192.168.1.200",
+        "address": "192.0.2.10",
         "first_channel": 1,
         "last_channel": 4,
         "usb_port": "COM5",
         "network": {
           "state": "good",
-          "address": "192.168.1.200",
+          "address": "192.0.2.10",
           "last_ok": 1792185907.6836329,
           "latency_ms": 0.0,
           "error": null
@@ -236,7 +236,7 @@
     ],
     "meter": {
       "state": "good",
-      "address": "192.168.1.71",
+      "address": "192.0.2.71",
       "channel": 4,
       "voltage": 0.0528397267,
       "at": 1792185907.710606,
@@ -248,13 +248,13 @@
     "units": [
       {
         "unit": 1,
-        "address": "192.168.1.200",
+        "address": "192.0.2.10",
         "first_channel": 1,
         "last_channel": 4,
         "usb_port": "COM5",
         "network": {
           "state": "disconnected",
-          "address": "192.168.1.200",
+          "address": "192.0.2.10",
           "last_ok": 1792185907.6836329,
           "latency_ms": 0.0,
           "error": null
@@ -358,7 +358,7 @@
     ],
     "meter": {
       "state": "good",
-      "address": "192.168.1.71",
+      "address": "192.0.2.71",
       "channel": 4,
       "voltage": 0.0528357967,
       "at": 1792185910.3818789,
@@ -370,13 +370,13 @@
     "units": [
       {
         "unit": 1,
-        "address": "192.168.1.200",
+        "address": "192.0.2.10",
         "first_channel": 1,
         "last_channel": 4,
         "usb_port": "COM5",
         "network": {
           "state": "good",
-          "address": "192.168.1.200",
+          "address": "192.0.2.10",
           "last_ok": 1792185913.1916246,
           "latency_ms": 16.0,
           "error": null
@@ -480,7 +480,7 @@
     ],
     "meter": {
       "state": "good",
-      "address": "192.168.1.71",
+      "address": "192.0.2.71",
       "channel": 4,
       "voltage": 0.0398630582,
       "at": 1792185913.310732,
