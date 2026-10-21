@@ -305,3 +305,17 @@ on both flashed units, with 87 passing host regressions. The new-rate live run
 failed its meter-association preflight and did not establish an analog rate pass;
 see [evidence](tests/evidence/2026-10-16-safe-rate/). A23/A25 calibration findings
 remain open; no calibration was changed as part of the rate/configuration update.
+
+### Unit 3 commissioning — Codex addition, 2026-10-16
+
+- [ ] **A26 — DAC 10 (Unit 3, CH2) nominal calibration fails ±0.5 mV.**
+  The eleven-point −9 to +10 V sweep has maximum request error **4.134382 mV**
+  and register-to-meter error **4.149641 mV**. Stored zero measures about
+  **+3.745 mV**. Absolute ramp and SAFE ZERO endpoints also fail. Relative ramp
+  timing/paths, network reset/hold/abort, independent 0.02 V/s safe-zero behavior,
+  all four stored targets, latch and rearm pass. Both other units remained
+  network-accessible with USB power only and received no output/recovery jobs.
+  A diagnostic gain **0.9999532137**, offset **+3.739858 mV**, and maximum fit
+  residual **0.012795 mV** suggest calibration; the fit was not applied. Any
+  correction must also update the device's independent physical safe-zero target.
+  See [Unit 3 / DAC 10 evidence](tests/evidence/2026-10-16-unit3-dac10/).

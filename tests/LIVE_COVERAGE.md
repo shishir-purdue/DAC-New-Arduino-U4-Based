@@ -184,3 +184,27 @@ follow DAC 5's small step, so **new-rate analog validation remains unverified**.
 The test guard prevented the remaining output tests. Earlier rate measurements
 remain 0.01 V/s history. Real network identities are redacted from public records;
 the original local records remain in ignored results storage.
+
+## Unit 3 / global DAC 10 — 2026-10-16
+
+Unit 3 was appended to the ignored configuration and flashed with its own USB
+serial and identity using the generic bench environment. It owns DAC 9–12;
+the meter is on DAC 10 (local CH2). Only Unit 3 has analog power. The dashboard
+has 12 channel cards and three independent network/recovery groups. HTTP tests
+exercise its action/state interface, without claiming a new visual browser check.
+
+`unit3_dac10_acceptance.ipynb` records preflight, eleven voltage points, six ramps,
+network reset/disconnect/abort, and independent safe zero. **R10, N10, S10 and
+final scoped-zero checks pass. V10, R10-accuracy and S10-accuracy fail ±0.5 mV.**
+Maximum request/display errors are **4.134382 / 4.149641 mV**; final nominal zero
+measures **+3.744997 mV**. The diagnostic calibration fit remains unapplied (A26).
+
+SAFE ZERO at the new 0.02 V/s setting measures slopes **−0.01924173 /
++0.02003242 V/s**, taking **2.811 / 2.626 s** from ±0.05 V. TCP is disconnected
+during these ramps, all four codes reach 131072, latch/rearm works, and both
+other units stay reachable. Only DAC 10 has analog evidence on this unit;
+button emulation does not validate physical contacts. All jobs targeted Unit 3.
+
+[Evidence](evidence/2026-10-16-unit3-dac10/) contains a sanitized executed notebook,
+manifest, upload/provenance hashes, CSV traces, plot and initial/final states.
+UTC run/data IDs are `modular_run_20261017T023338Z` / `modules_20261017T023342Z`.

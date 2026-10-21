@@ -1,0 +1,88 @@
+{
+  "notebook": "unit3_dac10_acceptance.ipynb",
+  "results": [
+    {
+      "case": 1,
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": 2,
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "V10",
+      "result": "FAIL",
+      "errors": [
+        "Requested voltage exceeds \u00b10.5 mV accuracy"
+      ]
+    },
+    {
+      "case": "R10",
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "R10-accuracy",
+      "result": "FAIL",
+      "errors": [
+        "Ramp endpoints exceed \u00b10.5 mV"
+      ]
+    },
+    {
+      "case": "N10",
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "S10",
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "S10-accuracy",
+      "result": "FAIL",
+      "errors": [
+        "Safe-zero analog endpoint exceeds \u00b10.5 mV"
+      ]
+    },
+    {
+      "case": "FINAL",
+      "result": "PASS",
+      "errors": []
+    }
+  ],
+  "unit": 3,
+  "global_channel": 10,
+  "local_channel": 2,
+  "firmware_environment": "uno_r4_minima_bench",
+  "unit_selection": "DAC_UNIT=unit3",
+  "firmware_sha256": "1f7d4363749e25128dbff967ed6cc118990b39cee6753d84647724d18b8e7f53",
+  "generated_header_sha256": "506b0516f4f499ae0136af8455def5a6eeb0928162eb82b03787be88e84fe26a",
+  "source_hashes": {
+    "Software/src/main.cpp": "decb727775b01d4e71561c0a81ac0bbe2eebea54d0e43b438b26955fffb3944f",
+    "Software/src/PhysicalControls.h": "2d1d3b2483d298f842eeda5454c4ee4629e70e0bc9c4658b61c756be707a58c5",
+    "Software/src/DeviceIdentity.h": "1356399b74d27cfa412dc1706e093aea06db4c22616117f3950e91b9f6905375",
+    "Software/src/DeviceCalibration.h": "51cdc6aff4b78e6e5ac628197512f10d1e87ede05ca1d686105fc5dd1a62922a",
+    "Software/tools/configure_unit.py": "bc630823bad1117147939ddf9d36f55a874362728c1957c3d89479688624fda5",
+    "Software/tools/bench_configuration.py": "8fb2444026d7ddb5d20651f696d07ff67e0de55f9728b18e21747eee318b485a",
+    "Software/tools/select_upload_target.py": "bd1bacf1605c65d6fdd629b62e94f45167b5fb48b76e47767eed99fb6f711a54",
+    "platformio.ini": "0e75c8f46b50ad5f81320ea0292c408614aed76a7e7205deaa14893060f1cd8a",
+    "malab/notebooks/unit3_dac10_acceptance.ipynb": "74d9c53768287f4a8f429e076d6f9a4a4502d1ce81016a94c7d86cd0eae7329a"
+  },
+  "calibration_applied": false,
+  "safe_zero_V_per_s": 0.02,
+  "local_date": "2026-10-16",
+  "timezone": "America/Indianapolis",
+  "data_directory": "malab\\notebooks\\results\\modules_20261017T023342Z",
+  "executed_notebook": "malab\\notebooks\\results\\modular_run_20261017T023338Z\\executed.ipynb",
+  "address": "192.0.2.30",
+  "mac": "02:00:00:00:00:03",
+  "usb_port": "COM7",
+  "usb_serial": "UNIT_3_USB_SERIAL",
+  "max_request_error_mV": 4.1343820000001585,
+  "max_display_error_mV": 4.1496407890626585,
+  "other_units": "USB power only; no output or recovery commands sent; analog readbacks unavailable",
+  "public_identities": "All addresses, MACs and USB serials in this directory are redacted example values; original local data remains ignored."
+}

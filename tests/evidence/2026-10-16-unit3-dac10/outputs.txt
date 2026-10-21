@@ -1,0 +1,63 @@
+CASE 1
+CASE 2
+Results: C:\Users\G41Lab\Documents\DAC Box\malab\notebooks\results\modules_20261017T023342Z channel: 10 unit: 3 profile: {'offset_nanovolts': -10000000000, 'step_picovolts': 76293945, 'zero_code': 131072, 'volts_per_code': 7.62939453125e-05}
+
+PASS: meter follows DAC 10 small step and returns; readings: [{'target': 0, 'code': 131072, 'displayed': 0.0, 'meter': 0.00374432758}, {'target': 0.05, 'code': 131727, 'displayed': 0.0499725341796875, 'meter': 0.05371070326}, {'target': 0, 'code': 131072, 'displayed': 0.0, 'meter': 0.0037436356899999998}]
+
+CASE V10
+{'target': -9, 'displayed': -9.000015258789062, 'meter': -8.995865618, 'request_error_mV': 4.1343820000001585, 'display_error_mV': 4.1496407890626585}
+
+{'target': -5, 'displayed': -5.0, 'meter': -4.996013416, 'request_error_mV': 3.9865839999997377, 'display_error_mV': 3.9865839999997377}
+
+{'target': -1, 'displayed': -0.9999847412109375, 'meter': -0.99619962, 'request_error_mV': 3.8003800000000476, 'display_error_mV': 3.7851212109375476}
+
+{'target': -0.05, 'displayed': -0.0499725341796875, 'meter': -0.04623902942, 'request_error_mV': 3.7609705800000017, 'display_error_mV': 3.733504759687499}
+
+{'target': 0, 'displayed': 0.0, 'meter': 0.003747250114, 'request_error_mV': 3.7472501140000003, 'display_error_mV': 3.7472501140000003}
+
+{'target': 0.05, 'displayed': 0.0499725341796875, 'meter': 0.0537131055, 'request_error_mV': 3.713105499999994, 'display_error_mV': 3.7405713203124966}
+
+{'target': 1, 'displayed': 0.9999847412109375, 'meter': 1.003675964, 'request_error_mV': 3.6759639999999205, 'display_error_mV': 3.6912227890624205}
+
+{'target': 5, 'displayed': 5.0, 'meter': 5.003508092, 'request_error_mV': 3.508091999999685, 'display_error_mV': 3.508091999999685}
+
+{'target': 9, 'displayed': 9.000015258789062, 'meter': 9.003334894, 'request_error_mV': 3.334893999999977, 'display_error_mV': 3.319635210937477}
+
+{'target': 10, 'displayed': 9.999923706054688, 'meter': 10.00319006, 'request_error_mV': 3.1900599999996615, 'display_error_mV': 3.2663539453121615}
+
+{'target': 0, 'displayed': 0.0, 'meter': 0.003742600628, 'request_error_mV': 3.742600628, 'display_error_mV': 3.742600628}
+
+AssertionError: Requested voltage exceeds ±0.5 mV accuracy
+CASE R10
+{'speed': 0.001, 'start': 0, 'target': 0.005, 'expected_s': 5.34058, 'observed_s': 5.588119745254517, 'meter_endpoint': 0.008771989773333332, 'endpoint_error_mV': 3.771989773333332}
+
+{'speed': 0.001, 'start': 0.005, 'target': 0, 'expected_s': 5.34058, 'observed_s': 5.592309951782227, 'meter_endpoint': 0.0037468331366666665, 'endpoint_error_mV': 3.7468331366666665}
+
+{'speed': 0.01, 'start': 0, 'target': 0.05, 'expected_s': 5.035404, 'observed_s': 5.171545028686523, 'meter_endpoint': 0.053709273366666664, 'endpoint_error_mV': 3.7092733666666615}
+
+{'speed': 0.01, 'start': 0.05, 'target': 0, 'expected_s': 5.035404, 'observed_s': 5.154147386550903, 'meter_endpoint': 0.0037437611533333334, 'endpoint_error_mV': 3.7437611533333333}
+
+{'speed': 0.1, 'start': 0, 'target': 0.5, 'expected_s': 5.00528, 'observed_s': 5.173717498779297, 'meter_endpoint': 0.5037452866666666, 'endpoint_error_mV': 3.745286666666625}
+
+{'speed': 0.1, 'start': 0.5, 'target': 0, 'expected_s': 5.00528, 'observed_s': 5.183115005493164, 'meter_endpoint': 0.003750154196666667, 'endpoint_error_mV': 3.7501541966666667}
+
+PASS: ramp timing, monotonic relative paths and changing telemetry
+
+CASE R10-accuracy
+AssertionError: Ramp endpoints exceed ±0.5 mV
+CASE N10
+PASS: reset holds all four codes and measured output; disconnect ages; abort holds
+
+CASE S10
+{'sign': 1, 'duration_s': 2.8112425804138184, 'slope_V_per_s': -0.019241729131649336, 'meter_zero': 0.00373658397}
+
+{'sign': -1, 'duration_s': 2.626493453979492, 'slope_V_per_s': 0.020032418219818243, 'meter_zero': 0.003734619}
+
+PASS: all four stored zero codes, TCP-independent ramp, measured slew, latch and rearm
+
+CASE S10-accuracy
+AssertionError: Safe-zero analog endpoint exceeds ±0.5 mV
+CASE FINAL
+Diagnostic fit only: {'gain': 0.9999532137453354, 'offset_V': 0.003739857794949897, 'max_residual_mV': 0.012794931726567427, 'applied': False}
+Final codes: [131072, 131072, 131072, 131072] meter: 0.00374499733 V
+PASS: all dashboard actions targeted Unit 3; Units 1 and 2 were observed only

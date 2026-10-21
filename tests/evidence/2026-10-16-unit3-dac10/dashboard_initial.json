@@ -1,0 +1,416 @@
+{
+  "now": 1792204407.595611,
+  "server_started": 1792204407.2426574,
+  "server_pid": 19784,
+  "units": [
+    {
+      "unit": 1,
+      "address": "192.0.2.10",
+      "first_channel": 1,
+      "last_channel": 4,
+      "usb_port": "COM5",
+      "network": {
+        "state": "good",
+        "address": "192.0.2.10",
+        "last_ok": 1792204407.485947,
+        "latency_ms": 15.0,
+        "error": null
+      },
+      "recovery": {
+        "state": "READY",
+        "at": 1792204407.4580345,
+        "error": null
+      },
+      "ramp": {
+        "state": "IDLE",
+        "channel": 0,
+        "target_code": 0,
+        "local_channel": 0
+      },
+      "pending": null,
+      "device_error": "DAC 1: ERR! DAC readback invalid; voltage unknown.; DAC 2: ERR! DAC readback invalid; voltage unknown.; DAC 3: ERR! DAC readback invalid; voltage unknown.; DAC 4: ERR! DAC readback invalid; voltage unknown."
+    },
+    {
+      "unit": 2,
+      "address": "192.0.2.20",
+      "first_channel": 5,
+      "last_channel": 8,
+      "usb_port": "COM6",
+      "network": {
+        "state": "good",
+        "address": "192.0.2.20",
+        "last_ok": 1792204407.486949,
+        "latency_ms": 15.0,
+        "error": null
+      },
+      "recovery": {
+        "state": "READY",
+        "at": 1792204407.4580345,
+        "error": null
+      },
+      "ramp": {
+        "state": "IDLE",
+        "channel": 0,
+        "target_code": 0,
+        "local_channel": 0
+      },
+      "pending": null,
+      "device_error": "DAC 1: ERR! DAC readback invalid; voltage unknown.; DAC 2: ERR! DAC readback invalid; voltage unknown.; DAC 3: ERR! DAC readback invalid; voltage unknown.; DAC 4: ERR! DAC readback invalid; voltage unknown."
+    },
+    {
+      "unit": 3,
+      "address": "192.0.2.30",
+      "first_channel": 9,
+      "last_channel": 12,
+      "usb_port": "COM7",
+      "network": {
+        "state": "good",
+        "address": "192.0.2.30",
+        "last_ok": 1792204407.476878,
+        "latency_ms": 16.0,
+        "error": null
+      },
+      "recovery": {
+        "state": "READY",
+        "at": 1792204407.4580345,
+        "error": null
+      },
+      "ramp": {
+        "state": "IDLE",
+        "channel": 0,
+        "target_code": 0,
+        "local_channel": 0
+      },
+      "pending": null,
+      "device_error": null
+    }
+  ],
+  "channels": [
+    {
+      "channel": 1,
+      "voltage": null,
+      "code": null,
+      "source": "unknown",
+      "at": 1792204407.485947,
+      "calibrated": true,
+      "limits": [
+        -9.992845256,
+        10
+      ],
+      "calibration": {
+        "offset_nanovolts": -9992845256,
+        "step_picovolts": 76283553,
+        "zero_code": 130996,
+        "volts_per_code": 7.6283553e-05
+      },
+      "local_channel": 1,
+      "unit": 1
+    },
+    {
+      "channel": 2,
+      "voltage": null,
+      "code": null,
+      "source": "unknown",
+      "at": 1792204407.485947,
+      "calibrated": false,
+      "limits": [
+        -10,
+        9.999923706054688
+      ],
+      "calibration": {
+        "offset_nanovolts": -10000000000,
+        "step_picovolts": 76293945,
+        "zero_code": 131072,
+        "volts_per_code": 7.62939453125e-05
+      },
+      "local_channel": 2,
+      "unit": 1
+    },
+    {
+      "channel": 3,
+      "voltage": null,
+      "code": null,
+      "source": "unknown",
+      "at": 1792204407.485947,
+      "calibrated": false,
+      "limits": [
+        -10,
+        9.999923706054688
+      ],
+      "calibration": {
+        "offset_nanovolts": -10000000000,
+        "step_picovolts": 76293945,
+        "zero_code": 131072,
+        "volts_per_code": 7.62939453125e-05
+      },
+      "local_channel": 3,
+      "unit": 1
+    },
+    {
+      "channel": 4,
+      "voltage": null,
+      "code": null,
+      "source": "unknown",
+      "at": 1792204407.485947,
+      "calibrated": false,
+      "limits": [
+        -10,
+        9.999923706054688
+      ],
+      "calibration": {
+        "offset_nanovolts": -10000000000,
+        "step_picovolts": 76293945,
+        "zero_code": 131072,
+        "volts_per_code": 7.62939453125e-05
+      },
+      "local_channel": 4,
+      "unit": 1
+    },
+    {
+      "channel": 5,
+      "voltage": null,
+      "code": null,
+      "source": "unknown",
+      "at": 1792204407.486949,
+      "calibrated": false,
+      "limits": [
+        -10,
+        9.999923706054688
+      ],
+      "calibration": {
+        "offset_nanovolts": -10000000000,
+        "step_picovolts": 76293945,
+        "zero_code": 131072,
+        "volts_per_code": 7.62939453125e-05
+      },
+      "local_channel": 1,
+      "unit": 2
+    },
+    {
+      "channel": 6,
+      "voltage": null,
+      "code": null,
+      "source": "unknown",
+      "at": 1792204407.486949,
+      "calibrated": false,
+      "limits": [
+        -10,
+        9.999923706054688
+      ],
+      "calibration": {
+        "offset_nanovolts": -10000000000,
+        "step_picovolts": 76293945,
+        "zero_code": 131072,
+        "volts_per_code": 7.62939453125e-05
+      },
+      "local_channel": 2,
+      "unit": 2
+    },
+    {
+      "channel": 7,
+      "voltage": null,
+      "code": null,
+      "source": "unknown",
+      "at": 1792204407.486949,
+      "calibrated": false,
+      "limits": [
+        -10,
+        9.999923706054688
+      ],
+      "calibration": {
+        "offset_nanovolts": -10000000000,
+        "step_picovolts": 76293945,
+        "zero_code": 131072,
+        "volts_per_code": 7.62939453125e-05
+      },
+      "local_channel": 3,
+      "unit": 2
+    },
+    {
+      "channel": 8,
+      "voltage": null,
+      "code": null,
+      "source": "unknown",
+      "at": 1792204407.486949,
+      "calibrated": false,
+      "limits": [
+        -10,
+        9.999923706054688
+      ],
+      "calibration": {
+        "offset_nanovolts": -10000000000,
+        "step_picovolts": 76293945,
+        "zero_code": 131072,
+        "volts_per_code": 7.62939453125e-05
+      },
+      "local_channel": 4,
+      "unit": 2
+    },
+    {
+      "channel": 9,
+      "voltage": 0.0,
+      "code": 131072,
+      "source": "readback",
+      "at": 1792204407.476878,
+      "calibrated": false,
+      "limits": [
+        -10,
+        9.999923706054688
+      ],
+      "calibration": {
+        "offset_nanovolts": -10000000000,
+        "step_picovolts": 76293945,
+        "zero_code": 131072,
+        "volts_per_code": 7.62939453125e-05
+      },
+      "local_channel": 1,
+      "unit": 3
+    },
+    {
+      "channel": 10,
+      "voltage": 0.0,
+      "code": 131072,
+      "source": "readback",
+      "at": 1792204407.476878,
+      "calibrated": false,
+      "limits": [
+        -10,
+        9.999923706054688
+      ],
+      "calibration": {
+        "offset_nanovolts": -10000000000,
+        "step_picovolts": 76293945,
+        "zero_code": 131072,
+        "volts_per_code": 7.62939453125e-05
+      },
+      "local_channel": 2,
+      "unit": 3
+    },
+    {
+      "channel": 11,
+      "voltage": 0.0,
+      "code": 131072,
+      "source": "readback",
+      "at": 1792204407.476878,
+      "calibrated": false,
+      "limits": [
+        -10,
+        9.999923706054688
+      ],
+      "calibration": {
+        "offset_nanovolts": -10000000000,
+        "step_picovolts": 76293945,
+        "zero_code": 131072,
+        "volts_per_code": 7.62939453125e-05
+      },
+      "local_channel": 3,
+      "unit": 3
+    },
+    {
+      "channel": 12,
+      "voltage": 0.0,
+      "code": 131072,
+      "source": "readback",
+      "at": 1792204407.476878,
+      "calibrated": false,
+      "limits": [
+        -10,
+        9.999923706054688
+      ],
+      "calibration": {
+        "offset_nanovolts": -10000000000,
+        "step_picovolts": 76293945,
+        "zero_code": 131072,
+        "volts_per_code": 7.62939453125e-05
+      },
+      "local_channel": 4,
+      "unit": 3
+    }
+  ],
+  "meter": {
+    "state": "good",
+    "address": "192.0.2.71",
+    "channel": 10,
+    "voltage": 0.00021501119,
+    "at": 1792204407.475877,
+    "error": null
+  },
+  "history": [
+    {
+      "at": 1792204407.2516565,
+      "channels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "meter": null
+    },
+    {
+      "at": 1792204407.5170226,
+      "channels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "meter": 0.00021501119
+    }
+  ],
+  "events": [
+    {
+      "at": 1792204407.475877,
+      "message": "DAC connection established; outputs unchanged",
+      "level": "info",
+      "unit": 1
+    },
+    {
+      "at": 1792204407.475877,
+      "message": "DAC connection established; outputs unchanged",
+      "level": "info",
+      "unit": 2
+    },
+    {
+      "at": 1792204407.4663827,
+      "message": "DAC connection established; outputs unchanged",
+      "level": "info",
+      "unit": 3
+    },
+    {
+      "at": 1792204407.4580345,
+      "message": "Recovery: READY",
+      "level": "info",
+      "unit": 1
+    },
+    {
+      "at": 1792204407.4580345,
+      "message": "Recovery: READY",
+      "level": "info",
+      "unit": 2
+    },
+    {
+      "at": 1792204407.4580345,
+      "message": "Recovery: READY",
+      "level": "info",
+      "unit": 3
+    }
+  ],
+  "jobs": {},
+  "channel_count": 12
+}

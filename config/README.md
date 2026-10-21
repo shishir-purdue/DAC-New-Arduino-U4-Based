@@ -57,3 +57,23 @@ Never commit the local JSON, generated headers/binaries, or raw run output.
 Public evidence uses redacted example network identities without changing the
 measurements. Historical commits are a separate concern: ignoring a file does
 not remove a value already present in Git history.
+
+## Python-only resistor settings
+
+The API/dashboard saves optional per-channel load resistances in ignored
+`resistors.local.json` beside the selected bench configuration. Keys use each
+physical unit's address and local channel, so reordering the active unit list
+does not move resistor settings. Positive values are in ohms; absent entries
+mean voltage mode. Add/edit/remove through the API or each dashboard card.
+These settings never enter firmware builds or uploads. A lock file and atomic
+temporary files in this directory also use the ignored `.local.json` suffix.
+See [current controls and API](../malab/dashboard/README.md#per-channel-resistor-and-current-controls).
+
+## Python-only channel labels
+
+Optional display names live in ignored `labels.local.json` beside the bench
+configuration, with the same physical-address/local-channel keys. Use each
+card's **Rename** control or `set_label(channel, text)` / `get_label(channel)`
+in the Python API. Empty text clears a label. Labels survive restart and unit
+reordering and never enter firmware builds. Label and resistor files use the
+same atomic storage implementation but retain separate values and files.

@@ -1,0 +1,108 @@
+{
+  "notebook": "resistor_current_tests.ipynb",
+  "results": [
+    {
+      "case": "SETUP",
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "I01",
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "I02",
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "I03",
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "I04",
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "I05",
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "I06",
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "I07",
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "I08",
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "I09",
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "case": "I10",
+      "result": "PASS",
+      "errors": []
+    }
+  ],
+  "local_date": "2026-10-17",
+  "timezone": "America/Indianapolis",
+  "validation": "Offline protocol and DOM doubles; live rollout reads only",
+  "existing_regressions": {
+    "driver_groups": 27,
+    "modular_groups": 7,
+    "dashboard_unittests": 9
+  },
+  "rollout": {
+    "unit_count": 2,
+    "channel_count": 8,
+    "meter_channel": 2,
+    "codes_before": [
+      131072,
+      131072,
+      131072,
+      131072,
+      131072,
+      131072,
+      131072,
+      131072
+    ],
+    "codes_after": [
+      131072,
+      131072,
+      131072,
+      131072,
+      131072,
+      131072,
+      131072,
+      131072
+    ],
+    "network": [
+      "good",
+      "good"
+    ],
+    "issued_jobs": 0,
+    "resistances": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  }
+}

@@ -1,0 +1,93 @@
+Processing uno_r4_minima_bench (platform: renesas-ra@1.9.0; board: uno_r4_minima; framework: arduino)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+Using local configuration for unit3
+CONFIGURATION: https://docs.platformio.org/page/boards/renesas-ra/uno_r4_minima.html
+PLATFORM: Renesas RA (1.9.0) > Arduino Uno R4 Minima
+HARDWARE: RA4M1 48MHz, 32KB RAM, 256KB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, jlink)
+PACKAGES:
+ - framework-arduinorenesas-uno @ 1.6.0
+ - tool-dfuutil-arduino @ 1.11.0
+ - tool-jlink @ 1.92000.0 (9.20.0)
+ - tool-openocd @ 3.1200.7 (12.0)
+ - toolchain-gccarmnoneeabi @ 1.70201.0 (7.2.1)
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 24 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- AD5780
+|-- Ethernet @ 2.0.2
+|-- SPI
+Building in release mode
+Checking size .pio\build\uno_r4_minima_bench\firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=         ]  12.1% (used 3980 bytes from 32768 bytes)
+Flash: [===       ]  28.8% (used 75396 bytes from 262144 bytes)
+Configuring upload protocol...
+AVAILABLE: cmsis-dap, dfu, jlink
+CURRENT: upload_protocol = dfu
+Uploading .pio\build\uno_r4_minima_bench\firmware.bin
+dfu-util 0.11-arduino4
+
+Copyright 2005-2009 Weston Schmidt, Harald Welte and OpenMoko Inc.
+Copyright 2010-2021 Tormod Volden and Stefan Schmidt
+This program is Free Software and has ABSOLUTELY NO WARRANTY
+Please report bugs to http://sourceforge.net/p/dfu-util/tickets/
+
+Opening DFU capable USB device...
+Device ID 2341:0069
+Run-Time device DFU version 0101
+Claiming USB DFU (Run-Time) Interface...
+Setting Alternate Interface zero...
+Determining device status...
+DFU state(0) = appIDLE, status(0) = No error condition is present
+Device really in Run-Time Mode, send DFU detach request...
+Device will detach and reattach...
+Opening DFU USB Device...
+Claiming USB DFU Interface...
+Setting Alternate Interface #0 ...
+Determining device status...
+DFU state(2) = dfuIDLE, status(0) = No error condition is present
+DFU mode device DFU version 0101
+Device returned transfer size 64
+Copying data from PC to DFU device
+
+Download	[                         ]   0%            0 bytes
+Download	[=                        ]   4%         3072 bytes
+Download	[==                       ]   8%         6080 bytes
+Download	[===                      ]  12%         9088 bytes
+Download	[====                     ]  16%        12096 bytes
+Download	[=====                    ]  20%        15104 bytes
+Download	[======                   ]  24%        18112 bytes
+Download	[=======                  ]  28%        21184 bytes
+Download	[========                 ]  32%        24192 bytes
+Download	[=========                ]  36%        27200 bytes
+Download	[==========               ]  40%        30208 bytes
+Download	[===========              ]  44%        33216 bytes
+Download	[============             ]  48%        36224 bytes
+Download	[============             ]  48%        36736 bytes
+Download	[=============            ]  52%        39296 bytes
+Download	[==============           ]  56%        42304 bytes
+Download	[===============          ]  60%        45312 bytes
+Download	[================         ]  64%        48320 bytes
+Download	[=================        ]  68%        51328 bytes
+Download	[==================       ]  72%        54336 bytes
+Download	[===================      ]  76%        57408 bytes
+Download	[====================     ]  80%        60416 bytes
+Download	[=====================    ]  84%        63424 bytes
+Download	[======================   ]  88%        66432 bytes
+Download	[=======================  ]  92%        69440 bytes
+Download	[======================== ]  96%        72448 bytes
+Download	[=========================] 100%        75396 bytes
+Download done.
+DFU state(7) = dfuMANIFEST, status(0) = No error condition is present
+DFU state(2) = dfuIDLE, status(0) = No error condition is present
+Done!
+========================= [SUCCESS] Took 8.97 seconds =========================
+
+Environment          Status    Duration
+-------------------  --------  ------------
+uno_r4_minima_bench  SUCCESS   00:00:08.966
+========================= 1 succeeded in 00:00:08.966 =========================
